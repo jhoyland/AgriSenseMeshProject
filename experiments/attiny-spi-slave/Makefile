@@ -4,10 +4,10 @@ CC=/usr/bin/avr-gcc
 CFLAGS=-g -Os -Wall -mcall-prologues -mmcu=$(MCU)
 OBJ2HEX=/usr/bin/avr-objcopy
 AVRDUDE=/usr/local/bin/avrdude
-TARGET=i2ctest3
+TARGET=spi-slave-test3
 
 all:
-	$(CC) $(CFLAGS) $(TARGET).c usitwislave.c -o $(TARGET)
+	$(CC) $(CFLAGS) $(TARGET).c -o $(TARGET)
 	$(OBJ2HEX) -R .eeprom -O ihex $(TARGET) $(TARGET).hex
 	rm -f $(TARGET)
 
