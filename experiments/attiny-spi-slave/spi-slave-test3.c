@@ -1,4 +1,4 @@
-#define F_CPU 4000000UL
+#define F_CPU 8000000UL
 /* 8MHz causes garbled data  */
 
 #include <avr/io.h>
