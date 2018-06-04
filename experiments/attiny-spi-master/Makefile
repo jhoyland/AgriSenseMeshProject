@@ -4,7 +4,7 @@ CC=/usr/bin/avr-gcc
 CFLAGS=-g -Os -Wall -mcall-prologues -mmcu=$(MCU)
 OBJ2HEX=/usr/bin/avr-objcopy
 AVRDUDE=/usr/local/bin/avrdude
-TARGET=spi-master-shift1
+TARGET=spi-master-adc1
 
 all:
 	$(CC) $(CFLAGS) $(TARGET).c -o $(TARGET)
