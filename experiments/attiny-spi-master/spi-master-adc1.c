@@ -90,14 +90,17 @@ int main()
 {	
 	setup_spi();
 	uint16_t val = 0;
-	uint8_t dval = 0;
+	uint16_t dval = 0;
 
 	while(1)
 	{
 		val = get_adc_value(0);
-		val = val >> 4;
-		dval = val;
-		display_value(dval);
+		dval = val >> 9;
+
+		uint8_t x = 1<<dval;
+
+		display_value(x);
+
 		_delay_ms(100);
 	}
 	return 0;
