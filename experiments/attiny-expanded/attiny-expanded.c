@@ -1,15 +1,12 @@
 #define F_CPU 8000000UL
-/* 8MHz causes garbled data  */
+/* Note: Fuses must be set to remove 8x clock divider */
+
 
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
 /* 
-References:
-
-see: weathergadget.wordpress.com/2016/05/19/usi-spi-slave-communication/
-
 
 */
 
@@ -19,35 +16,42 @@ see: weathergadget.wordpress.com/2016/05/19/usi-spi-slave-communication/
 #define USCK	PB2
 #define D1	PB0
 
-uint8_t usi_clk_lo = (1<<USIWM0) | (1<<USITC);
-uint8_t usi_clk_hi = (1<<USIWM0) | (1<<USITC) | (1<<USICLK);
+const uint8_t usi_clk_lo = (1<<USIWM0) | (1<<USITC);
+const uint8_t usi_clk_hi = (1<<USIWM0) | (1<<USITC) | (1<<USICLK);
 
-uint8_t adc_buffer[3];
+volatile uint8_t PORTSR = 0;
+volatile uint8_t DUMMY = 0;
+
+#define SRQA 0
+#define SRQB 1
+#define SRQC 2
+#define SRQD 3
+#define SRQE 4
+#define SRQF 5
+#define SRQG 6
+#define SRQH 7
+
+volatile uint8_t adc_buffer[3];
 
 void setup_spi(void)
 {
 	DDRB |= 1<<DO;
 	DDRB |= 1<<CS_SR;
-	DDRB |= 1<<CS_ADC;
 	DDRB |= 1<<USCK;
 
 	/* To select software clock strobe USICS[1:0] = 0 */
 	USICR = (1<<USIWM0); /* 3-wire mode and software clock  */
 	
 	PORTB |= 1<<CS_SR; /* Pull up resistor enabled on CS */
-	PORTB |= 1<<CS_ADC;
-
+	
 	_delay_ms(500);
-
-	sei(); /* Enable interrupts */
 }
 
 void spi_transfer_byte(uint8_t* bout, uint8_t* bin)
 {
 	int i = 0;
 	USIDR = *bout;
-	/*for(i=0;i<8;i++)*/
-	while(! (USISR & (1<<USIOIF))) /* SPI_BYTE_DONE */ 
+	for(i=0;i<8;i++)
 	{
 		USICR = usi_clk_lo;
 		USICR = usi_clk_hi;
@@ -55,9 +59,8 @@ void spi_transfer_byte(uint8_t* bout, uint8_t* bin)
 	*bin = USIDR;
 }
 
-void spi_transfer_bytes(uint8_t* out, uint8_t* in, uint8_t n, uint8_t cs)
+void spi_transfer_bytes(uint8_t* out, uint8_t* in, uint8_t n)
 {
-	PORTB &= ~(1<<cs);
 	int i=0;
 	for(i=0;i<n;i++)
 	{
@@ -65,7 +68,18 @@ void spi_transfer_bytes(uint8_t* out, uint8_t* in, uint8_t n, uint8_t cs)
 		out = out + 1;
 		in = in + 1;
 	}
-	PORTB |= 1<<cs;
+}
+
+void spi_toggle_cs(uint8_t cs)
+{
+	PORTB ^= (1<<cs);
+}
+
+void spi_toggle_cs_expanded(uint8_t xcs)
+{
+	PORTSR ^= (1<<xcs);
+	spi_toggle_cs(CS_SR); /*This is not going to work!*/
+	
 }
 
 uint16_t get_adc_value(uint8_t chan)
