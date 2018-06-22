@@ -7,14 +7,6 @@
 #ifndef LIB_MRF24J_H
 #define LIB_MRF24J_H
 
-#if defined(ARDUINO) && ARDUINO >= 100 // Arduino IDE version >= 1.0
-    #include "Arduino.h"
-#else // older Arduino IDE versions
-    #include "WProgram.h"
-#endif
-#include "SPI.h"
-
-
 #define MRF_RXMCR 0x00
 #define MRF_PANIDL 0x01
 #define MRF_PANIDH 0x02
@@ -147,6 +139,14 @@
 #define MRF_I_RXIF  0b00001000
 #define MRF_I_TXNIF 0b00000001
 
+
+typedef struct _mrf_hw_info_t{
+    uint8_t cs;
+    uint8_t reset_pin;
+}
+
+
+
 typedef struct _rx_info_t{
     uint8_t frame_length;
     uint8_t rx_data[116]; //max data length = (127 aMaxPHYPacketSize - 2 Frame control - 1 sequence number - 2 panid - 2 shortAddr Destination - 2 shortAddr Source - 2 FCS)
@@ -163,72 +163,72 @@ typedef struct _tx_info_t{
     uint8_t channel_busy:1;
 } tx_info_t;
 
-class Mrf24j
+/*class Mrf24j
 {
     public:
-        Mrf24j(int pin_reset, int pin_chip_select, int pin_interrupt);
-        void reset(void);
-        void init(void);
+        Mrf24j(int pin_reset, int pin_chip_select, int pin_interrupt);*/
+        void mrf_reset(void);
+        void mrf_init(void);
 
-        byte read_short(byte address);
-        byte read_long(word address);
+        byte mrf_read_short(byte address);
+        byte mrf_read_long(word address);
 
-        void write_short(byte address, byte data);
-        void write_long(word address, byte data);
+        void mrf_write_short(byte address, byte data);
+        void mrf_write_long(word address, byte data);
 
-        word get_pan(void);
-        void set_pan(word panid);
+        word mrf_get_pan(void);
+        void mrf_set_pan(word panid);
 
-        void address16_write(word address16);
-        word address16_read(void);
+        void mrf_address16_write(word address16);
+        word mrf_address16_read(void);
 
-        void set_interrupts(void);
+        void mrf_set_interrupts(void);
 
-        void set_promiscuous(boolean enabled);
+        void mrf_set_promiscuous(boolean enabled);
 
         /**
          * Set the channel, using 802.15.4 channel numbers (11..26)
          */
-        void set_channel(byte channel);
+        void mrf_set_channel(byte channel);
 
-        void rx_enable(void);
-        void rx_disable(void);
+        void mrf_rx_enable(void);
+        void mrf_rx_disable(void);
 
         /** If you want to throw away rx data */
-        void rx_flush(void);
+        void mrf_rx_flush(void);
 
-        rx_info_t * get_rxinfo(void);
+        rx_info_t * mrf_get_rxinfo(void);
 
-        tx_info_t * get_txinfo(void);
+        tx_info_t * mrf_get_txinfo(void);
 
-        uint8_t * get_rxbuf(void);
+        uint8_t * mrf_get_rxbuf(void);
 
-        int rx_datalength(void);
+        int mrf_rx_datalength(void);
 
-        void set_ignoreBytes(int ib);
+        void mrf_set_ignoreBytes(int ib);
 
         /**
          * Set bufPHY flag to buffer all bytes in PHY Payload, or not
          */
-        void set_bufferPHY(boolean bp);
+        void mrf_set_bufferPHY(boolean bp);
 
-        boolean get_bufferPHY(void);
+        boolean mrf_get_bufferPHY(void);
 
         /**
          * Set PA/LNA external control
          */
-        void set_palna(boolean enabled);
+        void mrf_set_palna(boolean enabled);
 
-        void send16(word dest16, char * data);
+        void mrf_send16(word dest16, char * data);
 
-        void interrupt_handler(void);
+        void mrf_interrupt_handler(void);
 
-        void check_flags(void (*rx_handler)(void), void (*tx_handler)(void));
+        void mrf_check_flags(void (*rx_handler)(void), void (*tx_handler)(void));
 
-    private:
+   /* private:
         int _pin_reset;
         int _pin_cs;
         int _pin_int;
-};
+};*/
 
 #endif  /* LIB_MRF24J_H */

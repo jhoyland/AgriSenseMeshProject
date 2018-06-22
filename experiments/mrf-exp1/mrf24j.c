@@ -1,9 +1,25 @@
 /**
+ * mrf24j.c, James Hoyland, 2018, james@jamesmakesthings.ca 
+ *
+ * Dervide from:
  * mrf24j.cpp, Karl Palsson, 2011, karlp@tweak.net.au
  * modified bsd license / apache license
  */
 
 #include "mrf24j.h"
+
+
+#ifndef RESET_PORT
+#error No RESET_PORT defined for MRF24J module
+#endif
+
+#ifndef RESET_PIN
+#error No RESET_PIN defined for MRF24J module
+#endif
+
+#ifndef CS_MRF
+#error No chip select pin (CS_MRF) defined for MRF24J module
+#endif
 
 // aMaxPHYPacketSize = 127, from the 802.15.4-2006 standard.
 static uint8_t rx_buf[127];
@@ -24,12 +40,13 @@ volatile uint8_t flag_got_tx;
 static rx_info_t rx_info;
 static tx_info_t tx_info;
 
+static uint8_t mrf_spi_buffer[3];
 
 /**
  * Constructor MRF24J Object.
  * @param pin_reset, @param pin_chip_select, @param pin_interrupt
  */
-Mrf24j::Mrf24j(int pin_reset, int pin_chip_select, int pin_interrupt) {
+/*void mrf_setup(int pin_reset, int pin_chip_select, int pin_interrupt) {
     _pin_reset = pin_reset;
     _pin_cs = pin_chip_select;
     _pin_int = pin_interrupt;
@@ -38,74 +55,77 @@ Mrf24j::Mrf24j(int pin_reset, int pin_chip_select, int pin_interrupt) {
     pinMode(_pin_cs, OUTPUT);
     pinMode(_pin_int, INPUT);
 
+
+    TODO: modify spi to allow bit order selection etc.
+
     SPI.setBitOrder(MSBFIRST) ;
     SPI.setDataMode(SPI_MODE0);
     SPI.begin();
-}
 
-void Mrf24j::reset(void) {
-    digitalWrite(_pin_reset, LOW);
+}*/
+
+void mrf_reset(void) {
+    RESET_PORT &= ~(1 << RESET_PIN);
     delay(10);  // just my gut
-    digitalWrite(_pin_reset, HIGH);
+    RESET_PORT |= (1 << RESET_PIN);
     delay(20);  // from manual
 }
 
-byte Mrf24j::read_short(byte address) {
-    digitalWrite(_pin_cs, LOW);
+uint8_t mrf_read_short(uint8_t address) {
     // 0 top for short addressing, 0 bottom for read
-    SPI.transfer(address<<1 & 0b01111110);
-    byte ret = SPI.transfer(0x00);
-    digitalWrite(_pin_cs, HIGH);
-    return ret;
+
+    mrf_spi_buffer[0] = (address<<1) & 0b01111110;
+    mrf_spi_buffer[1] = 0;
+
+    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,2,CS_MRF);  
+
+    return mrf_spi_buffer[1];
 }
 
-byte Mrf24j::read_long(word address) {
-    digitalWrite(_pin_cs, LOW);
-    byte ahigh = address >> 3;
-    byte alow = address << 5;
-    SPI.transfer(0x80 | ahigh);  // high bit for long
-    SPI.transfer(alow);
-    byte ret = SPI.transfer(0);
-    digitalWrite(_pin_cs, HIGH);
-    return ret;
+uint8_t mrf_read_long(uint16_t address) {
+    mrf_spi_buffer[0] = 0x80 | (address >> 3);
+    mrf_spi_buffer[1] = address << 5;
+    mrf_spi_buffer[2] = 0
+
+    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,3,CS_MRF);  
+
+    return mrf_spi_buffer[2];
 }
 
 
-void Mrf24j::write_short(byte address, byte data) {
-    digitalWrite(_pin_cs, LOW);
+void mrf_write_short(uint8_t address, uint8_t data) {
     // 0 for top short address, 1 bottom for write
-    SPI.transfer((address<<1 & 0b01111110) | 0x01);
-    SPI.transfer(data);
-    digitalWrite(_pin_cs, HIGH);
+    mrf_spi_buffer[0] = ((address<<1 & 0b01111110) | 0x01);
+    mrf_spi_buffer[1] = data;
+
+    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,2,CS_MRF);  
 }
 
-void Mrf24j::write_long(word address, byte data) {
-    digitalWrite(_pin_cs, LOW);
-    byte ahigh = address >> 3;
-    byte alow = address << 5;
-    SPI.transfer(0x80 | ahigh);  // high bit for long
-    SPI.transfer(alow | 0x10);  // last bit for write
-    SPI.transfer(data);
-    digitalWrite(_pin_cs, HIGH);
+void mrf_write_long(uint16_t address, uint8_t data) {
+    mrf_spi_buffer[0] = 0x80 | (address >> 3);
+    mrf_spi_buffer[1] = (address << 5) | 0x10;
+    mrf_spi_buffer[2] = data;
+
+    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,3,CS_MRF); 
 }
 
-word Mrf24j::get_pan(void) {
-    byte panh = read_short(MRF_PANIDH);
+uint16_t mrf_get_pan(void) {
+    uint8_t panh = read_short(MRF_PANIDH);
     return panh << 8 | read_short(MRF_PANIDL);
 }
 
-void Mrf24j::set_pan(word panid) {
+void mrf_set_pan(uint16_t panid) {
     write_short(MRF_PANIDH, panid >> 8);
     write_short(MRF_PANIDL, panid & 0xff);
 }
 
-void Mrf24j::address16_write(word address16) {
+void mrf_address16_write(uint16_t address16) {
     write_short(MRF_SADRH, address16 >> 8);
     write_short(MRF_SADRL, address16 & 0xff);
 }
 
-word Mrf24j::address16_read(void) {
-    byte a16h = read_short(MRF_SADRH);
+uint16_t mrf_address16_read(void) {
+    uint8_t a16h = read_short(MRF_SADRH);
     return a16h << 8 | read_short(MRF_SADRL);
 }
 
@@ -113,8 +133,8 @@ word Mrf24j::address16_read(void) {
  * Simple send 16, with acks, not much of anything.. assumes src16 and local pan only.
  * @param data
  */
-void Mrf24j::send16(word dest16, char * data) {
-    byte len = strlen(data); // get the length of the char* array
+void mrf_send16(uint16_t dest16, uint8_t * data) {
+    uint8_t len = strlen(data); // get the length of the char* array
     int i = 0;
     write_long(i++, bytes_MHR); // header length
     // +ignoreBytes is because some module seems to ignore 2 bytes after the header?!.
@@ -122,19 +142,19 @@ void Mrf24j::send16(word dest16, char * data) {
     write_long(i++, bytes_MHR+ignoreBytes+len);
 
     // 0 | pan compression | ack | no security | no data pending | data frame[3 bits]
-    write_long(i++, 0b01100001); // first byte of Frame Control
+    write_long(i++, 0b01100001); // first uint8_t of Frame Control
     // 16 bit source, 802.15.4 (2003), 16 bit dest,
-    write_long(i++, 0b10001000); // second byte of frame control
+    write_long(i++, 0b10001000); // second uint8_t of frame control
     write_long(i++, 1);  // sequence number 1
 
-    word panid = get_pan();
+    uint16_t panid = get_pan();
 
     write_long(i++, panid & 0xff);  // dest panid
     write_long(i++, panid >> 8);
     write_long(i++, dest16 & 0xff);  // dest16 low
     write_long(i++, dest16 >> 8); // dest16 high
 
-    word src16 = address16_read();
+    uint16_t src16 = address16_read();
     write_long(i++, src16 & 0xff); // src16 low
     write_long(i++, src16 >> 8); // src16 high
 
@@ -148,18 +168,18 @@ void Mrf24j::send16(word dest16, char * data) {
     write_short(MRF_TXNCON, (1<<MRF_TXNACKREQ | 1<<MRF_TXNTRIG));
 }
 
-void Mrf24j::set_interrupts(void) {
+void mrf_set_interrupts(void) {
     // interrupts for rx and tx normal complete
     write_short(MRF_INTCON, 0b11110110);
 }
 
 /** use the 802.15.4 channel numbers..
  */
-void Mrf24j::set_channel(byte channel) {
+void mrf_set_channel(uint8_t channel) {
     write_long(MRF_RFCON0, (((channel - 11) << 4) | 0x03));
 }
 
-void Mrf24j::init(void) {
+void mrf_init(void) {
     /*
     // Seems a bit ridiculous when I use reset pin anyway
     write_short(MRF_SOFTRST, 0x7); // from manual
@@ -198,7 +218,7 @@ void Mrf24j::init(void) {
  * continue working.
  * Only the most recent data is ever kept.
  */
-void Mrf24j::interrupt_handler(void) {
+void mrf_interrupt_handler(void) {
     uint8_t last_interrupt = read_short(MRF_INTSTAT);
     if (last_interrupt & MRF_I_RXIF) {
         flag_got_rx++;
@@ -246,7 +266,7 @@ void Mrf24j::interrupt_handler(void) {
 /**
  * Call this function periodically, it will invoke your nominated handlers
  */
-void Mrf24j::check_flags(void (*rx_handler)(void), void (*tx_handler)(void)){
+void mrf_check_flags(void (*rx_handler)(void), void (*tx_handler)(void)){
     // TODO - we could check whether the flags are > 1 here, indicating data was lost?
     if (flag_got_rx) {
         flag_got_rx = 0;
@@ -261,7 +281,7 @@ void Mrf24j::check_flags(void (*rx_handler)(void), void (*tx_handler)(void)){
 /**
  * Set RX mode to promiscuous, or normal
  */
-void Mrf24j::set_promiscuous(boolean enabled) {
+void mrf_set_promiscuous(boolean enabled) {
     if (enabled) {
         write_short(MRF_RXMCR, 0x01);
     } else {
@@ -269,23 +289,23 @@ void Mrf24j::set_promiscuous(boolean enabled) {
     }
 }
 
-rx_info_t * Mrf24j::get_rxinfo(void) {
+rx_info_t * mrf_get_rxinfo(void) {
     return &rx_info;
 }
 
-tx_info_t * Mrf24j::get_txinfo(void) {
+tx_info_t * mrf_get_txinfo(void) {
     return &tx_info;
 }
 
-uint8_t * Mrf24j::get_rxbuf(void) {
+uint8_t * mrf_get_rxbuf(void) {
     return rx_buf;
 }
 
-int Mrf24j::rx_datalength(void) {
+int mrf_rx_datalength(void) {
     return rx_info.frame_length - bytes_nodata;
 }
 
-void Mrf24j::set_ignoreBytes(int ib) {
+void mrf_set_ignoreBytes(int ib) {
     // some modules behaviour
     ignoreBytes = ib;
 }
@@ -293,18 +313,18 @@ void Mrf24j::set_ignoreBytes(int ib) {
 /**
  * Set bufPHY flag to buffer all bytes in PHY Payload, or not
  */
-void Mrf24j::set_bufferPHY(boolean bp) {
+void mrf_set_bufferPHY(boolean bp) {
     bufPHY = bp;
 }
 
-boolean Mrf24j::get_bufferPHY(void) {
+boolean mrf_get_bufferPHY(void) {
     return bufPHY;
 }
 
 /**
  * Set PA/LNA external control
  */
-void Mrf24j::set_palna(boolean enabled) {
+void mrf_set_palna(boolean enabled) {
     if (enabled) {
         write_long(MRF_TESTMODE, 0x07); // Enable PA/LNA on MRF24J40MB module.
     }else{
@@ -312,14 +332,14 @@ void Mrf24j::set_palna(boolean enabled) {
     }
 }
 
-void Mrf24j::rx_flush(void) {
+void mrf_rx_flush(void) {
     write_short(MRF_RXFLUSH, 0x01);
 }
 
-void Mrf24j::rx_disable(void) {
+void mrf_rx_disable(void) {
     write_short(MRF_BBREG1, 0x04);  // RXDECINV - disable receiver
 }
 
-void Mrf24j::rx_enable(void) {
+void mrf_rx_enable(void) {
     write_short(MRF_BBREG1, 0x00);  // RXDECINV - enable receiver
 }
