@@ -7,6 +7,10 @@
 #ifndef LIB_MRF24J_H
 #define LIB_MRF24J_H
 
+
+#define aMaxPHYPacketSize 127
+
+
 #define MRF_RXMCR 0x00
 #define MRF_PANIDL 0x01
 #define MRF_PANIDH 0x02

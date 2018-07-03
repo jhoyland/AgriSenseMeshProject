@@ -3,6 +3,16 @@
 
 #include "tinyspi.h"
 
+void spi_set_data_direction(uint8_t d)
+{
+    /*USI version of SPI can only do LSB first*/
+    #ifndef SPI_ON_USI
+    if(d == SPI_LSB)
+        SPCR |=  (1 << DORD);
+    else
+        SPCR &= ~(1 << DORD);
+    #endif
+}
 
 void spi_setup()
 {

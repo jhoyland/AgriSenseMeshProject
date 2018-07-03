@@ -7,22 +7,24 @@
  */
 
 #include "mrf24j.h"
+#include "mrfpindefs.h"
 
 
-#ifndef RESET_PORT
-#error No RESET_PORT defined for MRF24J module
+
+#ifndef MRF_RESET
+#error No MRF_RESET pin defined for MRF24J module
 #endif
 
-#ifndef RESET_PIN
-#error No RESET_PIN defined for MRF24J module
+#ifndef MRF_WAKE
+#error No MRF_WAKE pin defined for MRF24J module
 #endif
 
-#ifndef CS_MRF
-#error No chip select pin (CS_MRF) defined for MRF24J module
+#ifndef MRF_CS
+#error No chip select pin (MRF_CS) defined for MRF24J module
 #endif
 
 // aMaxPHYPacketSize = 127, from the 802.15.4-2006 standard.
-static uint8_t rx_buf[127];
+static uint8_t rx_buf[aMaxPHYPacketSize];
 
 // essential for obtaining the data frame only
 // bytes_MHR = 2 Frame control + 1 sequence number + 2 panid + 2 shortAddr Destination + 2 shortAddr Source
@@ -42,27 +44,6 @@ static tx_info_t tx_info;
 
 static uint8_t mrf_spi_buffer[3];
 
-/**
- * Constructor MRF24J Object.
- * @param pin_reset, @param pin_chip_select, @param pin_interrupt
- */
-/*void mrf_setup(int pin_reset, int pin_chip_select, int pin_interrupt) {
-    _pin_reset = pin_reset;
-    _pin_cs = pin_chip_select;
-    _pin_int = pin_interrupt;
-
-    pinMode(_pin_reset, OUTPUT);
-    pinMode(_pin_cs, OUTPUT);
-    pinMode(_pin_int, INPUT);
-
-
-    TODO: modify spi to allow bit order selection etc.
-
-    SPI.setBitOrder(MSBFIRST) ;
-    SPI.setDataMode(SPI_MODE0);
-    SPI.begin();
-
-}*/
 
 void mrf_reset(void) {
     RESET_PORT &= ~(1 << RESET_PIN);
@@ -115,13 +96,13 @@ uint16_t mrf_get_pan(void) {
 }
 
 void mrf_set_pan(uint16_t panid) {
-    write_short(MRF_PANIDH, panid >> 8);
-    write_short(MRF_PANIDL, panid & 0xff);
+    mrf_write_short(MRF_PANIDH, panid >> 8);
+    mrf_write_short(MRF_PANIDL, panid & 0xff);
 }
 
 void mrf_address16_write(uint16_t address16) {
-    write_short(MRF_SADRH, address16 >> 8);
-    write_short(MRF_SADRL, address16 & 0xff);
+    mrf_write_short(MRF_SADRH, address16 >> 8);
+    mrf_write_short(MRF_SADRL, address16 & 0xff);
 }
 
 uint16_t mrf_address16_read(void) {
@@ -133,82 +114,82 @@ uint16_t mrf_address16_read(void) {
  * Simple send 16, with acks, not much of anything.. assumes src16 and local pan only.
  * @param data
  */
-void mrf_send16(uint16_t dest16, uint8_t * data) {
-    uint8_t len = strlen(data); // get the length of the char* array
+void mrf_send16(uint16_t dest16, uint8_t * data, uint8_t len) {
+    //uint8_t len = strlen(data); // get the length of the char* array
     int i = 0;
-    write_long(i++, bytes_MHR); // header length
+    mrf_write_long(i++, bytes_MHR); // header length
     // +ignoreBytes is because some module seems to ignore 2 bytes after the header?!.
     // default: ignoreBytes = 0;
-    write_long(i++, bytes_MHR+ignoreBytes+len);
-
+    mrf_write_long(i++, bytes_MHR+ignoreBytes+len);
+    
     // 0 | pan compression | ack | no security | no data pending | data frame[3 bits]
-    write_long(i++, 0b01100001); // first uint8_t of Frame Control
+    mrf_write_long(i++, 0b01100001); // first uint8_t of Frame Control
     // 16 bit source, 802.15.4 (2003), 16 bit dest,
-    write_long(i++, 0b10001000); // second uint8_t of frame control
-    write_long(i++, 1);  // sequence number 1
+    mrf_write_long(i++, 0b10001000); // second uint8_t of frame control
+    mrf_write_long(i++, 1);  // sequence number 1
 
     uint16_t panid = get_pan();
 
-    write_long(i++, panid & 0xff);  // dest panid
-    write_long(i++, panid >> 8);
-    write_long(i++, dest16 & 0xff);  // dest16 low
-    write_long(i++, dest16 >> 8); // dest16 high
+    mrf_write_long(i++, panid & 0xff);  // dest panid
+    mrf_write_long(i++, panid >> 8);
+    mrf_write_long(i++, dest16 & 0xff);  // dest16 low
+    mrf_write_long(i++, dest16 >> 8); // dest16 high
 
     uint16_t src16 = address16_read();
-    write_long(i++, src16 & 0xff); // src16 low
-    write_long(i++, src16 >> 8); // src16 high
+    mrf_write_long(i++, src16 & 0xff); // src16 low
+    mrf_write_long(i++, src16 >> 8); // src16 high
 
     // All testing seems to indicate that the next two bytes are ignored.
     //2 bytes on FCS appended by TXMAC
     i+=ignoreBytes;
     for (int q = 0; q < len; q++) {
-        write_long(i++, data[q]);
+        mrf_write_long(i++, data[q]);
     }
     // ack on, and go!
-    write_short(MRF_TXNCON, (1<<MRF_TXNACKREQ | 1<<MRF_TXNTRIG));
+    mrf_write_short(MRF_TXNCON, (1<<MRF_TXNACKREQ | 1<<MRF_TXNTRIG));
 }
 
 void mrf_set_interrupts(void) {
     // interrupts for rx and tx normal complete
-    write_short(MRF_INTCON, 0b11110110);
+    mrf_write_short(MRF_INTCON, 0b11110110);
 }
 
 /** use the 802.15.4 channel numbers..
  */
 void mrf_set_channel(uint8_t channel) {
-    write_long(MRF_RFCON0, (((channel - 11) << 4) | 0x03));
+    mrf_write_long(MRF_RFCON0, (((channel - 11) << 4) | 0x03));
 }
 
 void mrf_init(void) {
     /*
     // Seems a bit ridiculous when I use reset pin anyway
-    write_short(MRF_SOFTRST, 0x7); // from manual
+    mrf_write_short(MRF_SOFTRST, 0x7); // from manual
     while (read_short(MRF_SOFTRST) & 0x7 != 0) {
         ; // wait for soft reset to finish
     }
     */
-    write_short(MRF_PACON2, 0x98); // – Initialize FIFOEN = 1 and TXONTS = 0x6.
-    write_short(MRF_TXSTBL, 0x95); // – Initialize RFSTBL = 0x9.
+    mrf_write_short(MRF_PACON2, 0x98); // – Initialize FIFOEN = 1 and TXONTS = 0x6.
+    mrf_write_short(MRF_TXSTBL, 0x95); // – Initialize RFSTBL = 0x9.
 
-    write_long(MRF_RFCON0, 0x03); // – Initialize RFOPT = 0x03.
-    write_long(MRF_RFCON1, 0x01); // – Initialize VCOOPT = 0x02.
-    write_long(MRF_RFCON2, 0x80); // – Enable PLL (PLLEN = 1).
-    write_long(MRF_RFCON6, 0x90); // – Initialize TXFIL = 1 and 20MRECVR = 1.
-    write_long(MRF_RFCON7, 0x80); // – Initialize SLPCLKSEL = 0x2 (100 kHz Internal oscillator).
-    write_long(MRF_RFCON8, 0x10); // – Initialize RFVCO = 1.
-    write_long(MRF_SLPCON1, 0x21); // – Initialize CLKOUTEN = 1 and SLPCLKDIV = 0x01.
+    mrf_write_long(MRF_RFCON0, 0x03); // – Initialize RFOPT = 0x03.
+    mrf_write_long(MRF_RFCON1, 0x01); // – Initialize VCOOPT = 0x02.
+    mrf_write_long(MRF_RFCON2, 0x80); // – Enable PLL (PLLEN = 1).
+    mrf_write_long(MRF_RFCON6, 0x90); // – Initialize TXFIL = 1 and 20MRECVR = 1.
+    mrf_write_long(MRF_RFCON7, 0x80); // – Initialize SLPCLKSEL = 0x2 (100 kHz Internal oscillator).
+    mrf_write_long(MRF_RFCON8, 0x10); // – Initialize RFVCO = 1.
+    mrf_write_long(MRF_SLPCON1, 0x21); // – Initialize CLKOUTEN = 1 and SLPCLKDIV = 0x01.
 
     //  Configuration for nonbeacon-enabled devices (see Section 3.8 “Beacon-Enabled and
     //  Nonbeacon-Enabled Networks”):
-    write_short(MRF_BBREG2, 0x80); // Set CCA mode to ED
-    write_short(MRF_CCAEDTH, 0x60); // – Set CCA ED threshold.
-    write_short(MRF_BBREG6, 0x40); // – Set appended RSSI value to RXFIFO.
-    set_interrupts();
-    set_channel(12);
+    mrf_write_short(MRF_BBREG2, 0x80); // Set CCA mode to ED
+    mrf_write_short(MRF_CCAEDTH, 0x60); // – Set CCA ED threshold.
+    mrf_write_short(MRF_BBREG6, 0x40); // – Set appended RSSI value to RXFIFO.
+    mrf_set_interrupts();
+    mrf_set_channel(12);
     // max power is by default.. just leave it...
     // Set transmitter power - See “REGISTER 2-62: RF CONTROL 3 REGISTER (ADDRESS: 0x203)”.
-    write_short(MRF_RFCTL, 0x04); //  – Reset RF state machine.
-    write_short(MRF_RFCTL, 0x00); // part 2
+    mrf_write_short(MRF_RFCTL, 0x04); //  – Reset RF state machine.
+    mrf_write_short(MRF_RFCTL, 0x00); // part 2
     delay(1); // delay at least 192usec
 }
 
@@ -283,9 +264,9 @@ void mrf_check_flags(void (*rx_handler)(void), void (*tx_handler)(void)){
  */
 void mrf_set_promiscuous(boolean enabled) {
     if (enabled) {
-        write_short(MRF_RXMCR, 0x01);
+        mrf_write_short(MRF_RXMCR, 0x01);
     } else {
-        write_short(MRF_RXMCR, 0x00);
+        mrf_write_short(MRF_RXMCR, 0x00);
     }
 }
 
@@ -326,20 +307,20 @@ boolean mrf_get_bufferPHY(void) {
  */
 void mrf_set_palna(boolean enabled) {
     if (enabled) {
-        write_long(MRF_TESTMODE, 0x07); // Enable PA/LNA on MRF24J40MB module.
+        mrf_write_long(MRF_TESTMODE, 0x07); // Enable PA/LNA on MRF24J40MB module.
     }else{
-        write_long(MRF_TESTMODE, 0x00); // Disable PA/LNA on MRF24J40MB module.
+        mrf_write_long(MRF_TESTMODE, 0x00); // Disable PA/LNA on MRF24J40MB module.
     }
 }
 
 void mrf_rx_flush(void) {
-    write_short(MRF_RXFLUSH, 0x01);
+    mrf_write_short(MRF_RXFLUSH, 0x01);
 }
 
 void mrf_rx_disable(void) {
-    write_short(MRF_BBREG1, 0x04);  // RXDECINV - disable receiver
+    mrf_write_short(MRF_BBREG1, 0x04);  // RXDECINV - disable receiver
 }
 
 void mrf_rx_enable(void) {
-    write_short(MRF_BBREG1, 0x00);  // RXDECINV - enable receiver
+    mrf_write_short(MRF_BBREG1, 0x00);  // RXDECINV - enable receiver
 }

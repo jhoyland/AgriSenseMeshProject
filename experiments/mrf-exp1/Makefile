@@ -4,12 +4,22 @@ CC=/usr/bin/avr-gcc
 CFLAGS=-g -Os -Wall -mcall-prologues -mmcu=$(MCU)
 OBJ2HEX=/usr/bin/avr-objcopy
 AVRDUDE=/usr/local/bin/avrdude
-TARGET=spi-master-adc1
 
-all:
-	$(CC) $(CFLAGS) $(TARGET).c -o $(TARGET)
-	$(OBJ2HEX) -R .eeprom -O ihex $(TARGET) $(TARGET).hex
-	rm -f $(TARGET)
+SOURCES = $(wildcard *.c)
+OBJECTS = $(patsubst %.c, %.o, $(SOURCES))
+ 
+TARGET=multisource
+
+all: $(TARGET).hex
+
+%.o: %.c
+	$(CC) -c $(CFLAGS) $< -o $@
+	
+$(TARGET).elf: $(OBJECTS)
+	$(CC) $(CFLAGS) $(OBJECTS) -o $(TARGET).elf
+	
+$(TARGET).hex: $(TARGET).elf	
+	$(OBJ2HEX) -R .eeprom -O ihex $(TARGET).elf $(TARGET).hex
 
 install: all
 	sudo gpio -g mode 22 out
@@ -23,7 +33,7 @@ noreset: all
 fuse:
 	sudo gpio -g mode 22 out
 	sudo gpio -g write 22 0
-	sudo $(AVRDUDE) -p $(AVRDUDEMCU) -P /dev/spidev0.0 -c linuxspi -b 10000 -U lfuse:w:0x62:m -U hfuse:w:0xd9:m -U efuse:w:0xff:m
+	sudo $(AVRDUDE) -p $(AVRDUDEMCU) -P /dev/spidev0.0 -c linuxspi -b 10000 -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
 	sudo gpio -g write 22 1
 
 clean:
