@@ -1,7 +1,7 @@
-
-
-
+#include <stdint.h>
 #include "tinyspi.h"
+
+
 
 void spi_set_data_direction(uint8_t d)
 {

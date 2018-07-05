@@ -10,4 +10,6 @@
 
 #define MRF_INT     PD2
 
+#define MRF_RESET_PORT PORTB
+
 #endif

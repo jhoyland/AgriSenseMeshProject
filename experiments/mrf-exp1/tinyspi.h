@@ -12,6 +12,8 @@
 //#define USCK PB5
 
 
+#define CS_PORT PORTB
+
 #ifndef SPI_ON_USI
 
 #define DATAREG SPDR
@@ -39,7 +41,10 @@
 #define SPI_X2 1
 #define SPI_X1 0
 
-void spi_set_data_direction(uint8_t)
+#define SPI_LSB 0
+#define SPI_MSB 1
+
+void spi_set_data_direction(uint8_t);
 void spi_setup();
 void spi_transfer_byte(uint8_t*,uint8_t*);
 void spi_transfer_nbytes(uint8_t*,uint8_t*,uint8_t,uint8_t);

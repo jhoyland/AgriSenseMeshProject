@@ -6,26 +6,60 @@
  * This example file is considered to be in the public domain
  * Originally written by Karl Palsson, karlp@tweak.net.au, March 2011
  */
-#include <tinyspi.h>
-#include <mrf24j.h>
-#include <blinkin.h>
 
-#define MRF_RESET   PB1
-#define MRF_CS      PB2
-#define SPI_MOSI    PB3
-#define SPI_MISO    PB4
-#define SPI_SCK     PB5
-#define MRF_WAKE    PB6
+#define F_CPU 1000000UL
 
-#define MRF_INT     PD2
+#include <avr/io.h>
+#include <util/delay.h>
+#include <avr/interrupt.h>
+
+#include "tinyspi.h"
+#include "mrf24j.h"
+#include "blinkin.h"
+#include "mrfpindefs.h"
 
 #define LED_PORT    PORTD
 #define LED_1       PD3    /*REMOTE LED*/
 #define LED_2       PD4    /*LOCAL LED*/
 
 #define BUTTON_1    PD5  
-#define BUTTON_PIN  PIND5;
+#define BUTTON_PIN  PIND5
 
+#define MAX_DEBOUNCE_COUNT 8
+
+/*Called by check flags*/
+void handle_rx() {
+    //Serial.print("received a packet ");Serial.print(mrf_get_rxinfo()->frame_length, DEC);Serial.println(" bytes long");
+    
+    if(mrf_get_bufferPHY()){
+      /*Serial.println("Packet data (PHY Payload):");
+      for (int i = 0; i < mrf_get_rxinfo()->frame_length; i++) {
+          Serial.print(mrf_get_rxbuf()[i]);
+      }*/
+    }
+
+    int i=0;
+    
+    /*Serial.println("\r\nASCII data (relevant data):");*/
+    for (i = 0; i < mrf_rx_datalength(); i++) {
+        /*Serial.write(mrf_get_rxinfo()->rx_data[i]);*/
+
+        
+    }
+    
+    //Serial.print("\r\nLQI/RSSI=");
+    //Serial.print(mrf_get_rxinfo()->lqi, DEC);
+    //Serial.print("/");
+    //Serial.println(mrf_get_rxinfo()->rssi, DEC);
+}
+
+void handle_tx() {
+    /*if (mrf_get_txinfo()->tx_ok) {
+        Serial.println("TX went ok, got ack");
+    } else {
+        Serial.print("TX failed after ");Serial.print(mrf_get_txinfo()->retries);Serial.println(" retries\n");
+    }*/
+}
 
 void setup() {
 
@@ -54,7 +88,7 @@ void setup() {
 
  // attachInterrupt(0, interrupt_routine, CHANGE); // interrupt 0 equivalent to pin 2(INT0) on ATmega8/168/328
  // last_time = millis();
-  interrupts();
+  sei();
 }
 
 ISR(PCINT0_vect) {
@@ -101,37 +135,9 @@ void loop() {
 		if( pollButton() ^ local_button_status ) debounce_count = 1;
 	}
 
-        mrf_send16(0x4202, "abcd");
-}
-/*Called by check flags*/
-void handle_rx() {
-    //Serial.print("received a packet ");Serial.print(mrf_get_rxinfo()->frame_length, DEC);Serial.println(" bytes long");
-    
-    if(mrf_get_bufferPHY()){
-      Serial.println("Packet data (PHY Payload):");
-      for (int i = 0; i < mrf_get_rxinfo()->frame_length; i++) {
-          Serial.print(mrf_get_rxbuf()[i]);
-      }
-    }
-    
-    Serial.println("\r\nASCII data (relevant data):");
-    for (int i = 0; i < mrf_rx_datalength(); i++) {
-        Serial.write(mrf_get_rxinfo()->rx_data[i]);
-    }
-    
-    //Serial.print("\r\nLQI/RSSI=");
-    //Serial.print(mrf_get_rxinfo()->lqi, DEC);
-    //Serial.print("/");
-    //Serial.println(mrf_get_rxinfo()->rssi, DEC);
+        mrf_send16(0x4202, "aaaa", 4);
 }
 
-void handle_tx() {
-    if (mrf_get_txinfo()->tx_ok) {
-        Serial.println("TX went ok, got ack");
-    } else {
-        Serial.print("TX failed after ");Serial.print(mrf_get_txinfo()->retries);Serial.println(" retries\n");
-    }
-}
 
 
 int main(void)

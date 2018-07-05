@@ -6,7 +6,7 @@
 
 #ifndef LIB_MRF24J_H
 #define LIB_MRF24J_H
-
+#include <stdint.h>
 
 #define aMaxPHYPacketSize 127
 
@@ -143,15 +143,19 @@
 #define MRF_I_RXIF  0b00001000
 #define MRF_I_TXNIF 0b00000001
 
+#define bytes_MHR 9
+#define bytes_FCS 2 // FCS length = 2
+//static const int bytes_nodata = bytes_MHR + bytes_FCS; // no_data bytes in PHY payload,  header length + FCS
+#define bytes_nodata 11
 
 typedef struct _mrf_hw_info_t{
     uint8_t cs;
     uint8_t reset_pin;
-}
+} hw_info_t;
 
 
 
-typedef struct _rx_info_t{
+typedef struct mrf_rx_info_t{
     uint8_t frame_length;
     uint8_t rx_data[116]; //max data length = (127 aMaxPHYPacketSize - 2 Frame control - 1 sequence number - 2 panid - 2 shortAddr Destination - 2 shortAddr Source - 2 FCS)
     uint8_t lqi;
@@ -161,7 +165,7 @@ typedef struct _rx_info_t{
 /**
  * Based on the TXSTAT register, but "better"
  */
-typedef struct _tx_info_t{
+typedef struct mrf_tx_info_t{
     uint8_t tx_ok:1;
     uint8_t retries:2;
     uint8_t channel_busy:1;
@@ -174,26 +178,26 @@ typedef struct _tx_info_t{
         void mrf_reset(void);
         void mrf_init(void);
 
-        byte mrf_read_short(byte address);
-        byte mrf_read_long(word address);
+        uint8_t mrf_read_short(uint8_t address);
+        uint8_t mrf_read_long(uint16_t address);
 
-        void mrf_write_short(byte address, byte data);
-        void mrf_write_long(word address, byte data);
+        void mrf_write_short(uint8_t address, uint8_t data);
+        void mrf_write_long(uint16_t address, uint8_t data);
 
-        word mrf_get_pan(void);
-        void mrf_set_pan(word panid);
+        uint16_t mrf_get_pan(void);
+        void mrf_set_pan(uint16_t panid);
 
-        void mrf_address16_write(word address16);
-        word mrf_address16_read(void);
+        void mrf_address16_write(uint16_t address16);
+        uint16_t mrf_address16_read(void);
 
         void mrf_set_interrupts(void);
 
-        void mrf_set_promiscuous(boolean enabled);
+        void mrf_set_promiscuous(uint8_t enabled);
 
         /**
          * Set the channel, using 802.15.4 channel numbers (11..26)
          */
-        void mrf_set_channel(byte channel);
+        void mrf_set_channel(uint8_t channel);
 
         void mrf_rx_enable(void);
         void mrf_rx_disable(void);
@@ -214,16 +218,16 @@ typedef struct _tx_info_t{
         /**
          * Set bufPHY flag to buffer all bytes in PHY Payload, or not
          */
-        void mrf_set_bufferPHY(boolean bp);
+        void mrf_set_bufferPHY(uint8_t bp);
 
-        boolean mrf_get_bufferPHY(void);
+        uint8_t mrf_get_bufferPHY(void);
 
         /**
          * Set PA/LNA external control
          */
-        void mrf_set_palna(boolean enabled);
+        void mrf_set_palna(uint8_t enabled);
 
-        void mrf_send16(word dest16, char * data);
+        void mrf_send16(uint16_t dest16, uint8_t * data, uint8_t len);
 
         void mrf_interrupt_handler(void);
 

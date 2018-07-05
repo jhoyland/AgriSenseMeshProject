@@ -9,7 +9,7 @@
 #include "mrf24j.h"
 #include "mrfpindefs.h"
 
-
+#include <avr/interrupt.h>
 
 #ifndef MRF_RESET
 #error No MRF_RESET pin defined for MRF24J module
@@ -28,13 +28,11 @@ static uint8_t rx_buf[aMaxPHYPacketSize];
 
 // essential for obtaining the data frame only
 // bytes_MHR = 2 Frame control + 1 sequence number + 2 panid + 2 shortAddr Destination + 2 shortAddr Source
-static int bytes_MHR = 9;
-static int bytes_FCS = 2; // FCS length = 2
-static int bytes_nodata = bytes_MHR + bytes_FCS; // no_data bytes in PHY payload,  header length + FCS
+
 
 static int ignoreBytes = 0; // bytes to ignore, some modules behaviour.
 
-static boolean bufPHY = false; // flag to buffer all bytes in PHY Payload, or not
+//static bool bufPHY = false; // flag to buffer all bytes in PHY Payload, or not
 
 volatile uint8_t flag_got_rx;
 volatile uint8_t flag_got_tx;
@@ -44,11 +42,18 @@ static tx_info_t tx_info;
 
 static uint8_t mrf_spi_buffer[3];
 
+#define MRF_GOT_RX 1
+#define MRF_GOT_TX 2
+#define MRF_BUF_PHY 4
+
+
+volatile uint8_t mrf_flags;
+
 
 void mrf_reset(void) {
-    RESET_PORT &= ~(1 << RESET_PIN);
+    MRF_RESET_PORT &= ~(1 << MRF_RESET);
     delay(10);  // just my gut
-    RESET_PORT |= (1 << RESET_PIN);
+    MRF_RESET_PORT |=  (1 << MRF_RESET);
     delay(20);  // from manual
 }
 
@@ -58,7 +63,7 @@ uint8_t mrf_read_short(uint8_t address) {
     mrf_spi_buffer[0] = (address<<1) & 0b01111110;
     mrf_spi_buffer[1] = 0;
 
-    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,2,CS_MRF);  
+    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,2,MRF_CS);  
 
     return mrf_spi_buffer[1];
 }
@@ -66,9 +71,9 @@ uint8_t mrf_read_short(uint8_t address) {
 uint8_t mrf_read_long(uint16_t address) {
     mrf_spi_buffer[0] = 0x80 | (address >> 3);
     mrf_spi_buffer[1] = address << 5;
-    mrf_spi_buffer[2] = 0
+    mrf_spi_buffer[2] = 0;
 
-    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,3,CS_MRF);  
+    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,3,MRF_CS);  
 
     return mrf_spi_buffer[2];
 }
@@ -79,7 +84,7 @@ void mrf_write_short(uint8_t address, uint8_t data) {
     mrf_spi_buffer[0] = ((address<<1 & 0b01111110) | 0x01);
     mrf_spi_buffer[1] = data;
 
-    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,2,CS_MRF);  
+    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,2,MRF_CS);  
 }
 
 void mrf_write_long(uint16_t address, uint8_t data) {
@@ -87,12 +92,12 @@ void mrf_write_long(uint16_t address, uint8_t data) {
     mrf_spi_buffer[1] = (address << 5) | 0x10;
     mrf_spi_buffer[2] = data;
 
-    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,3,CS_MRF); 
+    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,3,MRF_CS); 
 }
 
 uint16_t mrf_get_pan(void) {
-    uint8_t panh = read_short(MRF_PANIDH);
-    return panh << 8 | read_short(MRF_PANIDL);
+    uint8_t panh = mrf_read_short(MRF_PANIDH);
+    return panh << 8 | mrf_read_short(MRF_PANIDL);
 }
 
 void mrf_set_pan(uint16_t panid) {
@@ -106,8 +111,8 @@ void mrf_address16_write(uint16_t address16) {
 }
 
 uint16_t mrf_address16_read(void) {
-    uint8_t a16h = read_short(MRF_SADRH);
-    return a16h << 8 | read_short(MRF_SADRL);
+    uint8_t a16h = mrf_read_short(MRF_SADRH);
+    return a16h << 8 | mrf_read_short(MRF_SADRL);
 }
 
 /**
@@ -128,21 +133,22 @@ void mrf_send16(uint16_t dest16, uint8_t * data, uint8_t len) {
     mrf_write_long(i++, 0b10001000); // second uint8_t of frame control
     mrf_write_long(i++, 1);  // sequence number 1
 
-    uint16_t panid = get_pan();
+    uint16_t panid = mrf_get_pan();
 
     mrf_write_long(i++, panid & 0xff);  // dest panid
     mrf_write_long(i++, panid >> 8);
     mrf_write_long(i++, dest16 & 0xff);  // dest16 low
     mrf_write_long(i++, dest16 >> 8); // dest16 high
 
-    uint16_t src16 = address16_read();
+    uint16_t src16 = mrf_address16_read();
     mrf_write_long(i++, src16 & 0xff); // src16 low
     mrf_write_long(i++, src16 >> 8); // src16 high
 
     // All testing seems to indicate that the next two bytes are ignored.
     //2 bytes on FCS appended by TXMAC
     i+=ignoreBytes;
-    for (int q = 0; q < len; q++) {
+    int q;
+    for (q = 0; q < len; q++) {
         mrf_write_long(i++, data[q]);
     }
     // ack on, and go!
@@ -200,42 +206,43 @@ void mrf_init(void) {
  * Only the most recent data is ever kept.
  */
 void mrf_interrupt_handler(void) {
-    uint8_t last_interrupt = read_short(MRF_INTSTAT);
+    uint8_t last_interrupt = mrf_read_short(MRF_INTSTAT);
     if (last_interrupt & MRF_I_RXIF) {
+        int i = 0;
         flag_got_rx++;
         // read out the packet data...
-        noInterrupts();
-        rx_disable();
+        cli();
+        mrf_rx_disable();
         // read start of rxfifo for, has 2 bytes more added by FCS. frame_length = m + n + 2
-        uint8_t frame_length = read_long(0x300);
+        uint8_t frame_length = mrf_read_long(0x300);
 
         // buffer all bytes in PHY Payload
-        if(bufPHY){
+        if(mrf_flags | MRF_BUF_PHY){
             int rb_ptr = 0;
-            for (int i = 0; i < frame_length; i++) { // from 0x301 to (0x301 + frame_length -1)
-                rx_buf[rb_ptr++] = read_long(0x301 + i);
+            for (i = 0; i < frame_length; i++) { // from 0x301 to (0x301 + frame_length -1)
+                rx_buf[rb_ptr++] = mrf_read_long(0x301 + i);
             }
         }
 
         // buffer data bytes
         int rd_ptr = 0;
         // from (0x301 + bytes_MHR) to (0x301 + frame_length - bytes_nodata - 1)
-        for (int i = 0; i < rx_datalength(); i++) {
-            rx_info.rx_data[rd_ptr++] = read_long(0x301 + bytes_MHR + i);
+        for (i = 0; i < mrf_rx_datalength(); i++) {
+            rx_info.rx_data[rd_ptr++] = mrf_read_long(0x301 + bytes_MHR + i);
         }
 
         rx_info.frame_length = frame_length;
         // same as datasheet 0x301 + (m + n + 2) <-- frame_length
-        rx_info.lqi = read_long(0x301 + frame_length);
+        rx_info.lqi = mrf_read_long(0x301 + frame_length);
         // same as datasheet 0x301 + (m + n + 3) <-- frame_length + 1
-        rx_info.rssi = read_long(0x301 + frame_length + 1);
+        rx_info.rssi = mrf_read_long(0x301 + frame_length + 1);
 
-        rx_enable();
-        interrupts();
+        mrf_rx_enable();
+        sei();
     }
     if (last_interrupt & MRF_I_TXNIF) {
         flag_got_tx++;
-        uint8_t tmp = read_short(MRF_TXSTAT);
+        uint8_t tmp = mrf_read_short(MRF_TXSTAT);
         // 1 means it failed, we want 1 to mean it worked.
         tx_info.tx_ok = !(tmp & ~(1 << TXNSTAT));
         tx_info.retries = tmp >> 6;
@@ -262,7 +269,7 @@ void mrf_check_flags(void (*rx_handler)(void), void (*tx_handler)(void)){
 /**
  * Set RX mode to promiscuous, or normal
  */
-void mrf_set_promiscuous(boolean enabled) {
+void mrf_set_promiscuous(uint8_t enabled) {
     if (enabled) {
         mrf_write_short(MRF_RXMCR, 0x01);
     } else {
@@ -294,18 +301,24 @@ void mrf_set_ignoreBytes(int ib) {
 /**
  * Set bufPHY flag to buffer all bytes in PHY Payload, or not
  */
-void mrf_set_bufferPHY(boolean bp) {
-    bufPHY = bp;
+void mrf_set_bufferPHY(uint8_t bp) {
+    //bufPHY = bp;
+
+    if(bp) {
+        mrf_flags |= (1<<MRF_BUF_PHY);
+    }else{
+        mrf_flags &= ~(1<<MRF_BUF_PHY);
+    } 
 }
 
-boolean mrf_get_bufferPHY(void) {
-    return bufPHY;
+uint8_t mrf_get_bufferPHY(void) {
+    return mrf_flags | MRF_BUF_PHY;
 }
 
 /**
  * Set PA/LNA external control
  */
-void mrf_set_palna(boolean enabled) {
+void mrf_set_palna(uint8_t enabled) {
     if (enabled) {
         mrf_write_long(MRF_TESTMODE, 0x07); // Enable PA/LNA on MRF24J40MB module.
     }else{
