@@ -29,13 +29,10 @@
 
 /*Called by check flags*/
 void handle_rx() {
-    //Serial.print("received a packet ");Serial.print(mrf_get_rxinfo()->frame_length, DEC);Serial.println(" bytes long");
+
     
     if(mrf_get_bufferPHY()){
-      /*Serial.println("Packet data (PHY Payload):");
-      for (int i = 0; i < mrf_get_rxinfo()->frame_length; i++) {
-          Serial.print(mrf_get_rxbuf()[i]);
-      }*/
+
     }
 
     int i=0;
@@ -44,21 +41,21 @@ void handle_rx() {
     for (i = 0; i < mrf_rx_datalength(); i++) {
         /*Serial.write(mrf_get_rxinfo()->rx_data[i]);*/
 
+        if(rx_data[i] == 'a') BLINK(LED_PORT,LED_1);
+
         
     }
-    
-    //Serial.print("\r\nLQI/RSSI=");
-    //Serial.print(mrf_get_rxinfo()->lqi, DEC);
-    //Serial.print("/");
-    //Serial.println(mrf_get_rxinfo()->rssi, DEC);
+
 }
 
 void handle_tx() {
-    /*if (mrf_get_txinfo()->tx_ok) {
-        Serial.println("TX went ok, got ack");
+    if (mrf_get_txinfo()->tx_ok) {
+        BLINK(LED_PORT,LED_2);
+        BLINK(LED_PORT,LED_2);
+        BLINK(LED_PORT,LED_2);
     } else {
-        Serial.print("TX failed after ");Serial.print(mrf_get_txinfo()->retries);Serial.println(" retries\n");
-    }*/
+        BLINK(LED_PORT,LED_2);
+    }
 }
 
 void setup() {
@@ -120,6 +117,7 @@ uint8_t pollButton()
 
 void loop() {
     mrf_check_flags(&handle_rx, &handle_tx);
+
     if ( debounce_count > 0 )
     {
 		if( debounce_count == MAX_DEBOUNCE_COUNT )
@@ -135,7 +133,7 @@ void loop() {
 		if( pollButton() ^ local_button_status ) debounce_count = 1;
 	}
 
-        mrf_send16(0x4202, "aaaa", 4);
+    mrf_send16(0x4202, "aaaa", 4);
 }
 
 
