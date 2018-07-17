@@ -11,6 +11,8 @@ void spi_set_data_direction(uint8_t d)
         SPCR |=  (1 << DORD);
     else
         SPCR &= ~(1 << DORD);
+    #else
+    #warning Data direction limited to LSB first for SPI on USI hardware
     #endif
 }
 

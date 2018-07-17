@@ -8,8 +8,10 @@
 
 #include "mrf24j.h"
 #include "mrfpindefs.h"
+#include "tinyspi.h"
 
 #include <avr/interrupt.h>
+#include <util/delay.h>
 
 #ifndef MRF_RESET
 #error No MRF_RESET pin defined for MRF24J module
@@ -52,9 +54,9 @@ volatile uint8_t mrf_flags;
 
 void mrf_reset(void) {
     MRF_RESET_PORT &= ~(1 << MRF_RESET);
-    delay(10);  // just my gut
+    _delay_ms(10);  // just my gut
     MRF_RESET_PORT |=  (1 << MRF_RESET);
-    delay(20);  // from manual
+    _delay_ms(20);  // from manual
 }
 
 uint8_t mrf_read_short(uint8_t address) {
@@ -174,6 +176,9 @@ void mrf_init(void) {
         ; // wait for soft reset to finish
     }
     */
+    
+    spi_set_data_direction(SPI_MSB);
+    
     mrf_write_short(MRF_PACON2, 0x98); // – Initialize FIFOEN = 1 and TXONTS = 0x6.
     mrf_write_short(MRF_TXSTBL, 0x95); // – Initialize RFSTBL = 0x9.
 
@@ -196,7 +201,7 @@ void mrf_init(void) {
     // Set transmitter power - See “REGISTER 2-62: RF CONTROL 3 REGISTER (ADDRESS: 0x203)”.
     mrf_write_short(MRF_RFCTL, 0x04); //  – Reset RF state machine.
     mrf_write_short(MRF_RFCTL, 0x00); // part 2
-    delay(1); // delay at least 192usec
+    _delay_ms(1); // delay at least 192usec
 }
 
 /**
@@ -277,12 +282,12 @@ void mrf_set_promiscuous(uint8_t enabled) {
     }
 }
 
-rx_info_t * mrf_get_rxinfo(void) {
-    return &rx_info;
+void mrf_get_rxinfo(rx_info_t** x) {
+    *x = &rx_info;
 }
 
-tx_info_t * mrf_get_txinfo(void) {
-    return &tx_info;
+void mrf_get_txinfo(tx_info_t** x) {
+    *x = &tx_info;
 }
 
 uint8_t * mrf_get_rxbuf(void) {
@@ -336,4 +341,15 @@ void mrf_rx_disable(void) {
 
 void mrf_rx_enable(void) {
     mrf_write_short(MRF_BBREG1, 0x00);  // RXDECINV - enable receiver
+}
+
+uint8_t* mrf_get_rxdata()
+{
+	return rx_info.rx_data;
+}
+
+
+uint8_t mrf_tx_ok()
+{
+	return tx_info.tx_ok;
 }

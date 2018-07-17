@@ -205,9 +205,12 @@ typedef struct mrf_tx_info_t{
         /** If you want to throw away rx data */
         void mrf_rx_flush(void);
 
-        rx_info_t * mrf_get_rxinfo(void);
+        void mrf_get_rxinfo(rx_info_t **);
 
-        tx_info_t * mrf_get_txinfo(void);
+        void mrf_get_txinfo(tx_info_t **);
+        
+        uint8_t * mrf_get_rxdata();
+        uint8_t mrf_tx_ok();
 
         uint8_t * mrf_get_rxbuf(void);
 

@@ -1,14 +1,15 @@
 MCU=atmega328p
 AVRDUDEMCU=m328p
+DEFINES=-DF_CPU=1000000UL
 CC=/usr/bin/avr-gcc
-CFLAGS=-g -Os -Wall -mcall-prologues -mmcu=$(MCU)
+CFLAGS=-g $(DEFINES) -Os -Wall -mcall-prologues -mmcu=$(MCU)
 OBJ2HEX=/usr/bin/avr-objcopy
 AVRDUDE=/usr/local/bin/avrdude
 
 SOURCES = $(wildcard *.c)
 OBJECTS = $(patsubst %.c, %.o, $(SOURCES))
  
-TARGET=multisource
+TARGET=mrfe1
 
 all: $(TARGET).hex
 
