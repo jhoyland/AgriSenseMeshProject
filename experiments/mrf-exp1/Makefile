@@ -1,6 +1,6 @@
 MCU=atmega328p
 AVRDUDEMCU=m328p
-DEFINES=-DF_CPU=1000000UL
+DEFINES=-DF_CPU=1000000UL -DSRC_ADDRESS=$(THIS_ADDRESS) -DDEST_ADDRESS=$(THAT_ADDRESS)
 CC=/usr/bin/avr-gcc
 CFLAGS=-g $(DEFINES) -Os -Wall -mcall-prologues -mmcu=$(MCU)
 OBJ2HEX=/usr/bin/avr-objcopy
@@ -34,9 +34,9 @@ noreset: all
 fuse:
 	sudo gpio -g mode 22 out
 	sudo gpio -g write 22 0
-	sudo $(AVRDUDE) -p $(AVRDUDEMCU) -P /dev/spidev0.0 -c linuxspi -b 10000 -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
+	sudo $(AVRDUDE) -p $(AVRDUDEMCU) -P /dev/spidev0.0 -c linuxspi -b 10000 -U lfuse:w:0x62:m -U hfuse:w:0xd9:m -U efuse:w:0xff:m
 	sudo gpio -g write 22 1
 
 clean:
-	rm -f *.hex *.obj *.o
+	rm -f *.hex *.obj *.elf *.o
 

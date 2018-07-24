@@ -27,8 +27,10 @@
 
 #define MAX_DEBOUNCE_COUNT 8
 
+#define ASMP_PANID 0xcafe
 
-uint8_t loop_counter;
+
+uint16_t loop_counter;
 
 
 /*Called by check flags*/
@@ -57,7 +59,7 @@ void handle_tx() {
 	
     if (mrf_tx_ok()) {
         BLINK(LED_PORT,LED_2);
-        BLINK(LED_PORT,LED_2);
+        BLINK(LED_PORT,LED_1);
         BLINK(LED_PORT,LED_2);
     } else {
         BLINK(LED_PORT,LED_2);
@@ -74,15 +76,18 @@ void setup() {
   DDRD |= (1<<LED_1) | (1<<LED_2);  
   
   PORTD |= (1<<BUTTON_1);
-  
+  PORTB |= (1<<MRF_CS); //
+  PORTB |= (1<<MRF_INT);
+  MRF_RESET_PORT |= (1<<MRF_RESET);
+  spi_set_data_direction(SPI_MSB);
   spi_setup();
 
   mrf_reset();
   mrf_init();
   
-  mrf_set_pan(0xcafe);
+  mrf_set_pan(ASMP_PANID);
   // This is _our_ address
-  mrf_address16_write(0x6001); 
+  mrf_address16_write(SRC_ADDRESS); 
   
   loop_counter = 0;
 
@@ -98,9 +103,12 @@ void setup() {
  // attachInterrupt(0, interrupt_routine, CHANGE); // interrupt 0 equivalent to pin 2(INT0) on ATmega8/168/328
  // last_time = millis();
   sei();
+  EIMSK |= (1<<INT0);
+  EICRA |= (1<<ISC01);
+  
 }
 
-ISR(PCINT0_vect) {
+ISR(INT0_vect) {
     mrf_interrupt_handler(); // mrf24 object interrupt routine
 }
 
@@ -115,11 +123,15 @@ uint8_t pollButton()
 void loop() {
     mrf_check_flags(&handle_rx, &handle_tx);
 
-		if( loop_counter > 1024 )
+		if( loop_counter > 32768 )
 		{
 			loop_counter = 0;
+			BLINK(LED_PORT,LED_2);
+			BLINK(LED_PORT,LED_2);
+			BLINK(LED_PORT,LED_2);
+			BLINK(LED_PORT,LED_2);
 			char* msg = "aaaa";
-			mrf_send16(0x4202, (uint8_t*)msg, 4);
+			mrf_send16(DEST_ADDRESS, (uint8_t*)msg, 4);
 		}
 		if( pollButton()) 
 		{ 
