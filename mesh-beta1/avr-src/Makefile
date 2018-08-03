@@ -34,7 +34,7 @@ noreset: all
 fuse:
 	sudo gpio -g mode 22 out
 	sudo gpio -g write 22 0
-	sudo $(AVRDUDE) -p $(AVRDUDEMCU) -P /dev/spidev0.0 -c linuxspi -b 10000 -U lfuse:w:0x62:m -U hfuse:w:0xd9:m -U efuse:w:0xff:m
+	sudo $(AVRDUDE) -p $(AVRDUDEMCU) -P /dev/spidev0.0 -c linuxspi -b 10000 -U lfuse:w:0x22:m -U hfuse:w:0xd9:m -U efuse:w:0x07:m
 	sudo gpio -g write 22 1
 
 clean:

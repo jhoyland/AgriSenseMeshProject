@@ -26,6 +26,10 @@ volatile uint8_t keep_going;
 
 #define FIRST_NODE 0x1010
 
+#define CMD_DATA 0x4441     // DA
+#define CMD_ERROR 0x4552    // ER
+#define CMD_BYTE 0x5342     // SB
+
 void request_data(uint16_t request_id)
 {
     uint8_t sz_packet = SZ_ADDRESSING_HEADER + SZ_PKT_CMD;
@@ -60,20 +64,27 @@ void handle_rx() {
     uint8_t sz_packet = rx_data[9];
 
     uint8_t i = 0;
-
-    printf("\nRX:\n==========\n\n");
-
-    for(i=0;i<sz_packet;i++)
+    
+    if(bytes_to_word(& rx_data[10]) == CMD_DATA)
     {
-        printf("%02d -> 0x%02x\n");
 
-    }
+		printf("\nRX:\n==========\n\n");
 
+		uint16_t data[2];
+		
+		unpack_12bit(data,& rx_data[14]);
+		
+		printf("\nRequest no %d",bytes_to_word(& rx_data[12]));
+		printf("\nMean = %d   stderr = %d",data[0],data[1]);
+		
 
+		printf("\n===END====\n\n");
 
-    printf("\n===END====\n\n");
-
-
+	}
+	else
+	{
+		printf("\nUrecognized packet");
+	}
 }
 
 void handle_tx() {
@@ -101,13 +112,6 @@ void setup() {
 	// Bind to interrupt
 	wiringPiISR(INT_PIN, INT_EDGE_FALLING, &mrf_interrupt_handler);
 
-	// Get initial state of pin
-	state = digitalRead(INT_PIN);
-
-	if (state) {
-		printf("Started! Initial state is on\n");
-	}
-
     mrf_reset();
     mrf_init();
   
@@ -115,7 +119,7 @@ void setup() {
   // This is _our_ address
     mrf_address16_write(0x3142); 
 
-    keep_going = 4;
+    keep_going = 8;
     req_id = 1;
 
 }
@@ -128,7 +132,7 @@ void loop() {
 
     if( (new_time.tv_sec - last_change.tv_sec) > 5 )
     {
-        printf("Requesting: %i\n", req_id);
+        printf("\nRequesting: %i\n", req_id);
         request_data(req_id);
         last_change = new_time; 
         keep_going = keep_going - 1;

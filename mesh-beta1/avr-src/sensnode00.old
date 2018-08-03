@@ -2,6 +2,7 @@
 #include "tinyspi.h"
 #include "mrf24j.h"
 #include "mrfpindefs.h"
+#include "blinkin.h"
 
 
 #define PI_ADDRESS 0x3142
@@ -46,21 +47,26 @@ status
 #define PI_ADDRESS_HI (PI_ADDRESS >> 8)
 #define PI_ADDRESS_LO (255 & PI_ADDRESS)
 
-
 #define PANID_HI (ASMP_PANID >> 8)
 #define PANID_LO (255 & ASMP_PANID)
 
 #define SZ_ADDRESSING_HEADER 8
 #define SZ_PKT_CMD 6
 
-#define SAMPLING_DELAY 50 
+#define SAMPLING_DELAY 5 
 #define N_ADC_CHANS 1
 #define SZ_RAW_DATA_BUFFER 8
+
+
+#define LED_PORT    PORTD
+#define LED_1       PD3    /*REMOTE LED*/
+#define LED_2       PD4    /*LOCAL LED*/
 
 
 uint16_t last_data_request;
 uint8_t status;
 uint8_t errcode;
+uint16_t loopcount;
 
 uint8_t current_rx_data[aMaxPHYPacketSize];
 uint8_t packet[aMaxPHYPacketSize];
@@ -300,6 +306,9 @@ void relay_packet() {
 void handle_rx() {
 
 
+		BLINK(LED_PORT,LED_2);
+		BLINK(LED_PORT,LED_2);
+		
     if(mrf_get_bufferPHY()){
 
     }
@@ -307,19 +316,6 @@ void handle_rx() {
 	uint8_t * rx_data = mrf_get_rxdata();
     memcpy(current_rx_data,rx_data,aMaxPHYPacketSize);
 
-/*
-    The MiWi header will need to be examined here.
-
-    Following procedure
-
-    1) Is this for me?
-        a) YES: Process the data ->3
-        b) NO: Send it on ->2
-    2) retranmit
-    3) process command
-
-        take data
-*/
 
     if(two_bytes(& current_rx_data[3]) == MY_ADDRESS) // Is for me
     {
@@ -352,7 +348,7 @@ void handle_rx() {
             
         }
         
-        relay_packet();
+      //  relay_packet();
 
     }
 
@@ -362,6 +358,10 @@ void handle_rx() {
 void handle_tx() {
 
 	
+
+		BLINK(LED_PORT,LED_2);
+		
+		
     if (mrf_tx_ok()) {
         /*Log transmit ok*/
     } else {
@@ -376,6 +376,7 @@ ISR(INT0_vect) {
 
 void setup() {
  /* Data directions */
+ 
 
   DDRB |= (1<<MRF_WAKE) | (1<<MRF_RESET) | (1<<MRF_CS);
   DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK);
@@ -384,13 +385,29 @@ void setup() {
   
   PORTB |= (1<<MRF_CS); //
   PORTB |= (1<<ADC_CS);
-  PORTB |= (1<<MRF_INT);
+  PORTD |= (1<<MRF_INT);
   MRF_RESET_PORT |= (1<<MRF_RESET);
+  
+  DDRD |= (1<<LED_1) | (1<<LED_2);
+ 
+		BLINK(LED_PORT,LED_1);
+		BLINK(LED_PORT,LED_2);
+		BLINK(LED_PORT,LED_1);
+		BLINK(LED_PORT,LED_2);
+  
   spi_set_data_direction(SPI_MSB);
   spi_setup();
 
+	
+		BLINK(LED_PORT,LED_1);
+		BLINK(LED_PORT,LED_1);
+
   mrf_reset();
   mrf_init();
+  
+  
+		BLINK(LED_PORT,LED_2);
+		BLINK(LED_PORT,LED_2);
   
   mrf_set_pan(ASMP_PANID);
   // This is _our_ address
@@ -399,9 +416,15 @@ void setup() {
   sei();
   EIMSK |= (1<<INT0);
   EICRA |= (1<<ISC01);   
+		BLINK(LED_PORT,LED_1);
+		BLINK(LED_PORT,LED_2);
+		BLINK(LED_PORT,LED_1);
+		BLINK(LED_PORT,LED_2);
 
   status = 0;
   errcode = 0; 
+  
+  loopcount = 0;
 }
 
 void loop() {
@@ -411,8 +434,18 @@ void loop() {
     {
         send_error_report();
     }
+    
+    loopcount ++;
+    if(loopcount > 50)
+    {
+		loopcount = 0;
+		BLINK(LED_PORT,LED_1);
+		BLINK(LED_PORT,LED_1);
+	}
 
     _delay_ms(10);
+    
+    
 }
 
 int main(void)

@@ -201,6 +201,10 @@ void mrf_init(void) {
     // Set transmitter power - See “REGISTER 2-62: RF CONTROL 3 REGISTER (ADDRESS: 0x203)”.
     mrf_write_short(MRF_RFCTL, 0x04); //  – Reset RF state machine.
     mrf_write_short(MRF_RFCTL, 0x00); // part 2
+    
+    flag_got_rx = 0;
+    flag_got_tx = 0;
+    
     _delay_ms(1); // delay at least 192usec
 }
 
