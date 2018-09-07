@@ -1,3 +1,7 @@
+/*
+bitmanip.c :- various functions for manipulating bytes
+*/
+
 #include <stdint.h>
 
 uint16_t bytes_to_word(uint8_t* b)
