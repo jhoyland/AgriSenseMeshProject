@@ -22,11 +22,14 @@ $(TARGET).elf: $(OBJECTS)
 $(TARGET).hex: $(TARGET).elf	
 	$(OBJ2HEX) -R .eeprom -O ihex $(TARGET).elf $(TARGET).hex
 
-install: all
+install-rpi: all
 	sudo gpio -g mode 22 out
 	sudo gpio -g write 22 0
 	sudo $(AVRDUDE) -p $(AVRDUDEMCU) -P /dev/spidev0.0 -c linuxspi -b 10000 -U flash:w:$(TARGET).hex
 	sudo gpio -g write 22 1
+	
+install-pololu: all
+	avrdude -c stk500v2 -P "$(PORT)" -p $(MCU) -U flash:w:$<:i
 	
 noreset: all
 	sudo $(AVRDUDE) -p $(AVRDUDEMCU) -P /dev/spidev0.0 -c linuxspi -b 10000 -U flash:w:$(TARGET).hex
