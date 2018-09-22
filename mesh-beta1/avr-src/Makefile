@@ -1,5 +1,6 @@
 MCU=atmega328p
 AVRDUDEMCU=m328p
+PORT=$(shell pavr2cmd --prog-port)
 DEFINES=-DF_CPU=1000000UL -DMY_ADDRESS=$(THIS_ADDRESS) -DASMP_PANID=0xF122
 CC=/usr/bin/avr-gcc
 CFLAGS=-g $(DEFINES) -Os -Wall -mcall-prologues -mmcu=$(MCU)
