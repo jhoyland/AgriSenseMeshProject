@@ -58,14 +58,22 @@ Byte    def               purpose
 
 The command codes determine the kind of message being sent. The codes consist of two bytes respresenting a two character mnemonic. There are also two bytes for command data if necessary.
 
-DQ (0x): originating from the base station
+DQ : originating from the base station
 This is a request for data from the target node (or possibly all nodes? - do we need a broadcast mode?).  The CMD_DATA should contain a unique id for the request. The returning node should include this id along with the data or any error message it returns to the base. The purpose of the id is so that if a node ends up returning data after a second request has already been sent the base station knows which request it relates to.
 
-DA () : originating from a node
+DA : originating from a node
 This is the data sent back to the base. The data starts at MSG_DATA. The command data should contain the id of the data request this data is in reference to.
 
 BY:
 This sends a message consisting of the header and single byte of data (for network diagnostic purposes)
+
+Other suggested command codes to be implemented are
+
+BQ : request battery status
+
+BA : return battery status
+
+XR: return an error message or alert to the base station to a problem
 
 
 
