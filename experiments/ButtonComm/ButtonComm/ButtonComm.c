@@ -50,7 +50,7 @@ void handle_rx(){
 	}
 }
 
-void handle_tx(){
+void handle_tx(){ //a successful transmission involves sending and receiving a message.
 	if(mrf_tx_ok()){
 		BLINK(LED_PORT, SEND_LED);
 		BLINK(LED_PORT, RECEIVE_LED);
@@ -80,9 +80,12 @@ void setup(){
 	mrf_reset();
 	mrf_init();
 	
+	mrf_set_pan(ASMP_PANID);
+	mrf_address16_write(SRC_ADDRESS);
 	sei(); //starts interrupts, essential to let chip know message is being handled
 	EIMSK |= (1<<INT0);
 	EICRA |= (1<<ISC01);
+	
 }
 
 uint8_t pollButton()
@@ -100,8 +103,10 @@ void loop(){
 	mrf_check_flags(&handle_rx, &handle_tx);
 	if(pollButton()){
 		BLINK(LED_PORT,BUTTON_LED); //if button is pushed, LED blinks
-		//on button push, send message and blink to confirm message is sent
+		//on button push, send message and blink to confirm message is send
+		for (int i = 0; i <30; i++){
 		mrf_send16(DEST_ADDRESS, (uint8_t*)msg, 4);	
+		}
 		mrf_check_flags(&handle_rx, &handle_tx);	
 	}
 	else{

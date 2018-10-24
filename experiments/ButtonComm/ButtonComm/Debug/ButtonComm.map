@@ -24,10 +24,6 @@ Discarded input sections
  .text          0x00000000        0x0 mrf24j.o
  .data          0x00000000        0x0 mrf24j.o
  .bss           0x00000000        0x0 mrf24j.o
- .text.mrf_set_pan
-                0x00000000       0x14 mrf24j.o
- .text.mrf_address16_write
-                0x00000000       0x14 mrf24j.o
  .text.mrf_set_promiscuous
                 0x00000000       0x14 mrf24j.o
  .text.mrf_get_rxinfo
@@ -231,7 +227,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x64e
+.text           0x00000000      0x692
  *(.vectors)
  .vectors       0x00000000       0x28 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
                 0x00000000                __vector_default
@@ -317,89 +313,95 @@ END GROUP
  .text.handle_tx
                 0x0000008a       0x96 ButtonComm.o
                 0x0000008a                handle_tx
- .text.setup    0x00000120       0x36 ButtonComm.o
+ .text.setup    0x00000120       0x42 ButtonComm.o
                 0x00000120                setup
  .text.pollButton
-                0x00000156        0x8 ButtonComm.o
-                0x00000156                pollButton
+                0x00000162        0x8 ButtonComm.o
+                0x00000162                pollButton
  .text.__vector_1
-                0x0000015e       0x46 ButtonComm.o
-                0x0000015e                __vector_1
- .text.loop     0x000001a4       0x54 ButtonComm.o
-                0x000001a4                loop
- .text.main     0x000001f8        0x6 ButtonComm.o
-                0x000001f8                main
+                0x0000016a       0x46 ButtonComm.o
+                0x0000016a                __vector_1
+ .text.loop     0x000001b0       0x64 ButtonComm.o
+                0x000001b0                loop
+ .text.main     0x00000214        0x6 ButtonComm.o
+                0x00000214                main
  .text.mrf_reset
-                0x000001fe       0x1e mrf24j.o
-                0x000001fe                mrf_reset
+                0x0000021a       0x1e mrf24j.o
+                0x0000021a                mrf_reset
  .text.mrf_read_short
-                0x0000021c       0x22 mrf24j.o
-                0x0000021c                mrf_read_short
+                0x00000238       0x22 mrf24j.o
+                0x00000238                mrf_read_short
  .text.mrf_read_long
-                0x0000023e       0x36 mrf24j.o
-                0x0000023e                mrf_read_long
+                0x0000025a       0x36 mrf24j.o
+                0x0000025a                mrf_read_long
  .text.mrf_write_short
-                0x00000274       0x1a mrf24j.o
-                0x00000274                mrf_write_short
+                0x00000290       0x1a mrf24j.o
+                0x00000290                mrf_write_short
  .text.mrf_write_long
-                0x0000028e       0x2e mrf24j.o
-                0x0000028e                mrf_write_long
+                0x000002aa       0x2e mrf24j.o
+                0x000002aa                mrf_write_long
  .text.mrf_get_pan
-                0x000002bc       0x1e mrf24j.o
-                0x000002bc                mrf_get_pan
+                0x000002d8       0x1e mrf24j.o
+                0x000002d8                mrf_get_pan
+ .text.mrf_set_pan
+                0x000002f6       0x14 mrf24j.o
+                0x000002f6                mrf_set_pan
+ .text.mrf_address16_write
+                0x0000030a       0x14 mrf24j.o
+                0x0000030a                mrf_address16_write
  .text.mrf_address16_read
-                0x000002da       0x1e mrf24j.o
-                0x000002da                mrf_address16_read
+                0x0000031e       0x1e mrf24j.o
+                0x0000031e                mrf_address16_read
  .text.mrf_send16
-                0x000002f8       0xb8 mrf24j.o
-                0x000002f8                mrf_send16
+                0x0000033c       0xb8 mrf24j.o
+                0x0000033c                mrf_send16
  .text.mrf_set_interrupts
-                0x000003b0        0x8 mrf24j.o
-                0x000003b0                mrf_set_interrupts
+                0x000003f4        0x8 mrf24j.o
+                0x000003f4                mrf_set_interrupts
  .text.mrf_set_channel
-                0x000003b8       0x1e mrf24j.o
-                0x000003b8                mrf_set_channel
+                0x000003fc       0x1e mrf24j.o
+                0x000003fc                mrf_set_channel
  .text.mrf_init
-                0x000003d6       0x7a mrf24j.o
-                0x000003d6                mrf_init
+                0x0000041a       0x7a mrf24j.o
+                0x0000041a                mrf_init
  .text.mrf_check_flags
-                0x00000450       0x2c mrf24j.o
-                0x00000450                mrf_check_flags
+                0x00000494       0x2c mrf24j.o
+                0x00000494                mrf_check_flags
  .text.mrf_get_bufferPHY
-                0x0000047c        0x8 mrf24j.o
-                0x0000047c                mrf_get_bufferPHY
+                0x000004c0        0x8 mrf24j.o
+                0x000004c0                mrf_get_bufferPHY
  .text.mrf_rx_disable
-                0x00000484        0x8 mrf24j.o
-                0x00000484                mrf_rx_disable
+                0x000004c8        0x8 mrf24j.o
+                0x000004c8                mrf_rx_disable
  .text.mrf_rx_enable
-                0x0000048c        0x8 mrf24j.o
-                0x0000048c                mrf_rx_enable
+                0x000004d0        0x8 mrf24j.o
+                0x000004d0                mrf_rx_enable
  .text.mrf_interrupt_handler
-                0x00000494      0x10e mrf24j.o
-                0x00000494                mrf_interrupt_handler
+                0x000004d8      0x10e mrf24j.o
+                0x000004d8                mrf_interrupt_handler
  .text.mrf_get_rxdata
-                0x000005a2        0x6 mrf24j.o
-                0x000005a2                mrf_get_rxdata
+                0x000005e6        0x6 mrf24j.o
+                0x000005e6                mrf_get_rxdata
  .text.mrf_tx_ok
-                0x000005a8        0x8 mrf24j.o
-                0x000005a8                mrf_tx_ok
+                0x000005ec        0x8 mrf24j.o
+                0x000005ec                mrf_tx_ok
  .text.spi_set_data_direction
-                0x000005b0       0x14 tinyspi.o
-                0x000005b0                spi_set_data_direction
+                0x000005f4       0x14 tinyspi.o
+                0x000005f4                spi_set_data_direction
  .text.spi_setup
-                0x000005c4        0x6 tinyspi.o
-                0x000005c4                spi_setup
+                0x00000608        0x6 tinyspi.o
+                0x00000608                spi_setup
  .text.spi_transfer_byte
-                0x000005ca       0x14 tinyspi.o
-                0x000005ca                spi_transfer_byte
+                0x0000060e       0x14 tinyspi.o
+                0x0000060e                spi_transfer_byte
  .text.spi_transfer_nbytes
-                0x000005de       0x6c tinyspi.o
-                0x000005de                spi_transfer_nbytes
-                0x0000064a                . = ALIGN (0x2)
+                0x00000622       0x6c tinyspi.o
+                0x00000622                spi_transfer_nbytes
+                0x0000068e                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000064a        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
-                0x0000064a                _exit
-                0x0000064a                exit
+ .fini9         0x0000068e        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+                0x0000068e                _exit
+                0x0000068e                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -418,11 +420,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000064a        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .fini0         0x0000068e        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
  *(.fini0)
-                0x0000064e                _etext = .
+                0x00000692                _etext = .
 
-.data           0x00800100        0x8 load address 0x0000064e
+.data           0x00800100        0x8 load address 0x00000692
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -456,8 +458,8 @@ END GROUP
                 0x00800205                flag_got_tx
                 0x00800206                flag_got_rx
                 0x00800207                PROVIDE (__bss_end, .)
-                0x0000064e                __data_load_start = LOADADDR (.data)
-                0x00000656                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00000692                __data_load_start = LOADADDR (.data)
+                0x0000069a                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x00800207        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
@@ -542,48 +544,48 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x1b88
+.debug_info     0x00000000     0x1be8
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x576 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
- .debug_info    0x00000576      0x655 ButtonComm.o
- .debug_info    0x00000bcb      0xe62 mrf24j.o
- .debug_info    0x00001a2d      0x15b tinyspi.o
+ .debug_info    0x00000576      0x6b5 ButtonComm.o
+ .debug_info    0x00000c2b      0xe62 mrf24j.o
+ .debug_info    0x00001a8d      0x15b tinyspi.o
 
-.debug_abbrev   0x00000000      0xa6c
+.debug_abbrev   0x00000000      0xa9e
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x52b C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
- .debug_abbrev  0x0000052b      0x18f ButtonComm.o
- .debug_abbrev  0x000006ba      0x2e4 mrf24j.o
- .debug_abbrev  0x0000099e       0xce tinyspi.o
+ .debug_abbrev  0x0000052b      0x1c1 ButtonComm.o
+ .debug_abbrev  0x000006ec      0x2e4 mrf24j.o
+ .debug_abbrev  0x000009d0       0xce tinyspi.o
 
-.debug_line     0x00000000      0xb88
+.debug_line     0x00000000      0xba8
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x10f C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
- .debug_line    0x0000010f      0x327 ButtonComm.o
- .debug_line    0x00000436      0x628 mrf24j.o
- .debug_line    0x00000a5e      0x12a tinyspi.o
+ .debug_line    0x0000010f      0x347 ButtonComm.o
+ .debug_line    0x00000456      0x628 mrf24j.o
+ .debug_line    0x00000a7e      0x12a tinyspi.o
 
-.debug_frame    0x00000000      0x3c8
+.debug_frame    0x00000000      0x3d4
  *(.debug_frame)
- .debug_frame   0x00000000       0xcc ButtonComm.o
- .debug_frame   0x000000cc      0x280 mrf24j.o
- .debug_frame   0x0000034c       0x7c tinyspi.o
+ .debug_frame   0x00000000       0xd8 ButtonComm.o
+ .debug_frame   0x000000d8      0x280 mrf24j.o
+ .debug_frame   0x00000358       0x7c tinyspi.o
 
 .debug_str      0x00000000      0x6eb
  *(.debug_str)
  .debug_str     0x00000000      0x1d9 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
- .debug_str     0x000001d9      0x27e ButtonComm.o
-                                0x2bd (size before relaxing)
- .debug_str     0x00000457      0x26e mrf24j.o
+ .debug_str     0x000001d9      0x29e ButtonComm.o
+                                0x2dd (size before relaxing)
+ .debug_str     0x00000477      0x24e mrf24j.o
                                 0x503 (size before relaxing)
  .debug_str     0x000006c5       0x26 tinyspi.o
                                 0x1db (size before relaxing)
 
-.debug_loc      0x00000000      0xe69
+.debug_loc      0x00000000      0xed9
  *(.debug_loc)
- .debug_loc     0x00000000      0x49b ButtonComm.o
- .debug_loc     0x0000049b      0x842 mrf24j.o
- .debug_loc     0x00000cdd      0x18c tinyspi.o
+ .debug_loc     0x00000000      0x50b ButtonComm.o
+ .debug_loc     0x0000050b      0x842 mrf24j.o
+ .debug_loc     0x00000d4d      0x18c tinyspi.o
 
 .debug_macinfo
  *(.debug_macinfo)
