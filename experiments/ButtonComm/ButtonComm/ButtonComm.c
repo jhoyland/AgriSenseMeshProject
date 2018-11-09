@@ -21,7 +21,7 @@
 #define LED_PORT PORTD
 #define SEND_LED PD3
 #define RECEIVE_LED PD4
-#define BUTTON_LED PD7
+#define RED_LED PD7
 
 #define BUTTON PB0
 #define BUTTON_PIN PINB
@@ -31,10 +31,12 @@
 char* msg = "aaaa";
 
 
-//source and destination address are just for the two chips
-//we are using today
-#define SRC_ADDRESS 0x0023
-#define DEST_ADDRESS 0x0016
+//source and destination addresses for the devices built so far
+#define DEVICE_31 0x0031
+#define DEVICE_16 0x0016
+#define DEVICE_13 0x0013
+
+#define THIS_DEVICE = DEVICE_31 //CHANGE THIS EACH TIME YOU PROGRAM
 
 
 void handle_rx(){
@@ -102,12 +104,11 @@ ISR(INT0_vect){
 void loop(){
 	mrf_check_flags(&handle_rx, &handle_tx);
 	if(pollButton()){
-		BLINK(LED_PORT,BUTTON_LED); //if button is pushed, LED blinks
+		BLINK(LED_PORT,SEND_LED); //if button is pushed, LED blinks
 		//on button push, send message and blink to confirm message is send
-		for (int i = 0; i <30; i++){
-		mrf_send16(DEST_ADDRESS, (uint8_t*)msg, 4);	
-		}
+		mrf_send16(DEVICE_16, (uint8_t*)msg, 4);
 		mrf_check_flags(&handle_rx, &handle_tx);	
+		}	
 	}
 	else{
 		mrf_check_flags(&handle_rx, &handle_tx);
