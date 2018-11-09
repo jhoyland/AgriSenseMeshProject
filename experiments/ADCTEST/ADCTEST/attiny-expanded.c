@@ -6,6 +6,8 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
+#include "spi-master-adc1.h"
+
 /* 
 
 */
@@ -15,6 +17,7 @@
 #define DO	PB1
 #define USCK	PB2
 #define D1	PB0
+
 
 
 volatile uint8_t PORTSR = 0;
@@ -31,9 +34,6 @@ volatile uint8_t DUMMY = 0;
 
 volatile uint8_t adc_buffer[3];
 
-
-
-
 void spi_transfer_bytes(uint8_t* out, uint8_t* in, uint8_t n)
 {
 	int i=0;
@@ -45,22 +45,24 @@ void spi_transfer_bytes(uint8_t* out, uint8_t* in, uint8_t n)
 	}
 }
 
-void spi_toggle_cs(uint8_t cs)
-{
-	PORTB ^= (1<<cs);
-}
 
-void spi_toggle_cs_expanded(uint8_t xcs)
+
+uint16_t get_adc_value(uint8_t chan)
 {
-	PORTSR ^= (1<<xcs);
-	spi_toggle_cs(CS_SR); /*This is not going to work!*/
+	adc_buffer[0] = 6 | (chan >>2);
+	adc_buffer[1] = chan << 6;
 	
+	spi_transfer_bytes(adc_buffer,adc_buffer,3);
+	
+	uint16_t b1 = adc_buffer[1];
+	uint16_t b2 = adc_buffer[2];
+	
+	return b2 | (b1<<8);
 }
-
 
 void display_value(uint8_t val)
 {
 	uint8_t dummy;
-	spi_transfer_bytes(&val,&dummy,1,CS_SR);
+	spi_transfer_bytes(&val,&dummy,1);
 }
 

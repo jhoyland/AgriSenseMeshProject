@@ -12,9 +12,9 @@
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>ButtonComm</AssemblyName>
-    <Name>ButtonComm</Name>
-    <RootNamespace>ButtonComm</RootNamespace>
+    <AssemblyName>ADCTEST</AssemblyName>
+    <Name>ADCTEST</Name>
+    <RootNamespace>ADCTEST</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
@@ -28,25 +28,13 @@
     <ResetRule>0</ResetRule>
     <eraseonlaunchrule>0</eraseonlaunchrule>
     <EraseKey />
-    <AsfFrameworkConfig>
-      <framework-data xmlns="">
-        <options />
-        <configurations />
-        <files />
-        <documentation help="" />
-        <offline-documentation help="" />
-        <dependencies>
-          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.40.0" />
-        </dependencies>
-      </framework-data>
-    </AsfFrameworkConfig>
     <avrtool>com.atmel.avrdbg.tool.stk500</avrtool>
     <avrtoolserialnumber />
     <avrdeviceexpectedsignature>0x1E9311</avrdeviceexpectedsignature>
     <com_atmel_avrdbg_tool_stk500>
       <ToolOptions>
         <InterfaceProperties>
-          <IspClock>14071</IspClock>
+          <IspClock>125000</IspClock>
         </InterfaceProperties>
         <InterfaceName>ISP</InterfaceName>
       </ToolOptions>
@@ -56,7 +44,7 @@
       <ToolName>STK500</ToolName>
     </com_atmel_avrdbg_tool_stk500>
     <avrtoolinterface>ISP</avrtoolinterface>
-    <avrtoolinterfaceclock>14071</avrtoolinterfaceclock>
+    <avrtoolinterfaceclock>125000</avrtoolinterfaceclock>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -140,6 +128,9 @@
     <Compile Include="blinkin.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="ADCTEST.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="mrf24j.c">
       <SubType>compile</SubType>
     </Compile>
@@ -149,10 +140,10 @@
     <Compile Include="mrfpindefs.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="tinyserial.c">
+    <Compile Include="spi-master-adc1.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="tinyserial.h">
+    <Compile Include="spi-master-adc1.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="tinyspi.c">
@@ -161,11 +152,11 @@
     <Compile Include="tinyspi.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="twowaycomm.c">
-      <SubType>compile</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Makefile">
+      <SubType>compile</SubType>
+    </None>
     <None Include="mrf24j.o">
       <SubType>compile</SubType>
     </None>

@@ -7,7 +7,7 @@
  * Originally written by Karl Palsson, karlp@tweak.net.au, March 2011
  */
 
-/*#define F_CPU 1000000UL*/
+#define F_CPU 1000000UL
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -19,8 +19,9 @@
 #include "mrfpindefs.h"
 
 #define LED_PORT    PORTD
-#define LED_1       PD3    /*REMOTE LED*/
-#define LED_2       PD4    /*LOCAL LED*/
+#define LED_1       PD3    /*REMOTE LED*/ //GREEN
+#define LED_2       PD4    /*LOCAL LED*/ //YELLOW
+#define LED_3		PD7	 //RED
 
 #define BUTTON_1    PD5  
 #define BUTTON_PIN  PIND
@@ -31,8 +32,8 @@
 
 
 uint16_t loop_counter;
-uint16_t SRC_ADDRESS = 0x0023;
-uint16_t DEST_ADDRESS = 0x0031;
+uint16_t SRC_ADDRESS = 0x0031;
+uint16_t DEST_ADDRESS = 0x0016;
 
 
 /*Called by check flags*/
@@ -47,12 +48,14 @@ void handle_rx() {
 
     if(rx_data[0] == 'a') 
     {	
-		BLINK(LED_PORT,LED_1);BLINK(LED_PORT,LED_1);
+		BLINK(LED_PORT,LED_1);
+		BLINK(LED_PORT,LED_2);
+		BLINK(LED_PORT,LED_2);
 	}
 	else
 	{
 		BLINK(LED_PORT,LED_1);
-	}
+	}	
 
 }
 
@@ -60,9 +63,9 @@ void handle_tx() {
 
 	
     if (mrf_tx_ok()) {
-        BLINK(LED_PORT,LED_2);
         BLINK(LED_PORT,LED_1);
         BLINK(LED_PORT,LED_2);
+        BLINK(LED_PORT,LED_3);
     } else {
         BLINK(LED_PORT,LED_2);
     }
@@ -130,9 +133,7 @@ void loop() {
 		{
 			loop_counter = 0;
 			BLINK(LED_PORT,LED_2);
-			BLINK(LED_PORT,LED_2);
-			BLINK(LED_PORT,LED_2);
-			BLINK(LED_PORT,LED_2);
+			BLINK(LED_PORT,LED_1);
 			char* msg = "aaaa";
 			mrf_send16(DEST_ADDRESS, (uint8_t*)msg, 4);
 		}
@@ -144,7 +145,7 @@ void loop() {
 			BLINK(LED_PORT,LED_2);
 			
 		}
-		
+		mrf_check_flags(&handle_rx, &handle_tx);
 		loop_counter = loop_counter + 1;
 	
 }
