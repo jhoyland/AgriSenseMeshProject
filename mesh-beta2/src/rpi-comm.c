@@ -13,8 +13,8 @@
 // In addition, each node has the same PANID which distinquishes members of this network from any others in range
 
 #define PI_BASE_ADDRESS 0x3142		
-#define NODE_BASE_ADDRESS 0x1010
-#define PANID 0xf122
+#define NODE_BASE_ADDRESS 0x0031
+#define PANID 0xCAFE
 
 // In this scheme each transmission is accompanied by 14 bytes of data (this forms part of the data payload
 // of the transmission. The transceivers also prepend data required by the communication protocol. The user does not 
@@ -93,7 +93,7 @@ void handle_rx() {
 
     uint8_t * rx_data = mrf_get_rxdata(); // Pointer to the received data
 
-    uint8_t sz_packet = rx_data[9]; // Size of teh received packet (see scheme above)
+    uint8_t sz_packet = rx_data[9]; // Size of the received packet (see scheme above)
 
     uint8_t i = 0;
     
@@ -159,7 +159,7 @@ void setup() {
     mrf_reset(); // Reset the MRF chip
     mrf_init();  // Initialize the MRF  chip
   
-    mrf_set_pan(0xf122);    // Set my panID
+    mrf_set_pan(PANID);    // Set my panID
   // This is _our_ address
     mrf_address16_write(0x3142);  // Set raspberry pi address
 // some loop flags for this experiment
