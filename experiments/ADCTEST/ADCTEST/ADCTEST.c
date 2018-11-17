@@ -4,6 +4,8 @@
  * Created: 11/6/2018 1:32:39 PM
  * Author : Michael
  */ 
+ 
+ //This program should just send a value from the ADC to the rasberry pi, which then prints it out on their screen.
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -13,6 +15,7 @@
 #include "mrf24j.h"
 #include "blinkin.h"
 #include "mrfpindefs.h"
+#include "bitmanip.h"
 
 
 #define LED_PORT    PORTD
@@ -46,7 +49,7 @@ void handle_rx() {
 
 	uint8_t * rx_data = mrf_get_rxdata();
 
-	if(rx_data[0] == 'a')
+	if(bytes_to_words(rx_data[0]) == 'a')
 	{
 		BLINK(LED_PORT,LED_1);BLINK(LED_PORT,LED_1);
 	}
@@ -128,6 +131,7 @@ void loop() {
 	if(pollButton()){
 		//read the ADC Value
 		value = get_adc_value(ADC_CHANNEL);
+		
 		if(value == 0) BLINK(LED_PORT, LED_1);
 		if(value >= 2000) BLINK(LED_PORT, LED_2);
 	}
