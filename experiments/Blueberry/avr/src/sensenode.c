@@ -1,5 +1,5 @@
 
-#define F_CPU 1000000UL
+//#define F_CPU 1000000UL
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -349,6 +349,7 @@ void setup() {
   
   mrf_set_pan(PAN_ID);
   // This is _our_ address
+  my_address = MY_ADDRESS;
   mrf_address16_write(my_address); 
 
 

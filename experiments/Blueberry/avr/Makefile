@@ -2,7 +2,9 @@ MCU=attiny88
 AVRDUDEMCU=t88
 TOOLCHAIN=/c/'Program Files (x86)'/Atmel/Studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/
 CC=$(TOOLCHAIN)avr-gcc.exe
-CFLAGS=-g -Os -Wall -mcall-prologues -mmcu=$(MCU)
+THIS_ADDRESS=0x1010
+DEFINES=-DF_CPU=1000000UL -DMY_ADDRESS=$(THIS_ADDRESS)
+CFLAGS=-g $(DEFINES) -Os -Wall -mcall-prologues -mmcu=$(MCU)
 OBJ2HEX=$(TOOLCHAIN)avr-objcopy.exe
 AVRDUDE=avrdude
 
