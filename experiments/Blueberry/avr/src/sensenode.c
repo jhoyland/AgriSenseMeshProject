@@ -25,21 +25,6 @@ uint8_t* active_command;
 uint8_t startup_status = 0;
 uint8_t running_status = 0;
 
-#define ST_PORTS 1
-#define ST_SPI 2
-#define ST_MRF 3
-#define ST_BUFFERS 4
-#define ST_INTERRUPTS 5
-#define ST_POWER 6
-#define ST_SENSORS 7
-#define ST_OPTION 8
-
-#define RU_CMD_EXEC 1
-#define RU_DATA_COLLECT 2
-#define RU_TX_HANDLE 3
-#define RU_RX_HANDLE 4
-#define RU_INTERRUPT 5
-#define RU_SETUP 6
 
 
 struct simple_queue command_queue;

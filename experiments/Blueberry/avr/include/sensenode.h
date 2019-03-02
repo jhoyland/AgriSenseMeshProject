@@ -14,26 +14,15 @@
 #include "mrf24j.h"
 #include "pktspec.h"
 #include "pindefs.h"
+#include "cmdspec.h"
+#include "netspec.h"
 #include "simple_queue.h"
 #include <string.h>
 
-#define CMD_DATA 0x4441
-#define CMD_PING 0x4552
-#define CMD_ECHO 0x4543
-#define CMD_GET_PARAMETER 0x5047
-#define CMD_SET_PARAMETER 0x5053
-#define CMD_QSTATUS 0x5153
-
-#define ERR_UNRECOGNIZED_COMMAND 0x0001
 
 #define ADC_N_SAMPLES 128
 
 #define ADC_CS PB7
-
-#define PAN_ID 0xF122
-
-#define PAN_ID_HI 0xF1
-#define PAN_ID_LO 0x22
 
 void handle_rx();
 void handle_tx();

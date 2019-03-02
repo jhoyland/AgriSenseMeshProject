@@ -42,7 +42,5 @@
 
 #define PK_DATUM_SIZE 3
 
-#define PI_ADDR_HI 0x31
-#define PI_ADDR_LO 0x42
 
 #endif /* INCFILE1_H_ */
