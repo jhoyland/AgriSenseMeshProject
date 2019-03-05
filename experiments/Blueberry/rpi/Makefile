@@ -1,7 +1,7 @@
 
 
-CC=gcc.exe
-CFLAGS=-g $(DEFINES) -Os -Wall -mcall-prologues 
+CC=gcc
+CFLAGS=-g -v
 
 # User directories to search
 BUILDDIR  = ./build
@@ -31,8 +31,6 @@ INCCMD    = $(addprefix -I,$(INCDIR) $(LIBINCDIR) $(COMMONINCDIR))
 
 
 TARGET=blueberry-base
-
-all: $(TARGET).hex
 
 # The rules
 

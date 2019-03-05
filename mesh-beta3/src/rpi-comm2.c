@@ -1,5 +1,5 @@
 //this should work to send a request to the node, and respond with the confirmation code from the node.
-
+#define F_CPU 100000UL
 #include <stdio.h>
 #include <sys/time.h>
 #include <wiringPi.h>
@@ -60,15 +60,17 @@ volatile uint8_t keep_going;
 #define FROM_PI_REQUEST 0xF314 //"From pi"
 #define FROM_NODE_REQUEST 0xF031 //"From 31"
 
-
+uint8_t sz_packet = 14;
+uint8_t packet[14];
 
 // Requests sensor data from the specified node
 
 void request_data(uint16_t target_node, uint16_t request_id)
 {
+	//printf("\nRequesting Data\n");
     // Build the header - in this case the packet just consists of the addressing header and the command header
-    uint8_t sz_packet = 13;//SZ_ADDRESSING_HEADER + SZ_PKT_CMD;
-    uint8_t packet[sz_packet];
+    //uint8_t sz_packet = 14;//SZ_ADDRESSING_HEADER + SZ_PKT_CMD;
+    //uint8_t packet[sz_packet];
     packet[0] = 0xCA;
     packet[1] = 0xFE;
     packet[2] = (uint8_t)(PI_BASE_ADDRESS>>8);
@@ -78,7 +80,7 @@ void request_data(uint16_t target_node, uint16_t request_id)
     packet[6] = 0x00;
     packet[7] = 0x31;
     packet[8] = 0; // HOP COUNTER - starts at zero
-    packet[9] = sz_packet;
+    packet[9] = 0x14;
     //word_to_bytes(&packet[10],FROM_PI_REQUEST); // this should write the pi request code to 10 and 11
     packet[10] = 0xF3;   //  0xF314 sending this message means it comes from the pi
     packet[11] = 0x14;
@@ -86,6 +88,7 @@ void request_data(uint16_t target_node, uint16_t request_id)
     packet[13] = 0;
 	// Send the packet to the first node in the tree
     mrf_send16(FIRST_NODE, packet, sz_packet);
+    req_id++;
 }
 
 // This is called by the interrupt handler if new data is received
@@ -97,53 +100,47 @@ void handle_rx() {
     // prepended by the traciever - if we want to do something with it we can capture it here
     //if(mrf_get_bufferPHY()){
     //}
-	
     uint8_t * rx_data = mrf_get_rxdata(); // Pointer to the received data
-
     uint8_t sz_packet = rx_data[9]; // Size of the received packet (see scheme above)
-
     uint8_t i;
-
-    
-    
-    
     //debug to see what my data is
     printf("\ndata incoming");
-    //uint8_t k;  //counter for for loop needs to be declares outside of loop due to C99
-	/*for(k=0; k < sz_packet; k++) //this can print all the values of the data pack
+    fflush(stdout);
+    uint8_t k;  //counter for for loop needs to be declared outside of loop due to C99
+	for(k=0; k < 14; k++) //this can print all the values of the data pack
 	{
-		printf("\n%x", rx_data[k]);
-	}*/
-	
+		printf("\nRecieved: %X", rx_data[k]);
+	}
+	if(rx_data[0] == 0) //this happens when there's an empty message, an occasional glitch
+	{
+		
+		//request_data(FIRST_NODE, req_id);
+		//req_id++;
+	}
     if(rx_data[10] == 0xF0)  // Is this data coming back from the node? (F031 is the code)
     {
 
 		printf("\nRX:\n==========\n\n");
+		fflush(stdout);
 		//uint16_t data[2];
-		
-		
 		//unpack_12bit(data,& rx_data[12]);
 		printf("\nThe Secret Message is: %x %x \n",rx_data[12],rx_data[13]);
-		
-		
+		fflush(stdout);
 	       // In this test we are receiving a single pair or 12-bit data items
 	    	// Representing the mean and std error of the sensor reading
 	    	// These are packed into 3 bytes by the node so need unpacking here
-	    
 		/*
-		
 		printf("\nRequest no %d",bytes_to_word(& rx_data[12]));
 		printf("\nMean = %d   stderr = %d",data[0],data[1]);*/
-		
-
 		printf("\n===END====\n\n");
-
+		fflush(stdout);
 	}
-	/*else // At the moment we are not expecting anything else! Could have nodes send
+	else // At the moment we are not expecting anything else! Could have nodes send
 		// diagnostic data or error messages etc though
 	{
 		printf("\nUrecognized packet");
-	}*/
+		fflush(stdout);
+	}
 }
 
 // This is called by the interrupt handler when transmit has completed and the receiver has acknowledged
@@ -153,11 +150,15 @@ void handle_rx() {
 
 void handle_tx() {
 
+	printf("\nEntered handle txx\n");
+	fflush(stdout);
 	
     if (mrf_tx_ok()) {
         printf("\nTransmit acknowledged\n");
+        fflush(stdout);
     } else {
         printf("\nTransmit failed\n");
+        fflush(stdout);
     }
 }
 
@@ -191,23 +192,68 @@ void setup() {
 
 }
 
+void get_command()
+{
+	char command[4];
+	printf("What would you like to do? Scan only.");
+	scanf("%s", &command);
+	if(!(strcmp(&command, "scan")))
+	{
+		printf("\n Scanning");
+		request_data(FIRST_NODE, req_id);
+	}
+}
+
+int wait5seconds(){
+   struct timeval new_time;
+   gettimeofday(&new_time,NULL);
+   if((new_time.tv_sec - last_change.tv_sec) > 5)
+   {
+	   last_change = new_time;
+	   return 0;
+   }
+	
+}
 void loop() {
 	
 	// Check if any new interrupts have triggered
+	//check flags a few times
+	int i;
+	//for(i = 0; i > 5; i++){
     mrf_check_flags(&handle_rx, &handle_tx);
-
-   struct timeval new_time;
+	//}
+	
+	//setup();
+    //printf("\nReset MRF, wait 5 seconds...\n");
+    //wait5seconds();
+	
+    struct timeval new_time;
     gettimeofday(&new_time,NULL);
 
-	// request data every 5 seconds
 	
-    if( (new_time.tv_sec - last_change.tv_sec) > 5)
+	
+	// request data every 5 seconds
+   if( (new_time.tv_sec - last_change.tv_sec) > 5)
     {
+		int i;
         printf("\nRequesting: %i\n", req_id);
-        request_data(FIRST_NODE, req_id);
-        last_change = new_time; 
+        fflush(stdout);
+        
+        //for(i = 0; i < 3000; i++)
+       // {
+		request_data(FIRST_NODE, req_id);
+		mrf_check_flags(&handle_rx, &handle_tx);
+		for(i = 0; i < sz_packet; i++)
+		{
+		printf("\n%x",packet[i]);
+		}
+		//}
+        //printf("\nChecking flags %i\n", req_id);
+        last_change = new_time;  
         //keep_going = keep_going - 1;
-        req_id ++;
+        //req_id ++;
+       
+
     } 
 
                      
@@ -216,6 +262,7 @@ void loop() {
 int main(void)
 {
     setup();
+    //get_command();
     while(keep_going) loop();
     return 0;   
 }

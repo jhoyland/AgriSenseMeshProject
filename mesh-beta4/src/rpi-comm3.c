@@ -1,10 +1,9 @@
+//this should work to send a request to the node, and that node should forward the message, get the message back, and respond with the confirmation code from the node.
+#define F_CPU 1000000UL
 #include <stdio.h>
 #include <sys/time.h>
 #include <wiringPi.h>
 #include "mrf24jpi.h"
-#include "pktspec.h"
-#include "netspec.h"
-#include "cmdspec.h"
 
 // Which GPIO pin we're using
 
@@ -14,6 +13,10 @@
 // The base unit (Rasperry Pi) is PI_BASE_ADDRESS
 // The first node in the tree is NODE_BASE_ADDRESS
 // In addition, each node has the same PANID which distinquishes members of this network from any others in range
+
+#define PI_BASE_ADDRESS 0x3142		
+//#define NODE_BASE_ADDRESS 0x0031
+#define ASMP_PANID 0xCAFE
 
 // In this scheme each transmission is accompanied by 14 bytes of data (this forms part of the data payload
 // of the transmission. The transceivers also prepend data required by the communication protocol. The user does not 
@@ -37,6 +40,10 @@
 */
 
 
+#define SZ_ADDRESSING_HEADER 8
+#define SZ_PKT_CMD 6
+
+
 // Current state of the pin
 static volatile int state;
 // Time of last change
@@ -45,79 +52,97 @@ struct timeval last_change;
 uint16_t req_id;
 volatile uint8_t keep_going;
 
-#define FIRST_NODE 0x1010
-/*
+#define FIRST_NODE 0x0000
+
 #define CMD_DATA 0x4441     // DA
 #define CMD_ERROR 0x4552    // ER
 #define CMD_BYTE 0x5342     // SB
-*/
-// Requests sensor data from the specified node
+#define FROM_PI_REQUEST 0xF314 //"From pi"
+#define SEND_TO_PI 0x2314
+
+
+
+// Requests sensor data from the specified node. In this case, it sends a message to node 1
 
 void request_data(uint16_t target_node, uint16_t request_id)
 {
+	printf("\nRequesting Data\n");
     // Build the header - in this case the packet just consists of the addressing header and the command header
-    uint8_t sz_packet = PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER;
+    uint8_t sz_packet = 15; //SZ_ADDRESSING_HEADER + SZ_PKT_CMD;
     uint8_t packet[sz_packet];
-    packet[0] = PAN_ID_HI;
-    packet[1] = PAN_ID_LO;
-    packet[2] = (uint8_t)(target_node>>8);
-    packet[3] = (uint8_t)(255&target_node);
-    packet[4] = PAN_ID_HI;
-    packet[5] = PAN_ID_LO;
-    packet[6] = PI_ADDR_HI;
-    packet[7] = PI_ADDR_LO;
+    //word_to_bytes(&packet[0],ASMP_PANID);
+    packet[0] = 0xCA;
+    packet[1] = 0xFE;
+    packet[2] = (uint8_t)(PI_BASE_ADDRESS>>8);
+    packet[3] = (uint8_t)(255&PI_BASE_ADDRESS);
+    //word_to_bytes(&packet[4],ASMP_PANID);
+    packet[4] = 0xCA;
+    packet[5] = 0xFE;
+    //word_to_bytes(&packet[6],FIRST_NODE);
+    packet[6] = 0x00;
+    packet[7] = 0x01;
     packet[8] = 0; // HOP COUNTER - starts at zero
     packet[9] = sz_packet;
-    packet[10] = 0x44;   //  0x4441 = DA from the base this is a data request
-    packet[11] = 0x41;
-    packet[12] = (uint8_t)(request_id>>8);  // This is an reference number for the request - should be unique to each request
-    packet[13] = (uint8_t)(255&request_id);
+    //word_to_bytes(&packet[10],FROM_PI_REQUEST); // this should write the pi request code to 10 and 11
+    packet[10] = 0x20;   //command code: send to node 2. (0x0001)
+    packet[11] = 0x01;
+    packet[12] = 0;  // these are empty when sent
+    packet[13] = 0;
+    packet[14] - 0;
+    packet[15] = 0;
 	// Send the packet to the first node in the tree
-    mrf_send16(GATEWAY_NODE, packet, sz_packet);
+    mrf_send16(FIRST_NODE, packet, sz_packet);
+    req_id++;
 }
 
 // This is called by the interrupt handler if new data is received
 
 void handle_rx() {
 
+	printf("\nEntered handle rx");
     // We are not interested in the full "physical" buffer - this includes the automatic data
     // prepended by the traciever - if we want to do something with it we can capture it here
-    if(mrf_get_bufferPHY()){
-
-    }
-
+    //if(mrf_get_bufferPHY()){
+    //}
     uint8_t * rx_data = mrf_get_rxdata(); // Pointer to the received data
 
-    uint8_t sz_packet = rx_data[9]; // Size of teh received packet (see scheme above)
+    uint8_t sz_packet = rx_data[9]; // Size of the received packet (see scheme above)
 
-    uint8_t i = 0;
-    
+    uint8_t i;
+    //debug to see what my data is
+    printf("\ndata incoming");
+    fflush(stdout);
+    uint8_t k;  //counter for for loop needs to be declared outside of loop due to C99
+	for(k=0; k < 15; k++) //this can print all the values of the data pack
+	{
+		printf("\n%x", rx_data[k]);
+	}
 	
-	
-    if(bytes_to_word(& rx_data[10]) == CMD_DATA)  // Is this data coming back from the node?
+    if(rx_data[10] == 0x23 && rx_data[11] == 0x14) //the message came from node 1, and it's sending to the pi
     {
 
 		printf("\nRX:\n==========\n\n");
-		
+		fflush(stdout);
+		//uint16_t data[2];
+		//unpack_12bit(data,& rx_data[12]);
+		printf("\nThe Secret Message from 1 is: %x %x \n",rx_data[12],rx_data[13]);
+		printf("\nThe secret message from 2 is: %x %x \n",rx_data[14],rx_data[15]);
+		printf("\nThe hop counter is: %d \n",rx_data[8]);
+		fflush(stdout);
 	       // In this test we are receiving a single pair or 12-bit data items
 	    	// Representing the mean and std error of the sensor reading
 	    	// These are packed into 3 bytes by the node so need unpacking here
-	    
-		uint16_t data[2];
-		
-		unpack_12bit(data,& rx_data[14]);
-		
-		printf("\nRequest no %d",bytes_to_word(& rx_data[12]));
-		printf("\nMean = %d   stderr = %d",data[0],data[1]);
-		
-
+		//printf("\nRequest no %d",bytes_to_word(& rx_data[12]));
+		//printf("\nMean = %d   stderr = %d",data[0],data[1]);*/
 		printf("\n===END====\n\n");
+		fflush(stdout);
 
 	}
 	else // At the moment we are not expecting anything else! Could have nodes send
 		// diagnostic data or error messages etc though
 	{
 		printf("\nUrecognized packet");
+		fflush(stdout);
 	}
 }
 
@@ -131,8 +156,10 @@ void handle_tx() {
 	
     if (mrf_tx_ok()) {
         printf("\nTransmit acknowledged\n");
+        fflush(stdout);
     } else {
         printf("\nTransmit failed\n");
+        fflush(stdout);
     }
 }
 
@@ -154,33 +181,70 @@ void setup() {
     mrf_reset(); // Reset the MRF chip
     mrf_init();  // Initialize the MRF  chip
   
-    mrf_set_pan(0xf122);    // Set my panID
+    mrf_set_pan(ASMP_PANID);    // Set my panID
   // This is _our_ address
-    mrf_address16_write(0x3142);  // Set raspberry pi address
+    mrf_address16_write(PI_BASE_ADDRESS);  // Set raspberry pi address
+    
+    mrf_set_bufferPHY(FALSE);
 // some loop flags for this experiment
 		
-    keep_going = 8;
+    keep_going = 1;
     req_id = 1;
 
 }
 
+void get_command()
+{
+	char command[4];
+	printf("What would you like to do? Scan only.");
+	scanf("%s", &command);
+	if(!(strcmp(&command, "scan")))
+	{
+		printf("\n Scanning");
+		request_data(FIRST_NODE, req_id);
+	}
+}
+
+int wait5seconds(){
+   struct timeval new_time;
+   gettimeofday(&new_time,NULL);
+   if((new_time.tv_sec - last_change.tv_sec) > 5)
+   {
+	   last_change = new_time;
+	   return 0;
+   }
+	
+}
 void loop() {
 	
 	// Check if any new interrupts have triggered
+	//check flags a few times
+	//int i;
+	//for(i = 0; i > 5; i++){
     mrf_check_flags(&handle_rx, &handle_tx);
-
+	//}
+	
+	//setup();
+    //printf("\nReset MRF, wait 5 seconds...\n");
+    //wait5seconds();
+	
     struct timeval new_time;
     gettimeofday(&new_time,NULL);
 
-	// request data every 5 seconds
 	
-    if( (new_time.tv_sec - last_change.tv_sec) > 5 )
+	
+	// request data every 5 seconds
+   if((new_time.tv_sec - last_change.tv_sec) > 5)
     {
         printf("\nRequesting: %i\n", req_id);
-        request_data(GATEWAY_NODE,req_id);
-        last_change = new_time; 
-        keep_going = keep_going - 1;
-        req_id ++;
+        fflush(stdout);
+        request_data(FIRST_NODE, req_id);
+        //printf("\nChecking flags %i\n", req_id);
+        last_change = new_time;  
+        //keep_going = keep_going - 1;
+        //req_id ++;
+       
+
     } 
 
                      
@@ -189,6 +253,7 @@ void loop() {
 int main(void)
 {
     setup();
+    //get_command();
     while(keep_going) loop();
     return 0;   
 }
