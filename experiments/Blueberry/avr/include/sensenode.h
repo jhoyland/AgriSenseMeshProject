@@ -22,8 +22,6 @@
 
 #define ADC_N_SAMPLES 128
 
-#define ADC_CS PB7
-
 void handle_rx();
 void handle_tx();
 

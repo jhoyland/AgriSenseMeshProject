@@ -63,10 +63,14 @@ uint16_t my_address;
 
 #endif
 
+uint8_t validate_address(uint16_t addr)
+{
 
+}
 
 void handle_rx()
 {
+	__FLASH_GREEN__;
 	running_status |= (1<<RU_RX_HANDLE);
 
 	memcpy(recieved_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()*sizeof(uint8_t));
@@ -306,13 +310,15 @@ void setup() {
 
   startup_status = 0xFF;
 
+  running_status = (1<<RU_SETUP);
+
   /* Data directions */
 
   DDRB |= (1<<MRF_WAKE) | (1<<MRF_RESET) | (1<<MRF_CS);
   DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK); 
   DDRB |= (1<<ADC_CS);   
 
-  DDRD |= (1<<LED_1) | (1<<LED_2);  
+  DDRD |= (1<<LED_1) | (1<<LED_2) | (1<<LED_3);  
   
 //  PORTD |= (1<<BUTTON_1);
   PORTB |= (1<<MRF_CS); //
@@ -345,6 +351,7 @@ void setup() {
 
   transmit_command_header = & transmit_data_buffer[PK_COMMAND_HEADER];
   set_downstream_address_header(transmit_data_buffer);
+  set_downstream_address_header(error_data_buffer);
   active_command = & error_data_buffer[PK_DATA_START]; // Active command is located in the error data buffer so it is automatically sent with errors 
 
   if(ok) 
@@ -367,6 +374,8 @@ void setup() {
   __FLASH_YELLOW__;
   startup_status &= ~(1<<ST_OPTION);
   __FLASH_YELLOW__;
+
+  running_status &= ~(1<<RU_SETUP);
 }
 
 ISR(INT0_vect) {
@@ -385,6 +394,7 @@ void loop() {
 int main(void)
 {
     setup();
+    running_status |= (1<<RU_RUNNING);
     while(1) loop();
 
     return 0;

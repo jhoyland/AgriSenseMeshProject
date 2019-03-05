@@ -3,9 +3,10 @@
 
 // Diagnostic LED pins
 
-#define LED_PORT    PORTD
-#define LED_1       PD3    /*REMOTE LED*/
-#define LED_2       PD4    /*LOCAL LED*/
+#define LED_PORT    PORTD	/* + */
+#define LED_3       PD3    /*+REMOTE LED   GREEN*/
+#define LED_2       PD4    /*+LOCAL LED 		YELLOW*/
+#define LED_1		PD7		/*+ RED */
 
 
 // MRF24J40 wifi pins
