@@ -33,6 +33,8 @@ uint8_t adc_active_channels_bitmask = 1;
 
 uint16_t my_address;
 
+#define __DIAGNOSTIC_LEDS__
+
 #ifdef __DIAGNOSTIC_LEDS__
 
 #define __FLASH_RED__ BLINK(LED_PORT,LED_1)
@@ -63,10 +65,6 @@ uint16_t my_address;
 
 #endif
 
-uint8_t validate_address(uint16_t addr)
-{
-
-}
 
 void handle_rx()
 {
@@ -206,7 +204,13 @@ void set_downstream_address_header(uint8_t* buff)
 void execute_next_command()
 {
 	//uint8_t active_command[SZ_COMMAND];
-	if(dequeue(&command_queue,active_command) == 0) return; // No commands waiting
+	if(dequeue(&command_queue,active_command) == 0) 
+	{
+		__FLASH_YELLOW__;
+		return; // No commands waiting
+	}
+
+	__FLASH_GREEN__;
 
 	running_status |= (1<<RU_CMD_EXEC);
 
@@ -304,6 +308,25 @@ void send_error(uint16_t xm)
 
 }
 
+void setup_ports()
+{
+ DDRB |= (1<<MRF_WAKE) | (1<<MRF_RESET) | (1<<MRF_CS);
+  DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK); 
+  DDRB |= (1<<ADC_CS);   
+
+  DDRD |= (1<<LED_1) | (1<<LED_2) | (1<<LED_3);  
+
+  __FLASH_GREEN__;
+  __FLASH_YELLOW__;
+  __FLASH_RED__;
+  
+//  PORTD |= (1<<BUTTON_1);
+  PORTB |= (1<<MRF_CS); //
+  PORTB |= (1<<ADC_CS);
+  PORTD |= (1<<MRF_INT);
+  MRF_RESET_PORT |= (1<<MRF_RESET);
+}
+
 void setup() {
 
   uint8_t ok = 0;
@@ -313,18 +336,8 @@ void setup() {
   running_status = (1<<RU_SETUP);
 
   /* Data directions */
-
-  DDRB |= (1<<MRF_WAKE) | (1<<MRF_RESET) | (1<<MRF_CS);
-  DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK); 
-  DDRB |= (1<<ADC_CS);   
-
-  DDRD |= (1<<LED_1) | (1<<LED_2) | (1<<LED_3);  
-  
-//  PORTD |= (1<<BUTTON_1);
-  PORTB |= (1<<MRF_CS); //
-  PORTB |= (1<<ADC_CS);
-  PORTD |= (1<<MRF_INT);
-  MRF_RESET_PORT |= (1<<MRF_RESET);
+  setup_ports();
+ 
 
   startup_status &= ~(1<<ST_PORTS);
   __FLASH_GREEN__;
@@ -388,6 +401,7 @@ void loop() {
     mrf_check_flags(&handle_rx, &handle_tx);
 
     if(startup_status == 0) execute_next_command();
+    	else __FLASH_RED__;
 			
 }
 

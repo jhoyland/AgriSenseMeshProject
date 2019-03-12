@@ -38,6 +38,10 @@ void set_downstream_address_header(uint8_t* buff);
 void send_downstream(uint8_t* msg);
 void send_upstream(uint8_t* msg);
 
+void setup();
+void setup_ports();
+void loop();
+
 void send_error(uint16_t);
 
 #endif
