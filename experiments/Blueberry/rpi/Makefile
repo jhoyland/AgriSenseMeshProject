@@ -1,6 +1,6 @@
 
 
-CC=gcc.exe
+CC=gcc
 CFLAGS=-g $(DEFINES) -Os -Wall -mcall-prologues 
 
 # User directories to search

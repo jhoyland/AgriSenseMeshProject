@@ -22,8 +22,6 @@
 #define RU_RUNNING 7
 #define RU_SLEEP 8
 
-
-
 #define CMD_DATA 0x4441
 #define CMD_PING 0x4552
 #define CMD_ECHO 0x4543
