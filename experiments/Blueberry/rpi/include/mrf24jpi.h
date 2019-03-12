@@ -176,10 +176,7 @@ typedef struct mrf_tx_info_t{
     uint8_t channel_busy:1;
 } tx_info_t;
 
-/*class Mrf24j
-{
-    public:
-        Mrf24j(int pin_reset, int pin_chip_select, int pin_interrupt);*/
+
         void mrf_reset(void);
         void mrf_init(void);
 
@@ -240,9 +237,6 @@ typedef struct mrf_tx_info_t{
         void mrf_interrupt_handler(void);
 
         void mrf_check_flags(void (*rx_handler)(void), void (*tx_handler)(void));
-
-   /* private:*/
-
 
 
 #endif  /* LIB_MRF24J_H */
