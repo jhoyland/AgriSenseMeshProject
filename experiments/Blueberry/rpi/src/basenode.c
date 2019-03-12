@@ -3,6 +3,8 @@
 #include <wiringPi.h>
 #include "mrf24jpi.h"
 #include "pktspec.h"
+#include "netspec.h"
+#include "cmdspec.h"
 
 // Which GPIO pin we're using
 
@@ -54,16 +56,16 @@ volatile uint8_t keep_going;
 void request_data(uint16_t target_node, uint16_t request_id)
 {
     // Build the header - in this case the packet just consists of the addressing header and the command header
-    uint8_t sz_packet = SZ_ADDRESSING_HEADER + SZ_PKT_CMD;
+    uint8_t sz_packet = PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER;
     uint8_t packet[sz_packet];
-    packet[0] = 0xF1;
-    packet[1] = 0x22;
+    packet[0] = PAN_ID_HI;
+    packet[1] = PAN_ID_LO;
     packet[2] = (uint8_t)(target_node>>8);
     packet[3] = (uint8_t)(255&target_node);
-    packet[4] = 0xF1;
-    packet[5] = 0x22;
-    packet[6] = 0x31;
-    packet[7] = 0x42;
+    packet[4] = PAN_ID_HI;
+    packet[5] = PAN_ID_LO;
+    packet[6] = PI_ADDR_HI;
+    packet[7] = PI_ADDR_LO;
     packet[8] = 0; // HOP COUNTER - starts at zero
     packet[9] = sz_packet;
     packet[10] = 0x44;   //  0x4441 = DA from the base this is a data request
@@ -71,7 +73,7 @@ void request_data(uint16_t target_node, uint16_t request_id)
     packet[12] = (uint8_t)(request_id>>8);  // This is an reference number for the request - should be unique to each request
     packet[13] = (uint8_t)(255&request_id);
 	// Send the packet to the first node in the tree
-    mrf_send16(NODE_BASE_ADDRESS, packet, sz_packet);
+    mrf_send16(GATEWAY_NODE, packet, sz_packet);
 }
 
 // This is called by the interrupt handler if new data is received
@@ -175,7 +177,7 @@ void loop() {
     if( (new_time.tv_sec - last_change.tv_sec) > 5 )
     {
         printf("\nRequesting: %i\n", req_id);
-        request_data(req_id);
+        request_data(GATEWAY_NODE,req_id);
         last_change = new_time; 
         keep_going = keep_going - 1;
         req_id ++;

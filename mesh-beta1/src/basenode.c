@@ -182,7 +182,7 @@ void loop() {
     if( (new_time.tv_sec - last_change.tv_sec) > 5 )
     {
         printf("\nRequesting: %i\n", req_id);
-        request_data(req_id);
+        request_data(NODE_BASE_ADDRESS, req_id);
         last_change = new_time; 
         keep_going = keep_going - 1;
         req_id ++;

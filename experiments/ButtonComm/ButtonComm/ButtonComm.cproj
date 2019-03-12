@@ -140,9 +140,6 @@
     <Compile Include="blinkin.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="ButtonComm.c">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="mrf24j.c">
       <SubType>compile</SubType>
     </Compile>
@@ -162,6 +159,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="tinyspi.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="twowaycomm.c">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

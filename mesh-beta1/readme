@@ -50,8 +50,8 @@ Byte    def               purpose
 7       DST_ADDRESS_LO    Address of message destination (LSB)
 8       MSG_HOP_COUNT     Counter to store the number of nodes the message passed through
 9       MSG_SZ            Total size of the message including this header
-9       CMD_HI            Command code (MSB)
-10      CMD_LO            Command code (LSB)
+10       CMD_HI            Command code (MSB)
+11      CMD_LO            Command code (LSB)
 12      CMD_DATA_0        Command data 
 13      CMD_DATA_1        Command data 
 14      MSG_DATA          Beginning of data being sent (if required)

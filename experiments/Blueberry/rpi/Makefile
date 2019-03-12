@@ -1,7 +1,13 @@
+#RPi Makefiel
 
+<<<<<<< HEAD
 
 CC=gcc
 CFLAGS=-g $(DEFINES) -Os -Wall -mcall-prologues 
+=======
+CC=gcc
+CFLAGS=-g -v
+>>>>>>> a4a74d873a78584b16be6b4a7ff61343ffa52e38
 
 # User directories to search
 BUILDDIR  = ./build
@@ -32,17 +38,18 @@ INCCMD    = $(addprefix -I,$(INCDIR) $(LIBINCDIR) $(COMMONINCDIR))
 
 TARGET=blueberry-base
 
-all: $(TARGET).hex
-
 # The rules
 
 all: $(SOURCES) $(TARGET)
     
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) $(INCCMD) $< -o $@
+	$(CC) -c $(CFLAGS) $(INCCMD) $< -o $@
+    
+$(BUILDDIR)/%.o: $(COMMONSRCDIR)/%.c
+	$(CC) -c $(CFLAGS) $(INCCMD) $< -o $@
 
-$(TARGET): $(OBJECTS) 
-	$(CC) $(LDFLAGS) $(OBJECTS) $(LIBDIRCMD) $(LIBCMD) -o $@
+$(TARGET): $(OBJECTS) $(COMMONOBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) $(COMMONOBJECTS) $(LIBDIRCMD) $(LIBCMD) -o $@
 
 clean:
 	rm -f *.hex *.obj *.elf *.o

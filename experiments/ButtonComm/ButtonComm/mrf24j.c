@@ -25,7 +25,7 @@
 #error No chip select pin (MRF_CS) defined for MRF24J module
 #endif
 
-// aMaxPHYPacketSize = 127, from the 802.15.4-2006 standard.
+//aMaxPHYPacketSize = 127; //from the 802.15.4-2006 standard.
 static uint8_t rx_buf[aMaxPHYPacketSize];
 
 // essential for obtaining the data frame only
@@ -56,7 +56,7 @@ void mrf_reset(void) {
     MRF_RESET_PORT &= ~(1 << MRF_RESET);
     _delay_ms(10);  // just my gut
     MRF_RESET_PORT |=  (1 << MRF_RESET);
-    _delay_ms(20);  // from manual
+    _delay_ms(20);  // from manual *THIS SHOULD BE SMALLER*
 }
 
 uint8_t mrf_read_short(uint8_t address) {
@@ -65,7 +65,7 @@ uint8_t mrf_read_short(uint8_t address) {
     mrf_spi_buffer[0] = (address<<1) & 0b01111110;
     mrf_spi_buffer[1] = 0;
 
-    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,2,MRF_CS);  
+    spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,2,MRF_CS); //this calls mrf_spi_buffer 2x?  
 
     return mrf_spi_buffer[1];
 }
@@ -122,7 +122,7 @@ uint16_t mrf_address16_read(void) {
  * @param data
  */
 void mrf_send16(uint16_t dest16, uint8_t * data, uint8_t len) {
-    //uint8_t len = strlen(data); // get the length of the char* array
+    //uint8_t len = strlen(data); // get the length of the char* array THIS WAS COMMENTED OUT
     int i = 0;
     mrf_write_long(i++, bytes_MHR); // header length
     // +ignoreBytes is because some module seems to ignore 2 bytes after the header?!.

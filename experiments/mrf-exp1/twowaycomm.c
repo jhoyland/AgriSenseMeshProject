@@ -31,6 +31,8 @@
 
 
 uint16_t loop_counter;
+uint16_t SRC_ADDRESS = 0x0023;
+uint16_t DEST_ADDRESS = 0x0031;
 
 
 /*Called by check flags*/
@@ -65,6 +67,7 @@ void handle_tx() {
         BLINK(LED_PORT,LED_2);
     }
 }
+
 
 void setup() {
 
