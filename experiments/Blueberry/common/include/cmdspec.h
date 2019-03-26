@@ -22,8 +22,8 @@
 #define RU_RUNNING 7
 #define RU_SLEEP 8
 
-#define CMD_DATA 0x4441
-#define CMD_PING 0x4552
+#define CMD_DATA 0x4441						// 'DA' Request data: command arguments include a unique request id and a bitmask specifying which channels to read 
+#define CMD_PING 0x4552						// Ping:  
 #define CMD_ECHO 0x4543
 #define CMD_GET_PARAMETER 0x5047
 #define CMD_SET_PARAMETER 0x5053

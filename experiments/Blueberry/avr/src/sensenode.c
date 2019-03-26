@@ -134,7 +134,7 @@ uint8_t get_packed_data(uint8_t * op, uint8_t ch)
 	mean = mean / ADC_N_SAMPLES;	// Calculate mean
 	serr = sqrt( (serr - ADC_N_SAMPLES*mean*mean)/(ADC_N_SAMPLES*(ADC_N_SAMPLES-1.0)) );  // Calculate standard error
 
-	mean = fmin(mean,2047);
+	mean = fmin(mean,4095);
 	serr = fmax(serr,1);			// Minimum 1 bit error
 
 	data[0] = (uint16_t) mean;
@@ -153,7 +153,7 @@ void command_get_data(uint8_t* command)
 	word_to_bytes(&transmit_command_header[PK_CMD_HI],CMD_DATA);
 
 	transmit_command_header[PK_CMD_DATA_0] = command[PK_CMD_DATA_0]; // REQUEST ID
-	uint8_t adc_channel_request_bitmask = command[PK_CMD_DATA_1];
+	uint8_t adc_channel_request_bitmask = command[PK_CMD_DATA_1]; // Requested ADC channels
 	uint8_t adc_read_ok_bitmask = 0;
 	transmit_command_header[PK_SZ_PACKET] = PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER;
 	uint8_t* data_pointer = &transmit_data_buffer[PK_DATA_START];
