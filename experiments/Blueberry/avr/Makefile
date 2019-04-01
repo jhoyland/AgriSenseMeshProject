@@ -71,4 +71,4 @@ fuse:
 	sudo gpio -g write 22 1
 
 clean:
-	rm -f *.hex *.obj *.elf *.o
+	rm -f *.hex *.obj *.elf $(BUILDDIR)/*.o

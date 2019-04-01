@@ -15,7 +15,7 @@
 #define SPI_CS_PORT PORTB
 #endif
 
-#define SPI_ON_USI
+//#define SPI_ON_USI
 
 #ifndef SPI_ON_USI
 

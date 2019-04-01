@@ -65,6 +65,7 @@ uint16_t my_address;
 
 #endif
 
+uint16_t big_counter = 0;
 
 void handle_rx()
 {
@@ -203,7 +204,6 @@ void set_downstream_address_header(uint8_t* buff)
 
 void execute_next_command()
 {
-	//uint8_t active_command[SZ_COMMAND];
 	if(dequeue(&command_queue,active_command) == 0) 
 	{
 		__FLASH_YELLOW__;
@@ -310,9 +310,9 @@ void send_error(uint16_t xm)
 
 void setup_ports()
 {
- DDRB |= (1<<MRF_WAKE) | (1<<MRF_RESET) | (1<<MRF_CS);
+  DDRB |= (1<<MRF_WAKE) | (1<<MRF_RESET);
   DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK); 
-  DDRB |= (1<<ADC_CS);   
+  DDRB |= (1<<ADC_CS) | (1<<MRF_CS);  
 
   DDRD |= (1<<LED_1) | (1<<LED_2) | (1<<LED_3);  
 
@@ -345,16 +345,28 @@ void setup() {
   spi_set_data_direction(SPI_MSB);
   spi_setup();
 
+
+
   startup_status &= ~(1<<ST_SPI);
   __FLASH_GREEN__;
 
+
+
   mrf_reset();
-  mrf_init();
+  __FLASH_YELLOW__;
+
+
+
   
+  mrf_init();
+  __FLASH_RED__;
+
   mrf_set_pan(PAN_ID);
+  __FLASH_YELLOW__;
   // This is _our_ address
   my_address = MY_ADDRESS;
   mrf_address16_write(my_address); 
+  __FLASH_RED__;
 
 
   startup_status &= ~(1<<ST_MRF);
@@ -399,15 +411,28 @@ ISR(INT0_vect) {
 
 void loop() {
     mrf_check_flags(&handle_rx, &handle_tx);
-
+    uint16_t dat;
     if(startup_status == 0) execute_next_command();
     	else __FLASH_RED__;
+
+    big_counter++;
+
+    if(big_counter == 10)
+    {
+    	big_counter = 0;
+
+    	__FLASH_YELLOW__;
+    	dat= get_adc_value(0);
+    	__FLASH_GREEN__;
+
+    }
 			
 }
 
 int main(void)
 {
     setup();
+    big_counter = 0;
     running_status |= (1<<RU_RUNNING);
     while(1) loop();
 

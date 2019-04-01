@@ -54,9 +54,9 @@ volatile uint8_t mrf_flags;
 
 void mrf_reset(void) {
     MRF_RESET_PORT &= ~(1 << MRF_RESET);
-    _delay_ms(10);  // just my gut
+    _delay_ms(100);  // just my gut
     MRF_RESET_PORT |=  (1 << MRF_RESET);
-    _delay_ms(20);  // from manual
+    _delay_ms(250);  // from manual
 }
 
 uint8_t mrf_read_short(uint8_t address) {
@@ -68,7 +68,7 @@ uint8_t mrf_read_short(uint8_t address) {
     spi_transfer_nbytes(mrf_spi_buffer,mrf_spi_buffer,2,MRF_CS);  
 
     return mrf_spi_buffer[1];
-}
+} 
 
 uint8_t mrf_read_long(uint16_t address) {
     mrf_spi_buffer[0] = 0x80 | (address >> 3);

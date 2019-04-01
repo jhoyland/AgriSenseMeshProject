@@ -4,19 +4,19 @@
 // Diagnostic LED pins
 
 #define LED_PORT    PORTD	/* + */
-#define LED_3       PD3    /*+REMOTE LED   GREEN*/
-#define LED_2       PD4    /*+LOCAL LED 		YELLOW*/
+#define LED_3       PD5    /*+REMOTE LED   GREEN*/
+#define LED_2       PD6    /*+LOCAL LED 		YELLOW*/
 #define LED_1		PD7		/*+ RED */
 
 
 // MRF24J40 wifi pins
 
 
-#define MRF_RESET   PB1		// --> Reset line
-#define MRF_WAKE    PB6		// --> Wake line (for waking MRF)
 #define MRF_INT     PD2		// <-- Interrupt line
+#define MRF_WAKE    PD3		// --> Wake line (for waking MRF)
+#define MRF_RESET   PD4		// --> Reset line
 
-#define MRF_RESET_PORT PORTB
+#define MRF_RESET_PORT PORTD
 
 // SPI Pins
 #define SPI_MOSI    PB3		// --> SPI MOSI line
