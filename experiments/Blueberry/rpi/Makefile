@@ -1,13 +1,7 @@
 #RPi Makefiel
 
-<<<<<<< HEAD
-
-CC=gcc
-CFLAGS=-g $(DEFINES) -Os -Wall -mcall-prologues 
-=======
 CC=gcc
 CFLAGS=-g -v
->>>>>>> a4a74d873a78584b16be6b4a7ff61343ffa52e38
 
 # User directories to search
 BUILDDIR  = ./build
