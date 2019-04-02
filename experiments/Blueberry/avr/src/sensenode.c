@@ -12,7 +12,7 @@
 #include <math.h>
 
 #define SZ_COMMAND_BUFFER 5
-#define SZ_COMMAND 3
+#define SZ_COMMAND PK_SZ_CMD_HEADER
 
 
 uint8_t transmit_data_buffer[PK_SZ_TXRX_BUFFER];
@@ -69,6 +69,7 @@ uint16_t big_counter = 0;
 
 void handle_rx()
 {
+	__YELLOW_ON__;
 	__FLASH_GREEN__;
 	running_status |= (1<<RU_RX_HANDLE);
 
@@ -76,12 +77,13 @@ void handle_rx()
 
 	if( bytes_to_word(& recieved_data_buffer[PK_DEST_ADDR_HI]) == my_address )
 	{
+		__FLASH_GREEN__;
 		enqueue( &command_queue, &recieved_data_buffer[PK_COMMAND_HEADER] ); 
 		// TO DO: Check that enqueue worked. Currently the command is lost if queue is full - should send error to base in this case
 	}
 	else
 	{
-
+		__FLASH_RED__;
 		recieved_data_buffer[PK_COMMAND_HEADER + PK_HOP_COUNT] ++;
 
 		if(recieved_data_buffer[PK_DEST_ADDR_HI] == PI_ADDR_HI && recieved_data_buffer[PK_DEST_ADDR_LO] == PI_ADDR_LO)
@@ -95,6 +97,7 @@ void handle_rx()
 	}
 
 	running_status &= ~(1<<RU_RX_HANDLE);
+	__YELLOW_OFF__;
 }
 
 void handle_tx()
@@ -150,31 +153,38 @@ uint8_t get_packed_data(uint8_t * op, uint8_t ch)
 
 void command_get_data(uint8_t* command)
 {
+	__GREEN_ON__;
 	running_status |= (1<<RU_DATA_COLLECT);
 	word_to_bytes(&transmit_command_header[PK_CMD_HI],CMD_DATA);
 
-	transmit_command_header[PK_CMD_DATA_0] = command[PK_CMD_DATA_0]; // REQUEST ID
-	uint8_t adc_channel_request_bitmask = command[PK_CMD_DATA_1]; // Requested ADC channels
+	transmit_command_header[PK_CMD_DATA_0] = command[PK_CMD_DATA_0]; // REQUEST ID HI
+	transmit_command_header[PK_CMD_DATA_1] = command[PK_CMD_DATA_1]; // REQUEST ID LO
+	uint8_t adc_channel_request_bitmask = command[PK_CMD_DATA_2]; // Requested ADC channels
 	uint8_t adc_read_ok_bitmask = 0;
 	transmit_command_header[PK_SZ_PACKET] = PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER;
 	uint8_t* data_pointer = &transmit_data_buffer[PK_DATA_START];
 
 	for(uint8_t i=0;i<8;i++)
 	{
+		__YELLOW_ON__;
 		if((adc_channel_request_bitmask & adc_active_channels_bitmask) & (1<<i))
 		{
+			__FLASH_RED__;
 			if(get_packed_data(data_pointer, i)) 
 			{
+				__FLASH_RED__;
 				adc_read_ok_bitmask |= (1<<i);
 				transmit_command_header[PK_SZ_PACKET] += 3;
 				data_pointer += 3;
 			}
 		}
+		__YELLOW_OFF__;
 	}
 
 	running_status &= ~(1<<RU_DATA_COLLECT);
 
 	transmit_command_header[PK_CMD_DATA_1] = adc_read_ok_bitmask;
+	__GREEN_OFF__;
 
 	send_downstream(transmit_data_buffer);
 }
@@ -232,6 +242,7 @@ void execute_next_command()
 			command_get_parameter(active_command);
 			break;*/
 		default:
+			__FLASH_RED__;__FLASH_RED__;
 			send_error(ERR_UNRECOGNIZED_COMMAND);
 	}
 	running_status &= ~(1<<RU_CMD_EXEC);
@@ -352,22 +363,11 @@ void setup() {
 
 
 
-  mrf_reset();
-  __FLASH_YELLOW__;
-
-
-
-  
+  mrf_reset();  
   mrf_init();
-  __FLASH_RED__;
-
   mrf_set_pan(PAN_ID);
-  __FLASH_YELLOW__;
-  // This is _our_ address
   my_address = MY_ADDRESS;
   mrf_address16_write(my_address); 
-  __FLASH_RED__;
-
 
   startup_status &= ~(1<<ST_MRF);
   __FLASH_GREEN__;
@@ -383,6 +383,10 @@ void setup() {
   	{
   		startup_status &= ~(1<<ST_BUFFERS);
   		__FLASH_GREEN__;
+  	}
+  	else
+  	{
+  		__FLASH_RED__;
   	}
 
   ok = 0;
@@ -411,11 +415,11 @@ ISR(INT0_vect) {
 
 void loop() {
     mrf_check_flags(&handle_rx, &handle_tx);
-    uint16_t dat;
+ //   uint16_t dat;
     if(startup_status == 0) execute_next_command();
     	else __FLASH_RED__;
 
-    big_counter++;
+/*    big_counter++;
 
     if(big_counter == 10)
     {
@@ -425,7 +429,7 @@ void loop() {
     	dat= get_adc_value(0);
     	__FLASH_GREEN__;
 
-    }
+    }*/
 			
 }
 
