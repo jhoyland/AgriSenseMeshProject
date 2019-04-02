@@ -45,12 +45,6 @@ struct timeval last_change;
 uint16_t req_id;
 volatile uint8_t keep_going;
 
-#define FIRST_NODE 0x1010
-/*
-#define CMD_DATA 0x4441     // DA
-#define CMD_ERROR 0x4552    // ER
-#define CMD_BYTE 0x5342     // SB
-*/
 // Requests sensor data from the specified node
 
 void request_data(uint16_t target_node, uint16_t request_id)
@@ -58,21 +52,28 @@ void request_data(uint16_t target_node, uint16_t request_id)
     // Build the header - in this case the packet just consists of the addressing header and the command header
     uint8_t sz_packet = PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER;
     uint8_t packet[sz_packet];
-    packet[0] = PAN_ID_HI;
-    packet[1] = PAN_ID_LO;
-    packet[2] = (uint8_t)(target_node>>8);
-    packet[3] = (uint8_t)(255&target_node);
-    packet[4] = PAN_ID_HI;
-    packet[5] = PAN_ID_LO;
-    packet[6] = PI_ADDR_HI;
-    packet[7] = PI_ADDR_LO;
-    packet[8] = 0; // HOP COUNTER - starts at zero
-    packet[9] = sz_packet;
-    packet[10] = 0x44;   //  0x4441 = DA from the base this is a data request
-    packet[11] = 0x41;
-    packet[12] = (uint8_t)(request_id>>8);  // This is an reference number for the request - should be unique to each request
-    packet[13] = (uint8_t)(255&request_id);
+    packet[PK_DEST_PANID_HI] = PAN_ID_HI;
+    packet[PK_DEST_PANID_LO] = PAN_ID_LO;
+    packet[PK_DEST_ADDR_HI] = (uint8_t)(target_node>>8);
+    packet[PK_DEST_ADDR_LO] = (uint8_t)(255&target_node);
+    packet[PK_SRC_PANID_HI] = PAN_ID_HI;
+    packet[PK_SRC_PANID_LO] = PAN_ID_LO;
+    packet[PK_SRC_ADDR_HI] = PI_ADDR_HI;
+    packet[PK_SRC_ADDR_LO] = PI_ADDR_LO;
+    packet[PK_COMMAND_HEADER+PK_HOP_COUNT] = 0; // HOP COUNTER - starts at zero
+    packet[PK_COMMAND_HEADER+PK_SZ_PACKET] = sz_packet;
+    packet[PK_COMMAND_HEADER+PK_CMD_HI] = 0x44;   //  0x4441 = DA from the base this is a data request
+    packet[PK_COMMAND_HEADER+PK_CMD_LO] = 0x41;
+    packet[PK_COMMAND_HEADER+PK_CMD_DATA_0] = (uint8_t)(request_id>>8);  // This is an reference number for the request - should be unique to each request
+    packet[PK_COMMAND_HEADER+PK_CMD_DATA_1] = (uint8_t)(255&request_id);
+    packet[PK_COMMAND_HEADER+PK_CMD_DATA_2] = 1; // Data bitmask
+    packet[PK_COMMAND_HEADER+PK_CMD_DATA_3] = 0; 
 	// Send the packet to the first node in the tree
+	
+	uint16_t cm0 = bytes_to_word(& packet[PK_COMMAND_HEADER+PK_CMD_HI]);
+	printf("\nSENDING COMMAND: 0x%04X\n",cm0);
+	
+	
     mrf_send16(GATEWAY_NODE, packet, sz_packet);
 }
 
@@ -88,13 +89,14 @@ void handle_rx() {
 
     uint8_t * rx_data = mrf_get_rxdata(); // Pointer to the received data
 
-    uint8_t sz_packet = rx_data[9]; // Size of teh received packet (see scheme above)
+    uint8_t sz_packet = rx_data[PK_SZ_CMD_HEADER+PK_SZ_PACKET]; // Size of teh received packet (see scheme above)
 
     uint8_t i = 0;
     
+    
 	
 	
-    if(bytes_to_word(& rx_data[10]) == CMD_DATA)  // Is this data coming back from the node?
+    if(bytes_to_word(& rx_data[PK_COMMAND_HEADER+PK_CMD_HI]) == CMD_DATA)  // Is this data coming back from the node?
     {
 
 		printf("\nRX:\n==========\n\n");
@@ -154,9 +156,9 @@ void setup() {
     mrf_reset(); // Reset the MRF chip
     mrf_init();  // Initialize the MRF  chip
   
-    mrf_set_pan(0xf122);    // Set my panID
+    mrf_set_pan(PAN_ID);    // Set my panID
   // This is _our_ address
-    mrf_address16_write(0x3142);  // Set raspberry pi address
+    mrf_address16_write(PI_ADDR);  // Set raspberry pi address
 // some loop flags for this experiment
 		
     keep_going = 8;
