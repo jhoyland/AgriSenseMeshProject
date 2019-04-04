@@ -5,6 +5,7 @@
 #include "pktspec.h"
 #include "netspec.h"
 #include "cmdspec.h"
+#include "basenode.h"
 
 // Which GPIO pin we're using
 
@@ -77,23 +78,48 @@ void request_data(uint16_t target_node, uint16_t request_id)
     mrf_send16(GATEWAY_NODE, packet, sz_packet);
 }
 
+void request_ping(uint16_t target_node, uint16_t request_id, uint8_t d)
+{
+	    // Build the header - in this case the packet just consists of the addressing header and the command header
+    uint8_t sz_packet = PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER;
+    uint8_t packet[sz_packet];
+    packet[PK_DEST_PANID_HI] = PAN_ID_HI;
+    packet[PK_DEST_PANID_LO] = PAN_ID_LO;
+    packet[PK_DEST_ADDR_HI] = (uint8_t)(target_node>>8);
+    packet[PK_DEST_ADDR_LO] = (uint8_t)(255&target_node);
+    packet[PK_SRC_PANID_HI] = PAN_ID_HI;
+    packet[PK_SRC_PANID_LO] = PAN_ID_LO;
+    packet[PK_SRC_ADDR_HI] = PI_ADDR_HI;
+    packet[PK_SRC_ADDR_LO] = PI_ADDR_LO;
+    packet[PK_COMMAND_HEADER+PK_HOP_COUNT] = 0; // HOP COUNTER - starts at zero
+    packet[PK_COMMAND_HEADER+PK_SZ_PACKET] = sz_packet;
+    packet[PK_COMMAND_HEADER+PK_CMD_HI] = 0x45;   //  0x4441 = DA from the base this is a data request
+    packet[PK_COMMAND_HEADER+PK_CMD_LO] = 0x52;
+    packet[PK_COMMAND_HEADER+PK_CMD_DATA_0] = (uint8_t)(request_id>>8);  // This is an reference number for the request - should be unique to each request
+    packet[PK_COMMAND_HEADER+PK_CMD_DATA_1] = (uint8_t)(255&request_id);
+    packet[PK_COMMAND_HEADER+PK_CMD_DATA_2] = d; 
+    packet[PK_COMMAND_HEADER+PK_CMD_DATA_3] = 0; 
+	// Send the packet to the first node in the tree
+	
+	uint16_t cm0 = bytes_to_word(& packet[PK_COMMAND_HEADER+PK_CMD_HI]);
+	printf("\nSENDING COMMAND: 0x%04X\n",cm0);
+	
+	
+    mrf_send16(GATEWAY_NODE, packet, sz_packet);
+}
+
 // This is called by the interrupt handler if new data is received
 
 void handle_rx() {
 
-    // We are not interested in the full "physical" buffer - this includes the automatic data
-    // prepended by the traciever - if we want to do something with it we can capture it here
-    if(mrf_get_bufferPHY()){
-
-    }
+	printf("\nRX\n");
 
     uint8_t * rx_data = mrf_get_rxdata(); // Pointer to the received data
 
     uint8_t sz_packet = rx_data[PK_SZ_CMD_HEADER+PK_SZ_PACKET]; // Size of teh received packet (see scheme above)
 
     uint8_t i = 0;
-    
-    
+   
 	
 	
     if(bytes_to_word(& rx_data[PK_COMMAND_HEADER+PK_CMD_HI]) == CMD_DATA)  // Is this data coming back from the node?
@@ -178,8 +204,8 @@ void loop() {
 	
     if( (new_time.tv_sec - last_change.tv_sec) > 5 )
     {
-        printf("\nRequesting: %i\n", req_id);
-        request_data(GATEWAY_NODE,req_id);
+        printf("\nWaiting %i\n", req_id);
+        request_ping(GATEWAY_NODE,req_id,0x42);
         last_change = new_time; 
         keep_going = keep_going - 1;
         req_id ++;

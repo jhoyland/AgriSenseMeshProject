@@ -58,9 +58,9 @@ volatile uint8_t mrf_flags;
 
 void mrf_reset(void) {
     digitalWrite(RESET_PIN,0);
-    delay(10);  // just my gut
+    delay(100);  // just my gut
     digitalWrite(RESET_PIN,1);
-    delay(20);  // from manual
+    delay(200);  // from manual
 }
 
 uint8_t mrf_read_short(uint8_t address) {
