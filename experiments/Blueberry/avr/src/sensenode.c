@@ -9,7 +9,7 @@
 #include "sensenode.h"
 #include "blinkin.h"
 
-#include <math.h>
+#include <math.h> 
 
 #define SZ_COMMAND_BUFFER 5
 #define SZ_COMMAND PK_SZ_CMD_HEADER
@@ -321,11 +321,12 @@ void send_error(uint16_t xm)
 
 void setup_ports()
 {
-  DDRB |= (1<<MRF_WAKE) | (1<<MRF_RESET);
+
   DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK); 
   DDRB |= (1<<ADC_CS) | (1<<MRF_CS);  
 
   DDRD |= (1<<LED_1) | (1<<LED_2) | (1<<LED_3);  
+  DDRD |= (1<<MRF_WAKE) | (1<<MRF_RESET);
 
   __FLASH_GREEN__;
   __FLASH_YELLOW__;
@@ -334,7 +335,8 @@ void setup_ports()
 //  PORTD |= (1<<BUTTON_1);
   PORTB |= (1<<MRF_CS); //
   PORTB |= (1<<ADC_CS);
-  PORTD |= (1<<MRF_INT);
+
+  MRF_RESET_PORT |= (1<<MRF_INT);
   MRF_RESET_PORT |= (1<<MRF_RESET);
 }
 
@@ -342,7 +344,7 @@ void setup() {
 
   uint8_t ok = 0;
 
-  startup_status = 0xFF;
+  startup_status = 0b11111111;
 
   running_status = (1<<RU_SETUP);
 
@@ -361,7 +363,7 @@ void setup() {
   startup_status &= ~(1<<ST_SPI);
   __FLASH_GREEN__;
 
-
+  	_delay_ms(500);
 
   mrf_reset();  
   mrf_init();
