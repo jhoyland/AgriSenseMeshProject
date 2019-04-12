@@ -25,8 +25,6 @@ uint8_t* active_command;
 uint8_t startup_status = 0;
 uint8_t running_status = 0;
 
-
-
 struct simple_queue command_queue;
 
 uint8_t adc_active_channels_bitmask = 1;
@@ -194,9 +192,17 @@ void command_ping(uint8_t* command)
 	word_to_bytes(&transmit_command_header[PK_CMD_HI],CMD_ECHO);
 	transmit_command_header[PK_SZ_PACKET] = PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER;
 	transmit_command_header[PK_CMD_DATA_0] = command[PK_CMD_DATA_0];
-	transmit_command_header[PK_CMD_DATA_1] = command[PK_HOP_COUNT];
+	transmit_command_header[PK_CMD_DATA_1] = command[PK_CMD_DATA_1];
+	transmit_command_header[PK_CMD_DATA_2] = command[PK_HOP_COUNT];
+	transmit_command_header[PK_CMD_DATA_3] = 0x50;
 
 	send_downstream(transmit_data_buffer);
+}
+
+void command_get_parameter(uint* command)
+{
+
+
 }
 
 
