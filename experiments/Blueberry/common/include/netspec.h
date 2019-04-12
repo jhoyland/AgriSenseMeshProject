@@ -1,7 +1,6 @@
 #ifndef __NETSPEC_H
 #define __NETSPEC_H
 
-
 #define PAN_ID 0xF122
 
 #define PAN_ID_HI 0xF1
