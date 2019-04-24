@@ -24,6 +24,12 @@ uint8_t error_data_buffer[PK_SZ_ERR_BUFFER];
 uint8_t* transmit_command_header;
 uint8_t active_message[PK_SZ_TXRX_BUFFER];
 
+
+#define SZ_MESSAGE_QUEUE 8
+#define SZ_MESSAGE PK_SZ_TXRX_BUFFER
+
+struct simple_queue message_queue;
+
 /* Functions to set up outgoing messages */
 
 void set_packet_header()
@@ -272,6 +278,9 @@ void handle_tx() {
 }
 
 void setup() {
+
+    setup_queue(&message_queue,SZ_MESSAGE_QUEUE,SZ_MESSAGE,0);
+
     wiringPiSetup();
 
 	// Set pin to output in case it's not
