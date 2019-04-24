@@ -37,4 +37,6 @@
 #define ERR_UNRECOGNIZED_COMMAND 0x0001
 #define ERR_SETUP_FAILED	0x0002
 
+#define ADC_N_CHANNELS 8
+
 #endif

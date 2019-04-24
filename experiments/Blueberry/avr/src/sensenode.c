@@ -164,7 +164,7 @@ void command_get_data(uint8_t* command)
 	transmit_command_header[PK_SZ_PACKET] = PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER;
 	uint8_t* data_pointer = &transmit_data_buffer[PK_DATA_START];
 
-	for(uint8_t i=0;i<8;i++)
+	for(uint8_t i=0;i<ADC_N_CHANNELS;i++)
 	{
 		__YELLOW_ON__;
 		if((adc_channel_request_bitmask & adc_active_channels_bitmask) & (1<<i))
@@ -183,7 +183,8 @@ void command_get_data(uint8_t* command)
 
 	running_status &= ~(1<<RU_DATA_COLLECT);
 
-	transmit_command_header[PK_CMD_DATA_1] = adc_read_ok_bitmask;
+	transmit_command_header[PK_CMD_DATA_2] = adc_read_ok_bitmask;
+	transmit_command_header[PK_CMD_DATA_3] = adc_channel_request_bitmask;
 	__GREEN_OFF__;
 
 	send_downstream(transmit_data_buffer);
