@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <wiringPi.h>
+#include <string.h>
+#include "simple_queue.h"
 #include "mrf24jpi.h"
 #include "pktspec.h"
 #include "netspec.h"
@@ -32,47 +34,46 @@ struct simple_queue message_queue;
 
 /* Functions to set up outgoing messages */
 
-void set_packet_header()
+void set_packet_header(uint8_t* buff)
 {
-    transmit_data_buffer[PK_DEST_PANID_HI] = PAN_ID_HI;
-    transmit_data_buffer[PK_DEST_PANID_LO] = PAN_ID_LO;
-    transmit_data_buffer[PK_SRC_PANID_HI] = PAN_ID_HI;
-    transmit_data_buffer[PK_SRC_PANID_LO] = PAN_ID_LO;
-    transmit_data_buffer[PK_SRC_ADDR_HI] = PI_ADDR_HI;
-    transmit_data_buffer[PK_SRC_ADDR_LO] = PI_ADDR_LO;
-    transmit_data_buffer[PK_COMMAND_HEADER+PK_HOP_COUNT] = 0;
+    buff[PK_DEST_PANID_HI] = PAN_ID_HI;
+    buff[PK_DEST_PANID_LO] = PAN_ID_LO;
+    buff[PK_SRC_PANID_HI] = PAN_ID_HI;
+    buff[PK_SRC_PANID_LO] = PAN_ID_LO;
+    buff[PK_SRC_ADDR_HI] = PI_ADDR_HI;
+    buff[PK_SRC_ADDR_LO] = PI_ADDR_LO;
+    buff[PK_COMMAND_HEADER+PK_HOP_COUNT] = 0;
 }
 
-void set_request_id()
-{
-    transmit_command_header[PK_CMD_DATA_0] = (uint8_t)(req_id>>8);  // This is an reference number for the request - should be unique to each request
-    transmit_command_header[PK_CMD_DATA_1] = (uint8_t)(255&req_id); 
+void set_request_id(uint8_t* buff)
+{ 
+    word_to_bytes(& buff[PK_COMMAND_HEADER + PK_CMD_DATA_0], req_id);
     req_id++;   
 }
 
-void set_target_node(uint16_t target_node)
-{
-    transmit_data_buffer[PK_DEST_ADDR_HI] = (uint8_t)(target_node>>8);
-    transmit_data_buffer[PK_DEST_ADDR_LO] = (uint8_t)(255&target_node);    
+void set_target_node(uint8_t* buff,uint16_t target_node)
+{ 
+    word_to_bytes(& buff[PK_DEST_ADDR_HI], target_node);
 }
 
-void set_command(uint16_t cmd_id, uint8_t cmd2, uint8_t cmd3)
+void set_command(uint8_t* buff, uint16_t cmd_id, uint8_t cmd2, uint8_t cmd3)
 {
-    transmit_command_header[PK_CMD_HI] = (uint8_t)(cmd_id>>8);   
-    transmit_command_header[PK_CMD_LO] = (uint8_t)(255&cmd_id);
-    transmit_command_header[PK_CMD_DATA_2] = cmd2; 
-    transmit_command_header[PK_CMD_DATA_3] = cmd3; 
+    word_to_bytes(& buff[PK_COMMAND_HEADER + PK_CMD_HI], cmd_id);
+    buff[PK_COMMAND_HEADER + PK_CMD_DATA_2] = cmd2; 
+    buff[PK_COMMAND_HEADER + PK_CMD_DATA_3] = cmd3; 
 }
 
-void set_packet_size(uint8_t sz)
+void set_packet_size(uint8_t* buff, uint8_t sz)
 {
 
-    transmit_command_header[PK_SZ_PACKET] = sz;
+    buff[PK_COMMAND_HEADER + PK_SZ_PACKET] = sz;
 }
 
-void send_command()
+void send_command(uint8_t* buff)
 {
-    mrf_send16(GATEWAY_NODE,transmit_data_buffer,transmit_command_header[PK_SZ_PACKET]);
+    mrf_send16(GATEWAY_NODE,buff,buff[PK_COMMAND_HEADER + PK_SZ_PACKET]);
+    printf("\nSending:");
+    print_message(buff);
 }
 
 /* Convenience functions for extracting data from message*/
@@ -133,20 +134,38 @@ uint8_t get_hop_count(uint8_t* msg)
 
 void request_data(uint16_t target_node)
 {
-    set_packet_size(PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER);
-    set_target_node(target_node);
-    set_command(CMD_DATA,1,0);
-    set_request_id();
-    send_command();
+    set_packet_size(transmit_data_buffer,PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER);
+    set_target_node(transmit_data_buffer,target_node);
+    set_command(transmit_data_buffer,CMD_DATA,1,0);
+    set_request_id(transmit_data_buffer);
+    send_command(transmit_data_buffer);
 }
 
 void request_ping(uint16_t target_node, uint8_t d)
 {
-    set_packet_size(PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER);
-    set_target_node(target_node);
-    set_command(CMD_PING,d,0);
-    set_request_id();
-    send_command();
+    set_packet_size(transmit_data_buffer,PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER);
+    set_target_node(transmit_data_buffer,target_node);
+    set_command(transmit_data_buffer,CMD_PING,d,0);
+    set_request_id(transmit_data_buffer);
+    send_command(transmit_data_buffer);
+}
+
+void request_set_param(uint16_t target_node, uint8_t c)
+{
+    set_packet_size(transmit_data_buffer,PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER);
+    set_target_node(transmit_data_buffer,target_node);
+    set_command(transmit_data_buffer,CMD_SET_PARAMETER,c,0);
+    set_request_id(transmit_data_buffer);
+    send_command(transmit_data_buffer);    
+}
+
+void request_get_param(uint16_t target_node)
+{
+    set_packet_size(transmit_data_buffer,PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER);
+    set_target_node(transmit_data_buffer,target_node);
+    set_command(transmit_data_buffer,CMD_GET_PARAMETER,0,0);
+    set_request_id(transmit_data_buffer);
+    send_command(transmit_data_buffer);    
 }
 
 /* Process the next message in the queue */
@@ -251,6 +270,16 @@ void print_data(uint8_t * msg)
 void handle_rx() {
 
     memcpy(recieved_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()*sizeof(uint8_t)); // Copy the message into the recieved data buffer
+
+    char x[4];
+
+    x[0] = recieved_data_buffer[0];
+    x[1] = recieved_data_buffer[1];
+    x[2] = recieved_data_buffer[2];
+    x[3] = recieved_data_buffer[3];
+
+    printf("\nGot: %s", recieved_data_buffer);
+/*
     if(! enqueue( &message_queue, recieved_data_buffer ))                               // Try to queue the received message
     {
         printf("\nCommand queue full. Lost node message");
@@ -258,7 +287,7 @@ void handle_rx() {
     else
     {
         printf("\nNode message queued");
-    }
+    }*/
 
 }
 
@@ -269,8 +298,13 @@ void handle_rx() {
 
 void handle_tx() {
 
+ //   tx_info_t * inf;
+
+   // mrf_get_txinfo(&inf);
+
+  //  printf("\nStatus register:%x  &0x3F = %x     ! = %d",mrf_reg_TXSTAT,mrf_reg_TXSTAT & 0x3F,!(mrf_reg_TXSTAT & 0x3F));
 	
-    if (mrf_tx_ok()) {
+    if (!(mrf_reg_TXSTAT & 0x3F)/*mrf_tx_ok()*/) {
         printf("\nTransmit acknowledged\n");
     } else {
         printf("\nTransmit failed\n");
@@ -280,8 +314,14 @@ void handle_tx() {
 void setup() {
 
     setup_queue(&message_queue,SZ_MESSAGE_QUEUE,SZ_MESSAGE,0);
+    transmit_command_header = &(transmit_data_buffer[PK_COMMAND_HEADER]);
+
+    printf("\nBUFFER SIZE: %i",PK_SZ_TXRX_BUFFER);
+    printf("\nCOMMAND HEADER STARTS: %i",PK_COMMAND_HEADER);
+
 
     wiringPiSetup();
+    wiringPiSPISetup (0, 1000000) ;
 
 	// Set pin to output in case it's not
     pinMode(INT_PIN, OUTPUT);
@@ -303,12 +343,15 @@ void setup() {
     mrf_address16_write(PI_ADDR);  // Set raspberry pi address
 // some loop flags for this experiment
 		
-    keep_going = 8;
+    keep_going = 16;
     req_id = 1;
 
-    set_packet_header();
+    set_packet_header(transmit_data_buffer);
 
 }
+
+uint8_t count;
+uint8_t toggle;
 
 void loop() {
 	
@@ -320,12 +363,23 @@ void loop() {
 
 	// request data every 5 seconds
 	
-    if( (new_time.tv_sec - last_change.tv_sec) > 5 )
+    if( (new_time.tv_sec - last_change.tv_sec) > 1 )
     {
+
         printf("\nWaiting %i\n", req_id);
-        request_ping(GATEWAY_NODE,0x42);
+        if(toggle) 
+            {
+             //   request_set_param(GATEWAY_NODE,count);
+                toggle = 0;
+            }
+            else
+            {
+             //   request_get_param(GATEWAY_NODE);
+                toggle = 1;
+            }
         last_change = new_time; 
         keep_going = keep_going - 1;
+        count++;
     } 
 
     process_next_node_message();
@@ -335,6 +389,8 @@ void loop() {
 
 int main(void)
 {
+    count = 0;
+    toggle = 0;
     setup();
     while(keep_going) loop();
     return 0;   
