@@ -17,6 +17,7 @@
 
 uint8_t transmit_data_buffer[PK_SZ_TXRX_BUFFER];
 uint8_t recieved_data_buffer[PK_SZ_TXRX_BUFFER];
+uint8_t test_command[SZ_COMMAND];
 uint8_t error_data_buffer[PK_SZ_ERR_BUFFER];
 uint8_t* transmit_command_header;
 uint8_t adc_buffer[3];
@@ -67,21 +68,19 @@ uint16_t big_counter = 0;
 
 void handle_rx()
 {
-	__YELLOW_ON__;
-	__FLASH_GREEN__;
 	running_status |= (1<<RU_RX_HANDLE);
 
 	memcpy(recieved_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()*sizeof(uint8_t));
 
 	if( bytes_to_word(& recieved_data_buffer[PK_DEST_ADDR_HI]) == my_address )
 	{
-		__FLASH_GREEN__;
 		enqueue( &command_queue, &recieved_data_buffer[PK_COMMAND_HEADER] ); 
 		// TO DO: Check that enqueue worked. Currently the command is lost if queue is full - should send error to base in this case
 	}
 	else
 	{
-		__FLASH_RED__;
+		send_error(bytes_to_word(& recieved_data_buffer[PK_DEST_ADDR_HI]));
+		/*
 		recieved_data_buffer[PK_COMMAND_HEADER + PK_HOP_COUNT] ++;
 
 		if(recieved_data_buffer[PK_DEST_ADDR_HI] == PI_ADDR_HI && recieved_data_buffer[PK_DEST_ADDR_LO] == PI_ADDR_LO)
@@ -90,17 +89,30 @@ void handle_rx()
 
 		else
 
-			send_upstream(recieved_data_buffer);
+			send_upstream(recieved_data_buffer);*/
 
 	}
 
 	running_status &= ~(1<<RU_RX_HANDLE);
-	__YELLOW_OFF__;
 }
 
 void handle_tx()
 {
 	running_status |= (1<<RU_TX_HANDLE);
+
+	__YELLOW_ON__;
+
+	if(mrf_tx_ok())
+	{
+		__FLASH_GREEN__;
+	}
+	else
+	{
+		__FLASH_RED__;
+	}
+
+	__YELLOW_OFF__;
+
 	running_status &= ~(1<<RU_TX_HANDLE);
 
 }
@@ -151,7 +163,6 @@ uint8_t get_packed_data(uint8_t * op, uint8_t ch)
 
 void command_get_data(uint8_t* command)
 {
-	__GREEN_ON__;
 	running_status |= (1<<RU_DATA_COLLECT);
 	word_to_bytes(&transmit_command_header[PK_CMD_HI],CMD_DATA);
 
@@ -164,26 +175,21 @@ void command_get_data(uint8_t* command)
 
 	for(uint8_t i=0;i<ADC_N_CHANNELS;i++)
 	{
-		__YELLOW_ON__;
 		if((adc_channel_request_bitmask & adc_active_channels_bitmask) & (1<<i))
 		{
-			__FLASH_RED__;
 			if(get_packed_data(data_pointer, i)) 
 			{
-				__FLASH_RED__;
 				adc_read_ok_bitmask |= (1<<i);
 				transmit_command_header[PK_SZ_PACKET] += 3;
 				data_pointer += 3;
 			}
 		}
-		__YELLOW_OFF__;
 	}
 
 	running_status &= ~(1<<RU_DATA_COLLECT);
 
 	transmit_command_header[PK_CMD_DATA_2] = adc_read_ok_bitmask;
 	transmit_command_header[PK_CMD_DATA_3] = adc_channel_request_bitmask;
-	__GREEN_OFF__;
 
 	send_downstream(transmit_data_buffer);
 }
@@ -200,12 +206,6 @@ void command_ping(uint8_t* command)
 	send_downstream(transmit_data_buffer);
 }
 
-void command_get_parameter(uint* command)
-{
-
-
-}
-
 
 void set_downstream_address_header(uint8_t* buff)
 {
@@ -219,16 +219,55 @@ void set_downstream_address_header(uint8_t* buff)
 	word_to_bytes(&buff[PK_SRC_ADDR_HI],my_address);
 }
 
+void command_set_parameter(uint8_t* cmd)
+{
+	uint8_t leds = cmd[PK_CMD_DATA_2];
+
+	if(leds & 1) {__GREEN_ON__;}
+		else {__GREEN_OFF__;}
+
+	if(leds & 2) {__YELLOW_ON__;}
+		else {__YELLOW_OFF__;}
+
+	if(leds & 4) {__RED_ON__;}
+		else {__RED_OFF__;}
+}
+
+void command_get_parameter(uint8_t* cmd)
+{
+	uint8_t led_state = 0;
+
+	if(LED_PORT & (1 << LED_3)) led_state = 1;
+	if(LED_PORT & (1 << LED_2)) led_state |= 2;
+	if(LED_PORT & (1 << LED_1)) led_state |= 4;
+
+	word_to_bytes(&transmit_data_buffer[PK_CMD_HI],CMD_GET_PARAMETER);
+	transmit_command_header[PK_SZ_PACKET] = PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER;
+	transmit_command_header[PK_CMD_DATA_0] = cmd[PK_CMD_DATA_0];
+	transmit_command_header[PK_CMD_DATA_1] = cmd[PK_CMD_DATA_1];
+	transmit_command_header[PK_CMD_DATA_2] = led_state;
+
+	set_downstream_address_header(transmit_data_buffer);
+
+	send_downstream(transmit_data_buffer);
+
+}
+
+void command_send_test()
+{
+	memcpy(transmit_command_header,test_command,SZ_COMMAND);
+	set_downstream_address_header(transmit_data_buffer);
+
+	send_downstream(transmit_data_buffer);
+}
+
 void execute_next_command()
 {
+	if(isr_lock) return;
 	if(dequeue(&command_queue,active_command) == 0) 
 	{
-		__FLASH_YELLOW__;
 		return; // No commands waiting
 	}
-
-	__FLASH_GREEN__;
-
 	running_status |= (1<<RU_CMD_EXEC);
 
 	uint16_t command = bytes_to_word(& active_command[PK_CMD_HI]);
@@ -241,21 +280,22 @@ void execute_next_command()
 			break;
 	/*	case CMD_QSTATUS:
 			command_status_report(active_command);
-			break;
+			break;*/
 		case CMD_SET_PARAMETER:
 			command_set_parameter(active_command);
 			break;
 		case CMD_GET_PARAMETER:
 			command_get_parameter(active_command);
-			break;*/
+			break;
+		case CMD_NODE_TEST:
+			command_send_test();
+			break;
 		default:
-			__FLASH_RED__;__FLASH_RED__;
 			send_error(ERR_UNRECOGNIZED_COMMAND);
 	}
 	running_status &= ~(1<<RU_CMD_EXEC);
 
 	memset(active_command,0,PK_SZ_CMD_HEADER*sizeof(uint8_t)); // zeroing so that errors sent outside of command execution do not contain old commands
-
 }
 
 // Rigid grid address system - 
@@ -266,9 +306,10 @@ void send_downstream(uint8_t* msg)
 
 	if(my_address == 0x1010) // I am the gateway node
 	{
-		next_downstream_node = PI_ADDR_HI;
-		next_downstream_node = next_downstream_node << 8;
-		next_downstream_node = next_downstream_node | PI_ADDR_LO;
+		next_downstream_node = PI_ADDR;
+		//next_downstream_node = next_downstream_node << 8;
+		//next_downstream_node = next_downstream_node | PI_ADDR_LO;
+
 	}
 	else
 	{
@@ -400,9 +441,9 @@ void setup() {
 
   ok = 0;
 
-  sei();
   EIMSK |= (1<<INT0);
   EICRA |= (1<<ISC01);
+  sei();
 
   startup_status &= ~(1<<ST_INTERRUPTS);
   __FLASH_GREEN__;
@@ -412,6 +453,16 @@ void setup() {
   __FLASH_YELLOW__;
   startup_status &= ~(1<<ST_OPTION);
   __FLASH_YELLOW__;
+
+
+  test_command[PK_CMD_HI] = 0x4A;
+  test_command[PK_CMD_LO] = 0x4A;
+  test_command[PK_HOP_COUNT] = 0;
+  test_command[PK_SZ_PACKET] = PK_SZ_CMD_HEADER + PK_SZ_ADDR_HEADER;
+  test_command[PK_CMD_DATA_0] = 0x41;
+  test_command[PK_CMD_DATA_1] = 0x42;
+  test_command[PK_CMD_DATA_2] = 0x43;
+  test_command[PK_CMD_DATA_3] = 0x44;
 
   running_status &= ~(1<<RU_SETUP);
 }
@@ -425,20 +476,28 @@ ISR(INT0_vect) {
 void loop() {
     mrf_check_flags(&handle_rx, &handle_tx);
  //   uint16_t dat;
-    if(startup_status == 0) execute_next_command();
-    	else __FLASH_RED__;
+  //  if(startup_status == 0) execute_next_command();
+    //	else __FLASH_RED__;
 
-/*    big_counter++;
+   big_counter++;
 
-    if(big_counter == 10)
+    if(big_counter == 50)
     {
-    	big_counter = 0;
 
-    	__FLASH_YELLOW__;
-    	dat= get_adc_value(0);
     	__FLASH_GREEN__;
 
-    }*/
+		enqueue(&command_queue,test_command);
+
+    }
+
+    if(big_counter == 100)
+    {
+    	__FLASH_YELLOW__;
+
+    	execute_next_command();
+
+    	big_counter = 0;
+    }
 			
 }
 

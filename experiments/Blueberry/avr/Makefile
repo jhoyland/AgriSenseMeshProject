@@ -62,7 +62,7 @@ install-rpi: all
 	sudo gpio -g write 22 1
 	
 install-pololu: all
-	avrdude -c stk500v2 -P "$(PORT)" -p $(MCU) -b 10000 -U flash:w:$(TARGET).hex
+	sudo avrdude -c stk500v2 -P "$(PORT)" -p $(MCU) -b 10000 -U flash:w:$(TARGET).hex
 	
 noreset: all
 	sudo $(AVRDUDE) -p $(AVRDUDEMCU) -P /dev/spidev0.0 -c linuxspi -b 10000 -U flash:w:$(TARGET).hex

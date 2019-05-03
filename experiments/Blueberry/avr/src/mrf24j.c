@@ -123,6 +123,8 @@ uint16_t mrf_address16_read(void) {
  */
 void mrf_send16(uint16_t dest16, uint8_t * data, uint8_t len) {
     //uint8_t len = strlen(data); // get the length of the char* array
+    //GRAB_ISR_MUTEX;
+   // cli();
     int i = 0;
     mrf_write_long(i++, bytes_MHR); // header length
     // +ignoreBytes is because some module seems to ignore 2 bytes after the header?!.
@@ -153,11 +155,14 @@ void mrf_send16(uint16_t dest16, uint8_t * data, uint8_t len) {
     for (q = 0; q < len; q++) {
         mrf_write_long(i++, data[q]);
     }
+    //sei();
     // ack on, and go!
     mrf_write_short(MRF_TXNCON, (1<<MRF_TXNACKREQ | 1<<MRF_TXNTRIG));
+    //DROP_ISR_MUTEX;
 }
 
 void mrf_set_interrupts(void) {
+    isr_lock = 0;
     // interrupts for rx and tx normal complete
     mrf_write_short(MRF_INTCON, 0b11110110);
 }
@@ -169,15 +174,17 @@ void mrf_set_channel(uint8_t channel) {
 }
 
 void mrf_init(void) {
-    /*
+    
+    mrf_flags = 0;
+
     // Seems a bit ridiculous when I use reset pin anyway
     mrf_write_short(MRF_SOFTRST, 0x7); // from manual
-    while (read_short(MRF_SOFTRST) & 0x7 != 0) {
+    while ((mrf_read_short(MRF_SOFTRST) & 0x7) != 0) {
         ; // wait for soft reset to finish
     }
-    */
     
-    spi_set_data_direction(SPI_MSB);
+    
+    //spi_set_data_direction(SPI_MSB);
     
     mrf_write_short(MRF_PACON2, 0x98); // – Initialize FIFOEN = 1 and TXONTS = 0x6.
     mrf_write_short(MRF_TXSTBL, 0x95); // – Initialize RFSTBL = 0x9.
@@ -196,7 +203,7 @@ void mrf_init(void) {
     mrf_write_short(MRF_CCAEDTH, 0x60); // – Set CCA ED threshold.
     mrf_write_short(MRF_BBREG6, 0x40); // – Set appended RSSI value to RXFIFO.
     mrf_set_interrupts();
-    mrf_set_channel(12);
+    mrf_set_channel(20);
     // max power is by default.. just leave it...
     // Set transmitter power - See “REGISTER 2-62: RF CONTROL 3 REGISTER (ADDRESS: 0x203)”.
     mrf_write_short(MRF_RFCTL, 0x04); //  – Reset RF state machine.
@@ -215,12 +222,14 @@ void mrf_init(void) {
  * Only the most recent data is ever kept.
  */
 void mrf_interrupt_handler(void) {
+    //GRAB_ISR_MUTEX;
+    isr_lock = 1;
     uint8_t last_interrupt = mrf_read_short(MRF_INTSTAT);
     if (last_interrupt & MRF_I_RXIF) {
         int i = 0;
         flag_got_rx++;
         // read out the packet data...
-        cli();
+    //    cli();
         mrf_rx_disable();
         // read start of rxfifo for, has 2 bytes more added by FCS. frame_length = m + n + 2
         uint8_t frame_length = mrf_read_long(0x300);
@@ -247,16 +256,18 @@ void mrf_interrupt_handler(void) {
         rx_info.rssi = mrf_read_long(0x301 + frame_length + 1);
 
         mrf_rx_enable();
-        sei();
+    //    sei();
     }
     if (last_interrupt & MRF_I_TXNIF) {
         flag_got_tx++;
-        uint8_t tmp = mrf_read_short(MRF_TXSTAT);
+        mrf_reg_TXSTAT = mrf_read_short(MRF_TXSTAT);
         // 1 means it failed, we want 1 to mean it worked.
-        tx_info.tx_ok = !(tmp & ~(1 << TXNSTAT));
-        tx_info.retries = tmp >> 6;
-        tx_info.channel_busy = (tmp & (1 << CCAFAIL));
+        tx_info.tx_ok = !(mrf_reg_TXSTAT & 0x3F);
+        tx_info.retries = mrf_reg_TXSTAT >> 6;
+        tx_info.channel_busy = (mrf_reg_TXSTAT & (1 << CCAFAIL));
     }
+//DROP_ISR_MUTEX;
+    isr_lock = 0;
 }
 
 
@@ -265,6 +276,7 @@ void mrf_interrupt_handler(void) {
  */
 void mrf_check_flags(void (*rx_handler)(void), void (*tx_handler)(void)){
     // TODO - we could check whether the flags are > 1 here, indicating data was lost?
+    if(isr_lock) return;
     if (flag_got_rx) {
         flag_got_rx = 0;
         rx_handler();
@@ -273,6 +285,7 @@ void mrf_check_flags(void (*rx_handler)(void), void (*tx_handler)(void)){
         flag_got_tx = 0;
         tx_handler();
     }
+   // DROP_ISR_MUTEX;
 }
 
 /**
