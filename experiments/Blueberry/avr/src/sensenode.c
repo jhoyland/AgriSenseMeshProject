@@ -17,6 +17,7 @@
 
 uint8_t transmit_data_buffer[PK_SZ_TXRX_BUFFER];
 uint8_t recieved_data_buffer[PK_SZ_TXRX_BUFFER];
+uint8_t queue_memory[SZ_COMMAND * SZ_COMMAND_BUFFER + 1];
 uint8_t test_command[SZ_COMMAND];
 uint8_t error_data_buffer[PK_SZ_ERR_BUFFER];
 uint8_t* transmit_command_header;
@@ -28,7 +29,7 @@ uint8_t running_status = 0;
 
 struct simple_queue command_queue;
 
-uint8_t adc_active_channels_bitmask = 1;
+uint8_t adc_active_channels_bitmask = 3;
 
 uint16_t my_address;
 
@@ -100,18 +101,18 @@ void handle_tx()
 {
 	running_status |= (1<<RU_TX_HANDLE);
 
-	__YELLOW_ON__;
+	//__YELLOW_ON__;
 
 	if(mrf_tx_ok())
 	{
-		__FLASH_GREEN__;
+//		__FLASH_GREEN__;
 	}
 	else
 	{
-		__FLASH_RED__;
+//		__FLASH_RED__;
 	}
 
-	__YELLOW_OFF__;
+	//__YELLOW_OFF__;
 
 	running_status &= ~(1<<RU_TX_HANDLE);
 
@@ -129,7 +130,7 @@ uint16_t get_adc_value(uint8_t chan)
 	
 	return b2 | (b1<<8);
 }
-
+ 
 uint8_t get_packed_data(uint8_t * op, uint8_t ch)
 {
 	float d = 0; 		// Store individual data values
@@ -138,23 +139,34 @@ uint8_t get_packed_data(uint8_t * op, uint8_t ch)
 	uint16_t data[2];
 	data[0] = data[1] = 0;
 
-	for(uint16_t i=0; i<ADC_N_SAMPLES; i++)
+	for(uint16_t i=0; i<NP_ADC_N_SAMPLES; i++)
 	{
 		d = (float) get_adc_value(ch);		// Get the data point
 		mean  += d;		// Accumulate data point
 		serr  += d*d;		// Square and accumulate data point
 	}
 
-	mean = mean / ADC_N_SAMPLES;	// Calculate mean
-	serr = sqrt( (serr - ADC_N_SAMPLES*mean*mean)/(ADC_N_SAMPLES*(ADC_N_SAMPLES-1.0)) );  // Calculate standard error
+	mean = mean / NP_ADC_N_SAMPLES;	// Calculate mean
+	serr = sqrt( (serr - NP_ADC_N_SAMPLES*mean*mean)/(NP_ADC_N_SAMPLES*(NP_ADC_N_SAMPLES-1.0)) );  // Calculate standard error
 
 	mean = fmin(mean,4095);
 	serr = fmax(serr,1);			// Minimum 1 bit error
 
-	data[0] = (uint16_t) mean;
-	data[1] = (uint16_t) serr;
+	data[0] = mean & 4095;
+	data[1] = serr & 4095;
 
 	if(data[1]==0) data[1] = 1;
+
+	/*uint16_t data1[4];
+	data1[0] = 2345;
+	data1[1] = 678;
+	data1[2] = 3210;
+	data1[3] = 456;
+
+	
+
+	data[0] = get_adc_value(ch);
+	data[1] = get_adc_value(ch);*/
 
 	pack_12bit(op,data); // Pack the data into the supplied array
 
@@ -185,6 +197,8 @@ void command_get_data(uint8_t* command)
 			}
 		}
 	}
+
+
 
 	running_status &= ~(1<<RU_DATA_COLLECT);
 
@@ -219,6 +233,9 @@ void set_downstream_address_header(uint8_t* buff)
 	word_to_bytes(&buff[PK_SRC_ADDR_HI],my_address);
 }
 
+/* Get / set parameter commands will eventially allow modification of important parameters accross the network - right now they just turn the
+LEDs on and off for diagnostic purposes */
+
 void command_set_parameter(uint8_t* cmd)
 {
 	uint8_t leds = cmd[PK_CMD_DATA_2];
@@ -241,7 +258,7 @@ void command_get_parameter(uint8_t* cmd)
 	if(LED_PORT & (1 << LED_2)) led_state |= 2;
 	if(LED_PORT & (1 << LED_1)) led_state |= 4;
 
-	word_to_bytes(&transmit_data_buffer[PK_CMD_HI],CMD_GET_PARAMETER);
+	word_to_bytes(&transmit_command_header[PK_CMD_HI],CMD_GET_PARAMETER);
 	transmit_command_header[PK_SZ_PACKET] = PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER;
 	transmit_command_header[PK_CMD_DATA_0] = cmd[PK_CMD_DATA_0];
 	transmit_command_header[PK_CMD_DATA_1] = cmd[PK_CMD_DATA_1];
@@ -255,6 +272,7 @@ void command_get_parameter(uint8_t* cmd)
 
 void command_send_test()
 {
+//	__FLASH_RED__;
 	memcpy(transmit_command_header,test_command,SZ_COMMAND);
 	set_downstream_address_header(transmit_data_buffer);
 
@@ -307,9 +325,6 @@ void send_downstream(uint8_t* msg)
 	if(my_address == 0x1010) // I am the gateway node
 	{
 		next_downstream_node = PI_ADDR;
-		//next_downstream_node = next_downstream_node << 8;
-		//next_downstream_node = next_downstream_node | PI_ADDR_LO;
-
 	}
 	else
 	{
@@ -376,11 +391,6 @@ void setup_ports()
   DDRD |= (1<<LED_1) | (1<<LED_2) | (1<<LED_3);  
   DDRD |= (1<<MRF_WAKE) | (1<<MRF_RESET);
 
-  __FLASH_GREEN__;
-  __FLASH_YELLOW__;
-  __FLASH_RED__;
-  
-//  PORTD |= (1<<BUTTON_1);
   PORTB |= (1<<MRF_CS); //
   PORTB |= (1<<ADC_CS);
 
@@ -405,13 +415,14 @@ void setup() {
 
   spi_set_data_direction(SPI_MSB);
   spi_setup();
+  spi_set_speed(SCK_F_64); // MCP3208 doesn't like SPI speed too high. This sets it to fosc / 64
 
 
 
   startup_status &= ~(1<<ST_SPI);
   __FLASH_GREEN__;
 
-  	_delay_ms(500);
+  _delay_ms(500);
 
   mrf_reset();  
   mrf_init();
@@ -422,7 +433,7 @@ void setup() {
   startup_status &= ~(1<<ST_MRF);
   __FLASH_GREEN__;
 
-  ok = setup_queue(&command_queue,SZ_COMMAND_BUFFER,SZ_COMMAND,0);
+  ok = setup_queue_static(&command_queue,queue_memory,SZ_COMMAND_BUFFER,SZ_COMMAND,0); // Dynamic memory allocation causes too many problems!
 
   transmit_command_header = & transmit_data_buffer[PK_COMMAND_HEADER];
   set_downstream_address_header(transmit_data_buffer);
@@ -436,7 +447,7 @@ void setup() {
   	}
   	else
   	{
-  		__FLASH_RED__;
+  		__RED_ON__;
   	}
 
   ok = 0;
@@ -475,36 +486,14 @@ ISR(INT0_vect) {
 
 void loop() {
     mrf_check_flags(&handle_rx, &handle_tx);
- //   uint16_t dat;
-  //  if(startup_status == 0) execute_next_command();
-    //	else __FLASH_RED__;
 
-   big_counter++;
-
-    if(big_counter == 50)
-    {
-
-    	__FLASH_GREEN__;
-
-		enqueue(&command_queue,test_command);
-
-    }
-
-    if(big_counter == 100)
-    {
-    	__FLASH_YELLOW__;
-
-    	execute_next_command();
-
-    	big_counter = 0;
-    }
+    if(startup_status == 0) execute_next_command();
 			
 }
 
 int main(void)
 {
     setup();
-    big_counter = 0;
     running_status |= (1<<RU_RUNNING);
     while(1) loop();
 

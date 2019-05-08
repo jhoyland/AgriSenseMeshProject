@@ -36,10 +36,14 @@
 
 #define SPI_BYTE_XFER_DONE (STATUSREG & (1<<XFER_DONE_FLAG))
 
-#define SCK_F_4 0
-#define SCK_F_16 1
-#define SCK_F_64 2
-#define SCK_F_128 3
+#define SCK_F_4 0			// 00
+#define SCK_F_16 1			// 01
+#define SCK_F_64 2			// 10
+#define SCK_F_128 3			// 11
+
+#define SCK_F_2 4
+#define SCK_F_8 5
+#define SCK_F_32 6
 
 #define SPI_X2 1
 #define SPI_X1 0
@@ -51,6 +55,7 @@ void spi_set_data_direction(uint8_t);
 void spi_setup();
 void spi_transfer_byte(uint8_t*,uint8_t*);
 void spi_transfer_nbytes(uint8_t*,uint8_t*,uint8_t,uint8_t);
+void spi_set_speed(uint8_t);
 
 #endif
 

@@ -20,7 +20,7 @@
 #include <string.h>
 
 
-#define ADC_N_SAMPLES 128
+//#define ADC_N_SAMPLES 128
 
 void handle_rx();
 void handle_tx();
@@ -32,6 +32,10 @@ void execute_next_command();
 
 void command_get_data(uint8_t*);
 void command_ping(uint8_t*);
+
+void command_send_test();
+void command_set_parameter(uint8_t*);
+void command_get_parameter(uint8_t*);
 
 void set_downstream_address_header(uint8_t* buff);
 

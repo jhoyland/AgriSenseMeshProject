@@ -72,7 +72,7 @@ void set_packet_size(uint8_t* buff, uint8_t sz)
 void send_command(uint8_t* buff)
 {
     mrf_send16(GATEWAY_NODE,buff,buff[PK_COMMAND_HEADER + PK_SZ_PACKET]);
-    printf("\nSending:");
+ //   printf("\nSending:");
     print_message(buff);
 }
 
@@ -182,7 +182,7 @@ void process_next_node_message()
     switch(cmd)
     {
         case CMD_DATA:
-            printf("\nProcessing data message");
+   //         printf("\nProcessing data message");
             process_node_data();
             break;
         case CMD_ECHO:
@@ -199,7 +199,7 @@ void process_next_node_message()
 
 void process_node_data()
 {
-    print_message(active_message);
+    //print_message(active_message);
     print_data(active_message);
 }
 
@@ -235,7 +235,7 @@ void print_data(uint8_t * msg)
         uint8_t channel_read_ok = get_command_data(msg,2);
         uint8_t channel_requested = get_command_data(msg,3);
 
-        printf("\nSENSOR DATA:\n============\n");
+    //    printf("\nSENSOR DATA:\n============\n");
 
         for(n = 0; n < ADC_N_CHANNELS; n++)
         {

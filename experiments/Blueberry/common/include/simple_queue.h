@@ -14,6 +14,7 @@ struct simple_queue {
 };
 
 uint8_t setup_queue(struct simple_queue* q, uint8_t n, uint8_t s, uint8_t f);
+uint8_t setup_queue_static(struct simple_queue* q, uint8_t* queue_mem, uint8_t n, uint8_t s, uint8_t f);
 uint8_t enqueue(struct simple_queue* q, uint8_t* item);
 uint8_t dequeue(struct simple_queue* q, uint8_t* item);
 void print_queue(struct simple_queue*);

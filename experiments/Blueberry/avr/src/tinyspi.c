@@ -30,6 +30,22 @@ void spi_setup()
 	*/
 }
 
+// The lowest 2bits of SPCR set the speed. This function sets them to the user suppled value
+// If the user supplies a value >3 the speed is set by by the bottom 2 bits of the supplied value
+
+
+void spi_set_speed(uint8_t spd)
+{
+	uint8_t spbits = 7 & spd; // Suppress bits above bit 3 (just makes sure user doesn't provide invalid bits)
+
+	SPCR &= ~3;  // Clear speed bits (sets speed to default = fosc / 4)
+
+	SPCR |= (3 & spbits);  // Set user bits
+
+	if(spbits & 4) SPSR |= 1;
+		else SPSR &= (~1);
+}
+
 /*Transfers a single byte between master and slave*/
 
 void spi_transfer_byte(uint8_t* bout, uint8_t* bin)

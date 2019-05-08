@@ -18,7 +18,7 @@ LIBINCDIR =
 # List sources, object files and libraries to be used
 SOURCES   = $(wildcard $(SRCDIR)/*.c )
 OBJECTS   = $(patsubst $(SRCDIR)/%.c, $(BUILDDIR)/%.o, $(SOURCES))
-LIBRARIES = wiringPi wiringPiDev pthread 
+LIBRARIES = 
 
 # Create command line arguments
 LIBCMD    = $(addprefix -l,$(LIBRARIES))

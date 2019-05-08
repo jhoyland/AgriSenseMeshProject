@@ -28,6 +28,27 @@ uint8_t setup_queue(struct simple_queue* q, uint8_t n, uint8_t s, uint8_t f)
 
 }
 
+uint8_t setup_queue_static(struct simple_queue* q, uint8_t* queue_mem, uint8_t n, uint8_t s, uint8_t f)
+{
+	uint8_t sz = n*s;
+	(*q).queue = queue_mem;
+	(*q).end   = & queue_mem[sz];
+	(*q).back  = queue_mem;
+	(*q).front = NULL;
+	(*q).n_elements = n;
+	(*q).sz_element = s;
+	int i;
+	uint8_t* x = queue_mem;
+	for(i=0;i<=sz;i++)
+	{
+		*x = f;
+		x++;
+	}
+
+	return 1;
+
+}
+
 uint8_t* advance_cursor(struct simple_queue* q, uint8_t* curr)
 {
 	curr += (*q).sz_element;
