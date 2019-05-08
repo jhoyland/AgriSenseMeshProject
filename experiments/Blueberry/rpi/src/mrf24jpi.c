@@ -271,7 +271,7 @@ void mrf_interrupt_handler(void) {
     if (last_interrupt & MRF_I_TXNIF) {
         flag_got_tx++;
         mrf_reg_TXSTAT = mrf_read_short(MRF_TXSTAT);
-        printf("\nTXSTAT = %x  flag_got_tx=%d",mrf_reg_TXSTAT,flag_got_tx);
+    //    printf("\nTXSTAT = %x  flag_got_tx=%d",mrf_reg_TXSTAT,flag_got_tx);
         // 1 means it failed, we want 1 to mean it worked.
         tx_info.tx_ok = !(mrf_reg_TXSTAT & 0x3F);//~(1 << TXNSTAT)); // 0x3F is 001111111
         tx_info.retries = mrf_reg_TXSTAT >> 6;
