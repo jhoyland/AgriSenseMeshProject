@@ -72,8 +72,6 @@ void set_packet_size(uint8_t* buff, uint8_t sz)
 void send_command(uint8_t* buff)
 {
     mrf_send16(GATEWAY_NODE,buff,buff[PK_COMMAND_HEADER + PK_SZ_PACKET]);
- //   printf("\nSending:");
-    print_message(buff);
 }
 
 /* Convenience functions for extracting data from message*/
@@ -136,7 +134,7 @@ void request_data(uint16_t target_node)
 {
     set_packet_size(transmit_data_buffer,PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER);
     set_target_node(transmit_data_buffer,target_node);
-    set_command(transmit_data_buffer,CMD_DATA,1,0);
+    set_command(transmit_data_buffer,CMD_DATA,3,0);
     set_request_id(transmit_data_buffer);
     send_command(transmit_data_buffer);
 }
@@ -182,12 +180,20 @@ void process_next_node_message()
     switch(cmd)
     {
         case CMD_DATA:
+<<<<<<< HEAD
    //         printf("\nProcessing data message");
+=======
+           // printf("\nProcessing data message");
+>>>>>>> 762b8d47354e5494bf4020b744a895b1a8843c98
             process_node_data();
             break;
         case CMD_ECHO:
-            printf("\nProcessing ping echo");
+           // printf("\nProcessing ping echo");
             process_node_ping_echo();
+            break;
+        case CMD_NODE_TEST:
+            printf("\nNode Test");
+            print_message(active_message);
             break;
         default:
             printf("\n*Unrecognized command*");
@@ -199,7 +205,11 @@ void process_next_node_message()
 
 void process_node_data()
 {
+<<<<<<< HEAD
     //print_message(active_message);
+=======
+//print_message(active_message);
+>>>>>>> 762b8d47354e5494bf4020b744a895b1a8843c98
     print_data(active_message);
 }
 
@@ -235,27 +245,31 @@ void print_data(uint8_t * msg)
         uint8_t channel_read_ok = get_command_data(msg,2);
         uint8_t channel_requested = get_command_data(msg,3);
 
+<<<<<<< HEAD
     //    printf("\nSENSOR DATA:\n============\n");
+=======
+        printf("\nSENSOR DATA: ");
+>>>>>>> 762b8d47354e5494bf4020b744a895b1a8843c98
 
         for(n = 0; n < ADC_N_CHANNELS; n++)
         {
-            printf("\nCh %d:",n);
+           // printf("\nCh %d:",n);
             if(channel_requested & (1 << n))
             {
                 if(channel_read_ok & (1 << n))
                 {
                     get_data(msg,n,&dat_mean,&dat_stderr);
-                    printf(" &d \t +/- \t &d", dat_mean, dat_stderr);
+                    printf("%d: %4.0d +/- %4.0d, ",n, dat_mean, dat_stderr);
 
                 }
                 else
                 {
-                    printf(" READ FAILED");
+                    printf("%d: F, ",n);
                 }
             }
             else
             {
-                printf(" NOT REQUESTED");
+                printf("%d: N, ",n);
             }
         }
     }
@@ -271,23 +285,23 @@ void handle_rx() {
 
     memcpy(recieved_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()*sizeof(uint8_t)); // Copy the message into the recieved data buffer
 
-    char x[4];
+    /*char x[4];
 
     x[0] = recieved_data_buffer[0];
     x[1] = recieved_data_buffer[1];
     x[2] = recieved_data_buffer[2];
     x[3] = recieved_data_buffer[3];
 
-    printf("\nGot: %s", recieved_data_buffer);
-/*
+    printf("\nGot: %s", recieved_data_buffer);*/
+
     if(! enqueue( &message_queue, recieved_data_buffer ))                               // Try to queue the received message
     {
         printf("\nCommand queue full. Lost node message");
     }
     else
     {
-        printf("\nNode message queued");
-    }*/
+  //      printf("\nNode message queued");
+    }
 
 }
 
@@ -305,9 +319,9 @@ void handle_tx() {
   //  printf("\nStatus register:%x  &0x3F = %x     ! = %d",mrf_reg_TXSTAT,mrf_reg_TXSTAT & 0x3F,!(mrf_reg_TXSTAT & 0x3F));
 	
     if (!(mrf_reg_TXSTAT & 0x3F)/*mrf_tx_ok()*/) {
-        printf("\nTransmit acknowledged\n");
+    //    printf("\nTX ACK");
     } else {
-        printf("\nTransmit failed\n");
+      //  printf("\nTX FAIL");
     }
 }
 
@@ -315,9 +329,6 @@ void setup() {
 
     setup_queue(&message_queue,SZ_MESSAGE_QUEUE,SZ_MESSAGE,0);
     transmit_command_header = &(transmit_data_buffer[PK_COMMAND_HEADER]);
-
-    printf("\nBUFFER SIZE: %i",PK_SZ_TXRX_BUFFER);
-    printf("\nCOMMAND HEADER STARTS: %i",PK_COMMAND_HEADER);
 
 
     wiringPiSetup();
@@ -343,7 +354,7 @@ void setup() {
     mrf_address16_write(PI_ADDR);  // Set raspberry pi address
 // some loop flags for this experiment
 		
-    keep_going = 16;
+    keep_going = 8;
     req_id = 1;
 
     set_packet_header(transmit_data_buffer);
@@ -363,20 +374,23 @@ void loop() {
 
 	// request data every 5 seconds
 	
-    if( (new_time.tv_sec - last_change.tv_sec) > 1 )
+    if( (new_time.tv_sec - last_change.tv_sec) > 5 )
     {
 
-        printf("\nWaiting %i\n", req_id);
+     /*   printf("\nWaiting %i\n", req_id);
         if(toggle) 
             {
-             //   request_set_param(GATEWAY_NODE,count);
+                request_set_param(GATEWAY_NODE,count);
                 toggle = 0;
             }
             else
             {
-             //   request_get_param(GATEWAY_NODE);
+                request_get_param(GATEWAY_NODE);
                 toggle = 1;
-            }
+            }*/
+
+        request_data(GATEWAY_NODE);
+
         last_change = new_time; 
         keep_going = keep_going - 1;
         count++;

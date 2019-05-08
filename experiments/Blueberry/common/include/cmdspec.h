@@ -34,6 +34,7 @@
 #define CMD_GET_ADDRESS_LIST
 #define CMD_FORWARD_TO
 #define CMD_TRACE
+#define CMD_NODE_ERROR 0x5858
 
 #define NP_ADC_ACTIVE_CH 0
 #define NP_ADC_N_SAMPLES 256
