@@ -29,7 +29,7 @@ uint8_t adc_buffer[3];
 
 uint16_t get_adc_value(uint8_t chan)
 {
-	adc_buffer[0] = 6 | (chan >>2);
+	adc_buffer[0] = 6 | (chan >>2); //these two parts says which channel to read off of. 0 is CH0
 	adc_buffer[1] = chan << 6;
 	
 	spi_transfer_nbytes(adc_buffer,adc_buffer,3,ADC_CS);
@@ -37,7 +37,7 @@ uint16_t get_adc_value(uint8_t chan)
 	uint16_t b1 = adc_buffer[1];
 	uint16_t b2 = adc_buffer[2];
 	
-	return b2 | (b1<<8);
+	return b2 | (b1<<8); //organizes the two bytes to one 16 bit value
 }
 
 /*void display_value(uint8_t val)
