@@ -44,9 +44,10 @@ void spi_set_speed(uint8_t spd)
 
 	if(spbits & 4) SPSR |= 1;
 		else SPSR &= (~1);
+
 }
 
-/*Transfers a single byte between master and slave*/
+/*Transfers a single byte between master and slave. Assumes CS line is already selected*/
 
 void spi_transfer_byte(uint8_t* bout, uint8_t* bin)
 {
@@ -74,9 +75,9 @@ void spi_transfer_nbytes(uint8_t* out, uint8_t* in, uint8_t n, uint8_t cs)
 	{
 		spi_transfer_byte(out,in);    /*transfer byte */
 		/*advance iterators*/
-		out = out + 1;
-		in = in + 1;
-		n = n - 1;
+		out++;
+		in++;
+		n--;
 	}
 	SPI_CS_PORT |= 1<<cs;/*Deselect slave chip*/
 }

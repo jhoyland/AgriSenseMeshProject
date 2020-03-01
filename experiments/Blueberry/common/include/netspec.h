@@ -1,6 +1,11 @@
 #ifndef __NETSPEC_H
 #define __NETSPEC_H
 
+/*
+	Mostly PAN id's and addresses on the network
+
+*/
+
 #define PAN_ID 0xF122
 
 #define PAN_ID_HI 0xF1

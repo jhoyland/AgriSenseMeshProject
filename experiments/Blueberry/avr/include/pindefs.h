@@ -1,6 +1,8 @@
 #ifndef __PINDEFS_H
 #define __PINDEFS_H
 
+/* Pinout definitions for MCU */
+
 // Diagnostic LED pins
 
 #define LED_PORT    PORTD	/* + */

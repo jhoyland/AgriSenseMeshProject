@@ -149,11 +149,11 @@ uint8_t get_packed_data(uint8_t * op, uint8_t ch)
 	mean = mean / NP_ADC_N_SAMPLES;	// Calculate mean
 	serr = sqrt( (serr - NP_ADC_N_SAMPLES*mean*mean)/(NP_ADC_N_SAMPLES*(NP_ADC_N_SAMPLES-1.0)) );  // Calculate standard error
 
-	mean = fmin(mean,4095);
+	mean = fmin(mean,0xFFF);
 	serr = fmax(serr,1);			// Minimum 1 bit error
 
-	data[0] = mean & 4095;
-	data[1] = serr & 4095;
+	data[0] = mean & 0xFFF;
+	data[1] = serr & 0xFFF;
 
 	if(data[1]==0) data[1] = 1;
 

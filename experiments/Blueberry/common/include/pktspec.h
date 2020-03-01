@@ -9,6 +9,10 @@
 #ifndef PKTSPEC_H_
 #define PKTSPEC_H_
 
+/*
+	Defines the structure of the messages sent on the network
+*/
+
 
 #define PK_SZ_TXRX_BUFFER 40
 #define PK_SZ_ERR_BUFFER 24

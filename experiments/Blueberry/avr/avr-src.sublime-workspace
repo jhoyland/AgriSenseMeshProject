@@ -1,0 +1,1258 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"bit",
+				"bit_count"
+			],
+			[
+				"uint",
+				"uint16_t"
+			],
+			[
+				"rv",
+				"rvar_old"
+			],
+			[
+				"rme",
+				"rmean"
+			],
+			[
+				"rmean",
+				"rmean_old"
+			],
+			[
+				"old",
+				"old_var"
+			],
+			[
+				"ru",
+				"running_variance"
+			],
+			[
+				"runn",
+				"running_mean"
+			],
+			[
+				"new",
+				"new_mean"
+			],
+			[
+				"sd",
+				"sd"
+			],
+			[
+				"stdio",
+				"stdio.h\tstandard header"
+			],
+			[
+				"inc",
+				"include"
+			],
+			[
+				"std",
+				"stdlib.h\tstandard header"
+			],
+			[
+				"c",
+				"c"
+			],
+			[
+				"spi_t",
+				"spi_tx_buffer_cursor"
+			],
+			[
+				"spi_b",
+				"spi_byte_limit"
+			],
+			[
+				"spi",
+				"spi_rx_buffer_cursor"
+			],
+			[
+				"mean",
+				"mean"
+			],
+			[
+				"st",
+				"stdio.h\tstandard header"
+			],
+			[
+				"SPI",
+				"SPI_MCU_READY"
+			],
+			[
+				"spi_",
+				"spi_master"
+			],
+			[
+				"trans",
+				"transfer_complete"
+			],
+			[
+				"a",
+				"adc_buffer"
+			],
+			[
+				"ini",
+				"initiate_spi_transfer_master"
+			],
+			[
+				"init",
+				"initiate_spi_transfer_slave"
+			],
+			[
+				"ADC",
+				"ADC_VALUE_NONE"
+			],
+			[
+				"AD",
+				"ADC_VALUE_READING"
+			],
+			[
+				"adc",
+				"adc_value_ready"
+			],
+			[
+				"SP",
+				"SPI_ACTIVE"
+			],
+			[
+				"SPI_",
+				"SPI_TO_SUPERMASTER"
+			],
+			[
+				"rx",
+				"spi_rx_buffer"
+			],
+			[
+				"sp",
+				"spi_bus_contention"
+			],
+			[
+				"is",
+				"is_master"
+			],
+			[
+				"u",
+				"uint8_t"
+			],
+			[
+				"get",
+				"get_random_data"
+			],
+			[
+				"re",
+				"request_data"
+			],
+			[
+				"qu",
+				"queue_memory"
+			],
+			[
+				"SZ",
+				"SZ_COMMAND_BUFFER"
+			],
+			[
+				"__Flas",
+				"__FLASH_RED__"
+			],
+			[
+				"ex",
+				"execute_next_command"
+			],
+			[
+				"__",
+				"__FLASH_YELLOW__"
+			],
+			[
+				"b",
+				"big_counter"
+			],
+			[
+				"command",
+				"command_send_test"
+			],
+			[
+				"tran",
+				"transmit_data_buffer"
+			],
+			[
+				"tr",
+				"transmit_command_header"
+			],
+			[
+				"PK_SZ",
+				"PK_SZ_ADDR_HEADER"
+			],
+			[
+				"PK",
+				"PK_CMD_DATA_0"
+			],
+			[
+				"YE",
+				"__YELLOW_ON__"
+			],
+			[
+				"___",
+				"__FLASH_YELLOW__"
+			],
+			[
+				"mrf_rx",
+				"mrf_rx_enable"
+			],
+			[
+				"to",
+				"toggle"
+			],
+			[
+				"reque",
+				"request"
+			],
+			[
+				"tra",
+				"transmit_data_buffer"
+			],
+			[
+				"send",
+				"send_downstream"
+			],
+			[
+				"set",
+				"set_downstream_address_header"
+			],
+			[
+				"led",
+				"led_state"
+			],
+			[
+				"PK_CMD",
+				"PK_CMD_DATA_2"
+			],
+			[
+				"PK_CMD_DATA",
+				"PK_CMD_DATA_2"
+			],
+			[
+				"LED",
+				"LED_1"
+			],
+			[
+				"PK_CMD_",
+				"PK_CMD_DATA_1"
+			],
+			[
+				"uin",
+				"uint8_t"
+			],
+			[
+				"__GRE",
+				"__GREEN_OFF__"
+			],
+			[
+				"__RED",
+				"__RED_ON__"
+			],
+			[
+				"__YE",
+				"__YELLOW_OFF__"
+			],
+			[
+				"__GE",
+				"__GREEN_OFF__"
+			],
+			[
+				"__GREE",
+				"__GREEN_ON__"
+			],
+			[
+				"fla",
+				"flag_got_rx"
+			],
+			[
+				"__FLAS",
+				"__FLASH_GREEN__"
+			],
+			[
+				"print",
+				"print_message"
+			],
+			[
+				"PK_DES",
+				"PK_DEST_ADDR_HI"
+			],
+			[
+				"SZ_",
+				"PK_SZ_TXRX_BUFFER"
+			],
+			[
+				"proce",
+				"process_next_node_message"
+			],
+			[
+				"dat",
+				"dat_stderr"
+			],
+			[
+				"channe",
+				"channel_read_ok"
+			],
+			[
+				"P",
+				"PK_DATUM_SIZE"
+			],
+			[
+				"msg",
+				"msg"
+			],
+			[
+				"act",
+				"active_message"
+			],
+			[
+				"PK_SZ_",
+				"PK_SZ_CMD_HEADER"
+			],
+			[
+				"process",
+				"process_node_ping_echo"
+			],
+			[
+				"ac",
+				"active_message"
+			],
+			[
+				"CMD",
+				"CMD_DATA"
+			],
+			[
+				"PK_",
+				"PK_COMMAND_HEADER"
+			],
+			[
+				"mess",
+				"message_queue"
+			],
+			[
+				"rec",
+				"recieved_data_buffer"
+			],
+			[
+				"bytes",
+				"bytes_to_word"
+			],
+			[
+				"targ",
+				"target_node"
+			],
+			[
+				"mrf",
+				"mrf_send16"
+			],
+			[
+				"tae",
+				"target_node"
+			],
+			[
+				"req",
+				"req_id"
+			],
+			[
+				"command_get",
+				"command_get_parameter"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "src/tinyspi.c",
+			"settings":
+			{
+				"buffer_size": 1936,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/sensenode.c",
+			"settings":
+			{
+				"buffer_size": 12028,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/mrf24j.c",
+			"settings":
+			{
+				"buffer_size": 10558,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "include/tinyspi.h",
+			"settings":
+			{
+				"buffer_size": 1127,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "include/pindefs.h",
+			"settings":
+			{
+				"buffer_size": 716,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "include/sensenode.h",
+			"settings":
+			{
+				"buffer_size": 910,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "include/mrf24j.h",
+			"settings":
+			{
+				"buffer_size": 6391,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/pktspec.h",
+			"settings":
+			{
+				"buffer_size": 1324,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/cmdspec.h",
+			"settings":
+			{
+				"buffer_size": 1048,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/simple_queue.h",
+			"settings":
+			{
+				"buffer_size": 1908,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/netspec.h",
+			"settings":
+			{
+				"buffer_size": 270,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/blinkin.h",
+			"settings":
+			{
+				"buffer_size": 398,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/bitmanip.h",
+			"settings":
+			{
+				"buffer_size": 1383,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/src/simple_queue.c",
+			"settings":
+			{
+				"buffer_size": 3923,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/src/bitmanip.c",
+			"settings":
+			{
+				"buffer_size": 689,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS4600F19/How microprocessors work",
+		"/home/james/SpiderOak Hive/James/WebPage/whc_deets.txt",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS4600F19/code-fragments2.c",
+		"/home/james/dev/PHYS4600/project1/level3/main.c",
+		"/home/james/dev/phys4600f19/task3/data.dat",
+		"/home/james/SpiderOak Hive/James/Programming/fragments.c",
+		"/home/james/dev/experiments/sdev/binary_mean.c",
+		"/home/james/dev/PHYS4600/code-examples/ex1/syntax-notes.c",
+		"/home/james/dev/PHYS4600/project1/level2/pointers.c",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS1120F19/ws1.tex",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS1120F19/structure.tex",
+		"/home/james/dev/PHYS4600/project1/level2/main.c",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS4600F19/importtest.tex",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS1120 F17/moodquiz1vec.tex",
+		"/home/james/dev/PHYS4600/project1/level4/main.c",
+		"/home/james/dev/PHYS4600/project1/level1/main.c",
+		"/home/james/dev/PHYS4600/code-examples/ex1/task1.c",
+		"/home/james/dev/experiments/sdev/sdev.c",
+		"/home/james/dev/p4600marking/Phys4600/p4600tasks/task1/stats.c",
+		"/home/james/dev/p4600marking/Phys4600/p4600tasks/task0/task0.c",
+		"/home/james/dev/p4600marking/Phys4600/MHilborn",
+		"/mnt/cifs/Archive/Backups/D Backup/Family/My Documents/cache/fresnel.cpp",
+		"/mnt/cifs/Archive/Backups/D Backup/Family/My Documents/cache/ellipsometry.h",
+		"/mnt/cifs/Archive/Backups/D Backup/Family/My Documents/cache/ellipsometry.cpp",
+		"/mnt/cifs/Archive/Backups/D Backup/Family/My Documents/cache/main.cpp",
+		"/mnt/cifs/Archive/Backups/D Backup/Family/My Documents/cache/ring_buffer.h",
+		"/home/james/dev/PHYS4600/code-examples/ex0/afunction.s",
+		"/home/james/SpiderOak Hive/James/GCBS/IMG-20171108-WA0009.jpeg",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/photosens.c",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS4600F19/code-fragments.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/LowBush/src/node.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/src/tinyspi.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/src/sensenode.c",
+		"/home/james/dev/PHYS4600/code-examples/ex1/task1produce.c",
+		"/mnt/cifs/Archive/Backups/Dell Backup Sept 10 2010/James1/bit fit algorithm.txt",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS2420/PHYS2420/PHYS2420-F18-L7.tex",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/To be sorted/James1/jobs.cpp",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS4600F19/PHYS4600F19L1.tex",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/ProjectsF19/Projects",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS2420/PHYS2420/PHYS2420-F18-L4.tex",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS2420/PHYS2420/PHYS2420-F18-L6.tex",
+		"/home/james/dev/PHYS4600/code-examples/ex0/datatypes.c",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS4600F19/tasks",
+		"/home/james/SpiderOak Hive/James/Committees/Coop Finance/discussions2019",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS2420/PHYS2420/PHYS2420-F18.tex",
+		"/home/james/vmware/Windows 10 x64/Windows 10 x64.vmx",
+		"/home/james/bin/mount-home",
+		"/home/james/dev/PHYS4600/code-examples/ex1/ex1-3.c",
+		"/home/james/SpiderOak Hive/James/GCBS/xmas-special.txt",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS2420/PHYS2420/PHYS2420-F18-L2.tex",
+		"/home/james/dev/i2cOLED/src/i2cOLED.c",
+		"/home/james/dev/PHYS4600/code-examples/ex1/ex1-3.s",
+		"/home/james/dev/PHYS4600/code-examples/ex1/ex1-1.s",
+		"/home/james/dev/PHYS4600/code-examples/ex1/ex1-2.s",
+		"/home/james/dev/PHYS4600/project1/level3/data.dat",
+		"/home/james/bin/pi",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/cmdspec.h",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/src/bitmanip.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/pktspec.h",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/include/pindefs.h",
+		"/home/james/dev/experiments/mmspi/src/main.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/src/commsrf.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/attiny-spi-slave/spi-slave-test3.c",
+		"/home/james/dev/template/main-avr.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/rpi/src/basenode.c",
+		"/home/james/dev/experiments/mmspi/include/tinyspi.h",
+		"/home/james/dev/experiments/mmspi/src/tinyspi.c",
+		"/home/james/bin/setup-avr",
+		"/home/james/dev/AgriSenseMeshProject/experiments/attiny-spi-slave/Dealing with SPI bus contention between MCU master.txt",
+		"/home/james/dev/experiments/mmspi/src/main.old",
+		"/home/james/SpiderOak Hive/James/Research/ARTI/Reviewer_suggestions",
+		"/home/james/dev/experiments/mmspi/Makefile",
+		"/home/james/dev/AgriSenseMeshProject/experiments/bit-manip/src/bitmanip.c",
+		"/home/james/dev/ssd1306xled/ssd1306xled_test1/main.c",
+		"/home/james/dev/ssd1306xled/ssd1306xled/ssd1306xledtx.c",
+		"/home/james/dev/ssd1306xled/ssd1306xled/ssd1306xledfx.h",
+		"/home/james/dev/ssd1306xled/ssd1306xled/ssd1306xled.h",
+		"/home/james/bin/setup-avr.sh",
+		"/home/james/dev/template/Makefile",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/src/commsspi.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/meanserrtest/simple_queue_test.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/simple_queue/Makefile",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/src/simple_queue.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/bit-manip/Makefile",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/Makefile",
+		"/mnt/pi/AgriSenseMeshProject/experiments/Blueberry/rpi/src/basenode.c",
+		"/mnt/pi/AgriSenseMeshProject/experiments/Blueberry/rpi/src/mrf24jpi.c",
+		"/home/james/dev/i2cOLED/src/twimaster.c",
+		"/home/james/dev/ssd1306xled/ssd1306xled_test1/Makefile",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/include/sensenode.h",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/simple_queue.h",
+		"/home/james/blueberry-dev/common/include/cmdspec.h",
+		"/home/james/dev/ssd1306xled/ssd1306xled/ssd1306xled.c",
+		"/home/james/dev/ssd1306xled/ssd1306xled/ssd1306xledfx.c",
+		"/opt/eagle-9.4.0/README",
+		"/opt/eagle-9.4.0/qt.conf",
+		"/mnt/pi/AgriSenseMeshProject/experiments/Blueberry/common/include/cmdspec.h",
+		"/home/james/dev/AgriSenseMeshProject/.git/MERGE_MSG",
+		"/home/james/bin/pimount",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/include/mrf24j.h",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/src/mrf24j.c",
+		"/home/james/SpiderOak Hive/James/Teaching/Work placements/contactnotes",
+		"/home/james/SpiderOak Hive/James/Teaching/Work placements/First contact template.txt",
+		"/mnt/pi/AgriSenseMeshProject/experiments/Blueberry/rpi/include/mrf24jpi.h",
+		"/mnt/pi/AgriSenseMeshProject/experiments/Blueberry/rpi/op.log",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/netspec.h",
+		"/mnt/pi/dev/ctestd/arraytest.c",
+		"/mnt/pi/AgriSenseMeshProject/experiments/Blueberry/common/src/bitmanip.c",
+		"/mnt/pi/AgriSenseMeshProject/experiments/Blueberry/rpi/include/basenode.h",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/piconnect",
+		"/mnt/pi/dev/ctestd/Makefile",
+		"/home/james/SpiderOak Hive/1) Make Pastry",
+		"/home/james/SpiderOak Hive/James/Documents/Personal/How hot should the Earth be",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/bitmanip.h",
+		"/etc/imagescan/imagescan.conf",
+		"/home/james/dev/i2cOLED/include/i2cmaster.h",
+		"/home/james/dev/i2cOLED/Makefile",
+		"/home/james/dev/AgriSenseMeshProject/experiments/atmeg-spi-master/Makefile",
+		"/home/james/dev/AgriSenseMeshProject/mesh-beta1/avr-src/sensnode01.c",
+		"/home/james/dev/AgriSenseMeshProject/mesh-beta1/avr-src/mrf24j.c",
+		"/home/james/Downloads/i2cmaster/test_i2cmaster.c",
+		"/home/james/Downloads/i2cmaster/twimaster.c",
+		"/home/james/Downloads/i2cmaster/makefile.twimaster",
+		"/home/james/.config/gtk-3.0/settings.ini"
+	],
+	"find":
+	{
+		"height": 26.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"uint32_t",
+			"uint16_t",
+			" ",
+			"%d",
+			"f(\"S",
+			"svg",
+			"mks.",
+			"ISR",
+			"double",
+			"float",
+			"TX_STAT",
+			"TX",
+			"adc_active_channels_bitmask",
+			"print_message",
+			"case",
+			"new_queue",
+			"__FLASH_RED__",
+			"channel",
+			"__FLASH_RED__",
+			"memset",
+			"set_downstream_address_header",
+			"__YELLOW_ON__",
+			"my_address",
+			"__YELLOW_ON__",
+			"flag_got_tx",
+			"tx_info",
+			"handle_tx",
+			"handle_tex",
+			"mrf_set_bufferPHY",
+			"mrf_flag",
+			"mrf_flags",
+			"wiringPi",
+			"mrf_flags",
+			"sei()",
+			"flag_got_rx",
+			"tx_info",
+			"rx_info",
+			"mrf_rx_enable",
+			"mrf_tx_ok",
+			"mrf_tk_ok",
+			"send_downstream",
+			"req_id",
+			"set_target_node",
+			"transmit_command_header",
+			"transmit_data_buffer",
+			"transmit_command_header",
+			"command_queue",
+			"state",
+			"PK_COMMAND_HEADER",
+			"packet",
+			"PACKET",
+			"packet",
+			"reset"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"data_type",
+			"uint32_t",
+			"",
+			"%lu",
+			"f(\"\\nS"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 13,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/tinyspi.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1936,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/sensenode.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12028,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/mrf24j.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10558,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "include/tinyspi.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1127,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "include/pindefs.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 716,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "include/sensenode.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 910,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "include/mrf24j.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6391,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/pktspec.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1324,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/cmdspec.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1048,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/simple_queue.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1908,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1857,
+								1857
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 93.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/netspec.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 270,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/blinkin.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 398,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/include/bitmanip.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1383,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/src/simple_queue.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3923,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1225,
+								1225
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 365.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/common/src/bitmanip.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 689,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 26.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "",
+	"replace":
+	{
+		"height": 48.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

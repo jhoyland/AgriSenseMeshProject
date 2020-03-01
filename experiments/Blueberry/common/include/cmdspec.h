@@ -1,6 +1,9 @@
 #ifndef __CMD_SPEC_H
 #define __CMD_SPEC_H
 
+/*
+	Commands, errors etc for our network communications
+*/
 
 // Status bits
 
@@ -22,6 +25,8 @@
 #define RU_RUNNING 6
 #define RU_SLEEP 7
 
+// Command set for nodes
+
 #define CMD_DATA 0x4441						// 'DA' Request data: command arguments include a unique request id and a bitmask specifying which channels to read 
 #define CMD_PING 0x4552						// Ping:  
 #define CMD_ECHO 0x4543
@@ -36,12 +41,15 @@
 #define CMD_TRACE
 #define CMD_NODE_ERROR 0x5858
 
+// ADC parameters
+
 #define NP_ADC_ACTIVE_CH 0
 #define NP_ADC_N_SAMPLES 256
+#define ADC_N_CHANNELS 8
+
+// Error codes
 
 #define ERR_UNRECOGNIZED_COMMAND 0x0001
 #define ERR_SETUP_FAILED	0x0002
-
-#define ADC_N_CHANNELS 8
 
 #endif
