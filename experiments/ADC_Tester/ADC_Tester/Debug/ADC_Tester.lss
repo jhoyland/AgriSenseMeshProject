@@ -1,0 +1,405 @@
+
+ADC_Tester.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00800100  00000204  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         00000190  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .bss          00000003  00800100  00800100  00000204  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  00000204  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000234  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000090  00000000  00000000  00000270  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   000009df  00000000  00000000  00000300  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 000007d4  00000000  00000000  00000cdf  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   0000054e  00000000  00000000  000014b3  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  00000100  00000000  00000000  00001a04  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    00000436  00000000  00000000  00001b04  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    0000026c  00000000  00000000  00001f3a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000060  00000000  00000000  000021a6  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	13 c0       	rjmp	.+38     	; 0x28 <__ctors_end>
+   2:	22 c0       	rjmp	.+68     	; 0x48 <__bad_interrupt>
+   4:	21 c0       	rjmp	.+66     	; 0x48 <__bad_interrupt>
+   6:	20 c0       	rjmp	.+64     	; 0x48 <__bad_interrupt>
+   8:	1f c0       	rjmp	.+62     	; 0x48 <__bad_interrupt>
+   a:	1e c0       	rjmp	.+60     	; 0x48 <__bad_interrupt>
+   c:	1d c0       	rjmp	.+58     	; 0x48 <__bad_interrupt>
+   e:	1c c0       	rjmp	.+56     	; 0x48 <__bad_interrupt>
+  10:	1b c0       	rjmp	.+54     	; 0x48 <__bad_interrupt>
+  12:	1a c0       	rjmp	.+52     	; 0x48 <__bad_interrupt>
+  14:	19 c0       	rjmp	.+50     	; 0x48 <__bad_interrupt>
+  16:	18 c0       	rjmp	.+48     	; 0x48 <__bad_interrupt>
+  18:	17 c0       	rjmp	.+46     	; 0x48 <__bad_interrupt>
+  1a:	16 c0       	rjmp	.+44     	; 0x48 <__bad_interrupt>
+  1c:	15 c0       	rjmp	.+42     	; 0x48 <__bad_interrupt>
+  1e:	14 c0       	rjmp	.+40     	; 0x48 <__bad_interrupt>
+  20:	13 c0       	rjmp	.+38     	; 0x48 <__bad_interrupt>
+  22:	12 c0       	rjmp	.+36     	; 0x48 <__bad_interrupt>
+  24:	11 c0       	rjmp	.+34     	; 0x48 <__bad_interrupt>
+  26:	10 c0       	rjmp	.+32     	; 0x48 <__bad_interrupt>
+
+00000028 <__ctors_end>:
+  28:	11 24       	eor	r1, r1
+  2a:	1f be       	out	0x3f, r1	; 63
+  2c:	cf ef       	ldi	r28, 0xFF	; 255
+  2e:	d2 e0       	ldi	r29, 0x02	; 2
+  30:	de bf       	out	0x3e, r29	; 62
+  32:	cd bf       	out	0x3d, r28	; 61
+
+00000034 <__do_clear_bss>:
+  34:	21 e0       	ldi	r18, 0x01	; 1
+  36:	a0 e0       	ldi	r26, 0x00	; 0
+  38:	b1 e0       	ldi	r27, 0x01	; 1
+  3a:	01 c0       	rjmp	.+2      	; 0x3e <.do_clear_bss_start>
+
+0000003c <.do_clear_bss_loop>:
+  3c:	1d 92       	st	X+, r1
+
+0000003e <.do_clear_bss_start>:
+  3e:	a3 30       	cpi	r26, 0x03	; 3
+  40:	b2 07       	cpc	r27, r18
+  42:	e1 f7       	brne	.-8      	; 0x3c <.do_clear_bss_loop>
+  44:	20 d0       	rcall	.+64     	; 0x86 <main>
+  46:	a2 c0       	rjmp	.+324    	; 0x18c <_exit>
+
+00000048 <__bad_interrupt>:
+  48:	db cf       	rjmp	.-74     	; 0x0 <__vectors>
+
+0000004a <setup>:
+#define SPI_SS PB2
+
+
+
+void setup(){
+	DDRD |= (1 << RED_LIGHT); //set PD7 to output for LED
+  4a:	57 9a       	sbi	0x0a, 7	; 10
+	DDRD |= (1<< GREEN_LIGHT);
+  4c:	55 9a       	sbi	0x0a, 5	; 10
+	DDRD |= (1 << BLUE_LIGHT);
+  4e:	54 9a       	sbi	0x0a, 4	; 10
+	DDRD &= ~(1<<BUTTON); //set PD0 as input for the button
+  50:	50 98       	cbi	0x0a, 0	; 10
+	
+	PORTB |= (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<ADC_CS) | (1<<SPI_SS);
+  52:	85 b1       	in	r24, 0x05	; 5
+  54:	8c 6a       	ori	r24, 0xAC	; 172
+  56:	85 b9       	out	0x05, r24	; 5
+	DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<ADC_CS) | (1<<SPI_SS);
+  58:	84 b1       	in	r24, 0x04	; 4
+  5a:	8c 6a       	ori	r24, 0xAC	; 172
+  5c:	84 b9       	out	0x04, r24	; 4
+	DDRB &= ~(1<<SPI_MISO);	//master in slave out, input on attiny
+  5e:	24 98       	cbi	0x04, 4	; 4
+	
+	
+	spi_setup();
+  60:	38 d0       	rcall	.+112    	; 0xd2 <spi_setup>
+  62:	08 95       	ret
+
+00000064 <pollButton>:
+}
+
+uint8_t pollButton()
+{
+	if(BUTTON_PIN & (1<<BUTTON)) return 0;
+  64:	89 b1       	in	r24, 0x09	; 9
+  66:	80 95       	com	r24
+	else return 1;
+}
+  68:	81 70       	andi	r24, 0x01	; 1
+  6a:	08 95       	ret
+
+0000006c <loop>:
+
+void loop(){
+	
+//if(!(pollButton())) {PORTD |= (1<<LIGHT); _delay_ms(100);}
+	//else PORTD &= ~(1<<LIGHT);
+	if(!pollButton()){
+  6c:	fb df       	rcall	.-10     	; 0x64 <pollButton>
+  6e:	81 11       	cpse	r24, r1
+  70:	09 c0       	rjmp	.+18     	; 0x84 <loop+0x18>
+		if(get_adc_value(0) > 200)
+  72:	0c d0       	rcall	.+24     	; 0x8c <get_adc_value>
+  74:	89 3c       	cpi	r24, 0xC9	; 201
+  76:	91 05       	cpc	r25, r1
+  78:	18 f0       	brcs	.+6      	; 0x80 <loop+0x14>
+		{
+		PORTD |= (1<<GREEN_LIGHT); //if the ADC value returns, light green
+  7a:	5d 9a       	sbi	0x0b, 5	; 11
+		PORTD |= (1<<BLUE_LIGHT);
+  7c:	5c 9a       	sbi	0x0b, 4	; 11
+  7e:	08 95       	ret
+		//_delay_ms(1000);
+	    }
+		else 
+		{
+			PORTD |= (1<<RED_LIGHT); //if ADC value doesn't return, light red
+  80:	5f 9a       	sbi	0x0b, 7	; 11
+			PORTD |= (1<<BLUE_LIGHT);
+  82:	5c 9a       	sbi	0x0b, 4	; 11
+  84:	08 95       	ret
+
+00000086 <main>:
+	}
+}
+int main(void)
+{
+
+	setup();
+  86:	e1 df       	rcall	.-62     	; 0x4a <setup>
+	
+    /* Replace with your application code */
+    while (1) 
+    {
+		loop();
+  88:	f1 df       	rcall	.-30     	; 0x6c <loop>
+  8a:	fe cf       	rjmp	.-4      	; 0x88 <main+0x2>
+
+0000008c <get_adc_value>:
+uint8_t adc_buffer[3];
+
+
+
+uint16_t get_adc_value(uint8_t chan) //change this function to have ADC_CS as a parameter
+{
+  8c:	cf 93       	push	r28
+  8e:	df 93       	push	r29
+	DDRD |= (1<<YELLOW_LIGHT);
+  90:	56 9a       	sbi	0x0a, 6	; 10
+	DDRD |= (1<<BLUE_LIGHT);
+  92:	54 9a       	sbi	0x0a, 4	; 10
+	adc_buffer[0] = 6 | (chan >>2);
+  94:	c0 e0       	ldi	r28, 0x00	; 0
+  96:	d1 e0       	ldi	r29, 0x01	; 1
+  98:	98 2f       	mov	r25, r24
+  9a:	96 95       	lsr	r25
+  9c:	96 95       	lsr	r25
+  9e:	96 60       	ori	r25, 0x06	; 6
+  a0:	98 83       	st	Y, r25
+	adc_buffer[1] = chan << 6;
+  a2:	82 95       	swap	r24
+  a4:	88 0f       	add	r24, r24
+  a6:	88 0f       	add	r24, r24
+  a8:	80 7c       	andi	r24, 0xC0	; 192
+  aa:	89 83       	std	Y+1, r24	; 0x01
+	PORTD |= (1<<YELLOW_LIGHT);
+  ac:	5e 9a       	sbi	0x0b, 6	; 11
+	//_delay_ms(100);
+	PORTD &= ~(1<<YELLOW_LIGHT);
+  ae:	5e 98       	cbi	0x0b, 6	; 11
+	spi_transfer_nbytes(adc_buffer,adc_buffer,3,ADC_CS); //this function doesnt execute
+  b0:	27 e0       	ldi	r18, 0x07	; 7
+  b2:	43 e0       	ldi	r20, 0x03	; 3
+  b4:	be 01       	movw	r22, r28
+  b6:	ce 01       	movw	r24, r28
+  b8:	21 d0       	rcall	.+66     	; 0xfc <spi_transfer_nbytes>
+	PORTD |= (1<<YELLOW_LIGHT);
+  ba:	5e 9a       	sbi	0x0b, 6	; 11
+	//_delay_ms(100);
+	PORTD &= ~(1<<YELLOW_LIGHT);
+  bc:	5e 98       	cbi	0x0b, 6	; 11
+	uint16_t b1 = adc_buffer[1] & 0xF; //magic number sets first 4 bits to 0.
+	uint16_t b2 = adc_buffer[2];
+	
+	return b2 | (b1<<8);
+  be:	89 81       	ldd	r24, Y+1	; 0x01
+  c0:	8f 70       	andi	r24, 0x0F	; 15
+  c2:	90 e0       	ldi	r25, 0x00	; 0
+  c4:	98 2f       	mov	r25, r24
+  c6:	88 27       	eor	r24, r24
+  c8:	2a 81       	ldd	r18, Y+2	; 0x02
+}
+  ca:	82 2b       	or	r24, r18
+  cc:	df 91       	pop	r29
+  ce:	cf 91       	pop	r28
+  d0:	08 95       	ret
+
+000000d2 <spi_setup>:
+
+void spi_setup()
+{
+
+	#ifndef SPI_ON_USI
+	SPCR=(1<<SPE)|(1<<MSTR)|(1<<SPR0); //enables SPI, sets chip as master, sets clock speed to fosc/16
+  d2:	81 e5       	ldi	r24, 0x51	; 81
+  d4:	8c bd       	out	0x2c, r24	; 44
+  d6:	08 95       	ret
+
+000000d8 <spi_transfer_byte>:
+/*Transfers a single byte between master and slave*/
+
+void spi_transfer_byte(uint8_t* bout, uint8_t* bin)
+{
+	/*Outgoing data into data register*/
+	PORTD |= (1<<GREEN_LIGHT);
+  d8:	5d 9a       	sbi	0x0b, 5	; 11
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  da:	e7 ea       	ldi	r30, 0xA7	; 167
+  dc:	f1 e6       	ldi	r31, 0x61	; 97
+  de:	31 97       	sbiw	r30, 0x01	; 1
+  e0:	f1 f7       	brne	.-4      	; 0xde <spi_transfer_byte+0x6>
+  e2:	00 c0       	rjmp	.+0      	; 0xe4 <spi_transfer_byte+0xc>
+  e4:	00 00       	nop
+	_delay_ms(100);
+	DATAREG = *bout;
+  e6:	fc 01       	movw	r30, r24
+  e8:	80 81       	ld	r24, Z
+  ea:	8e bd       	out	0x2e, r24	; 46
+	while(! SPI_BYTE_XFER_DONE)
+  ec:	0d b4       	in	r0, 0x2d	; 45
+  ee:	07 fe       	sbrs	r0, 7
+  f0:	fd cf       	rjmp	.-6      	; 0xec <spi_transfer_byte+0x14>
+		USICR = usi_clk_lo;
+		USICR = usi_clk_hi;
+		#endif
+	} 
+	/*Incoming data out of data register*/
+	*bin = DATAREG;
+  f2:	8e b5       	in	r24, 0x2e	; 46
+  f4:	fb 01       	movw	r30, r22
+  f6:	80 83       	st	Z, r24
+	PORTD &= ~(1<<GREEN_LIGHT);
+  f8:	5d 98       	cbi	0x0b, 5	; 11
+  fa:	08 95       	ret
+
+000000fc <spi_transfer_nbytes>:
+}
+
+/*Selects the slave (cs)  and transfers n bytes. The input and output buffers must be defined and contain at least n bytes each*/
+
+void spi_transfer_nbytes(uint8_t* out, uint8_t* in, uint8_t n, uint8_t cs)
+{
+  fc:	cf 92       	push	r12
+  fe:	df 92       	push	r13
+ 100:	ef 92       	push	r14
+ 102:	ff 92       	push	r15
+ 104:	0f 93       	push	r16
+ 106:	1f 93       	push	r17
+ 108:	cf 93       	push	r28
+ 10a:	df 93       	push	r29
+ 10c:	ec 01       	movw	r28, r24
+ 10e:	8b 01       	movw	r16, r22
+	DDRD |= (1<<BLUE_LIGHT);
+ 110:	54 9a       	sbi	0x0a, 4	; 10
+	DDRD |= (1<<RED_LIGHT);
+ 112:	57 9a       	sbi	0x0a, 7	; 10
+	DDRD |= (1<<GREEN_LIGHT);
+ 114:	55 9a       	sbi	0x0a, 5	; 10
+	PORTD |= (1<<BLUE_LIGHT);
+ 116:	5c 9a       	sbi	0x0b, 4	; 11
+ 118:	3f e3       	ldi	r19, 0x3F	; 63
+ 11a:	8d e0       	ldi	r24, 0x0D	; 13
+ 11c:	93 e0       	ldi	r25, 0x03	; 3
+ 11e:	31 50       	subi	r19, 0x01	; 1
+ 120:	80 40       	sbci	r24, 0x00	; 0
+ 122:	90 40       	sbci	r25, 0x00	; 0
+ 124:	e1 f7       	brne	.-8      	; 0x11e <spi_transfer_nbytes+0x22>
+ 126:	00 c0       	rjmp	.+0      	; 0x128 <spi_transfer_nbytes+0x2c>
+ 128:	00 00       	nop
+	_delay_ms(1000);
+	PORTD &= ~(1<<BLUE_LIGHT);
+ 12a:	5c 98       	cbi	0x0b, 4	; 11
+	CS_PORT &= ~(1<<cs); /*Select slave chip*/
+ 12c:	85 b1       	in	r24, 0x05	; 5
+ 12e:	61 e0       	ldi	r22, 0x01	; 1
+ 130:	70 e0       	ldi	r23, 0x00	; 0
+ 132:	6b 01       	movw	r12, r22
+ 134:	02 c0       	rjmp	.+4      	; 0x13a <spi_transfer_nbytes+0x3e>
+ 136:	cc 0c       	add	r12, r12
+ 138:	dd 1c       	adc	r13, r13
+ 13a:	2a 95       	dec	r18
+ 13c:	e2 f7       	brpl	.-8      	; 0x136 <spi_transfer_nbytes+0x3a>
+ 13e:	9c 2d       	mov	r25, r12
+ 140:	90 95       	com	r25
+ 142:	89 23       	and	r24, r25
+ 144:	85 b9       	out	0x05, r24	; 5
+	while(n)
+ 146:	44 23       	and	r20, r20
+ 148:	a9 f0       	breq	.+42     	; 0x174 <spi_transfer_nbytes+0x78>
+ 14a:	41 50       	subi	r20, 0x01	; 1
+ 14c:	e4 2e       	mov	r14, r20
+ 14e:	f1 2c       	mov	r15, r1
+ 150:	3f ef       	ldi	r19, 0xFF	; 255
+ 152:	e3 1a       	sub	r14, r19
+ 154:	f3 0a       	sbc	r15, r19
+ 156:	ec 0e       	add	r14, r28
+ 158:	fd 1e       	adc	r15, r29
+	{
+		PORTD |= (1<<RED_LIGHT);
+ 15a:	5f 9a       	sbi	0x0b, 7	; 11
+		//_delay_ms(1000);
+		PORTD &= ~(1<<RED_LIGHT);
+ 15c:	5f 98       	cbi	0x0b, 7	; 11
+		//_delay_ms(1000);
+		spi_transfer_byte(out,in);    /*transfer byte */
+ 15e:	b8 01       	movw	r22, r16
+ 160:	ce 01       	movw	r24, r28
+ 162:	ba df       	rcall	.-140    	; 0xd8 <spi_transfer_byte>
+		PORTD |= (1<<RED_LIGHT);
+ 164:	5f 9a       	sbi	0x0b, 7	; 11
+		//_delay_ms(1000);
+		PORTD &= ~(1<<RED_LIGHT);
+ 166:	5f 98       	cbi	0x0b, 7	; 11
+		//_delay_ms(1000);
+		/*advance iterators*/
+		out = out + 1;
+ 168:	21 96       	adiw	r28, 0x01	; 1
+		in = in + 1;
+ 16a:	0f 5f       	subi	r16, 0xFF	; 255
+ 16c:	1f 4f       	sbci	r17, 0xFF	; 255
+	DDRD |= (1<<GREEN_LIGHT);
+	PORTD |= (1<<BLUE_LIGHT);
+	_delay_ms(1000);
+	PORTD &= ~(1<<BLUE_LIGHT);
+	CS_PORT &= ~(1<<cs); /*Select slave chip*/
+	while(n)
+ 16e:	ec 16       	cp	r14, r28
+ 170:	fd 06       	cpc	r15, r29
+ 172:	99 f7       	brne	.-26     	; 0x15a <spi_transfer_nbytes+0x5e>
+		/*advance iterators*/
+		out = out + 1;
+		in = in + 1;
+		n = n - 1;
+	}
+	CS_PORT |= 1<<cs;/*Deselect slave chip*/
+ 174:	85 b1       	in	r24, 0x05	; 5
+ 176:	c8 2a       	or	r12, r24
+ 178:	c5 b8       	out	0x05, r12	; 5
+}
+ 17a:	df 91       	pop	r29
+ 17c:	cf 91       	pop	r28
+ 17e:	1f 91       	pop	r17
+ 180:	0f 91       	pop	r16
+ 182:	ff 90       	pop	r15
+ 184:	ef 90       	pop	r14
+ 186:	df 90       	pop	r13
+ 188:	cf 90       	pop	r12
+ 18a:	08 95       	ret
+
+0000018c <_exit>:
+ 18c:	f8 94       	cli
+
+0000018e <__stop_program>:
+ 18e:	ff cf       	rjmp	.-2      	; 0x18e <__stop_program>
