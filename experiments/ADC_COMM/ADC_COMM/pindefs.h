@@ -25,6 +25,6 @@
 
 // SPI Chip select lines
 #define MRF_CS      PB2		// --> For wireless transceiver
-#define ADC_CS 		PC7 //PB7		// --> For ADC
+#define ADC_CS 		PB7 //PB7		// --> For ADC
 
 #endif

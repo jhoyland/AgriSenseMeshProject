@@ -7,11 +7,12 @@
  */
 
 #include "mrf24j.h"
-#include "pindefs.h"
+#include "PinDefs_1_31_2020.h"
 #include "tinyspi.h"
 
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include "blinkin.h"
 
 #ifndef MRF_RESET
 #error No MRF_RESET pin defined for MRF24J module
@@ -179,9 +180,9 @@ void mrf_init(void) {
 
     // Seems a bit ridiculous when I use reset pin anyway
     mrf_write_short(MRF_SOFTRST, 0x7); // from manual
-    while ((mrf_read_short(MRF_SOFTRST) & 0x7) != 0) {
-        ; // wait for soft reset to finish
-    }
+    //while ((mrf_read_short(MRF_SOFTRST) & 0x7) != 0) {
+      //  ; // wait for soft reset to finish
+    //}
     
     
     //spi_set_data_direction(SPI_MSB);
@@ -206,7 +207,7 @@ void mrf_init(void) {
     mrf_set_channel(20);
     // max power is by default.. just leave it...
     // Set transmitter power - See “REGISTER 2-62: RF CONTROL 3 REGISTER (ADDRESS: 0x203)”.
-    mrf_write_short(MRF_RFCTL, 0x04); //  – Reset RF state machine.
+    mrf_write_short(MRF_RFCTL, 0x04); //  -Reset RF state machine.
     mrf_write_short(MRF_RFCTL, 0x00); // part 2
     
     flag_got_rx = 0;
@@ -277,11 +278,13 @@ void mrf_interrupt_handler(void) {
 void mrf_check_flags(void (*rx_handler)(void), void (*tx_handler)(void)){
     // TODO - we could check whether the flags are > 1 here, indicating data was lost?
     if(isr_lock) return;
+	BLINK(LIGHT_PORT,GREEN_LIGHT); //we get to here no problem.
     if (flag_got_rx) {
         flag_got_rx = 0;
         rx_handler();
     }
-    if (flag_got_tx) {
+    if (flag_got_tx) { //this never happens
+		BLINK(LIGHT_PORT,BLUE_LIGHT);
         flag_got_tx = 0;
         tx_handler();
     }

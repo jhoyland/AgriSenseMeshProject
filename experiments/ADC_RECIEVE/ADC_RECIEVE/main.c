@@ -13,7 +13,7 @@
  */ 
 
 #include <avr/io.h>
-#include "mrfpindefs.h"
+#include "PinDefs_2_18_2020.h"
 #include "tinyspi.h"
 #include "blinkin.h"
 #include "mrf24j.h"
@@ -42,8 +42,9 @@
 #define ASMP_PANID 0xcafe //sets ID for entire network
 #define DEVICE_26 0x0026
 #define DEVICE_32 0x0032
+#define DEVICE_29 0x0029
 
-#define THIS_DEVICE 0x0032 //change this on each node you program
+#define THIS_DEVICE 0x0029 //change this on each node you program
 
 uint16_t message; //this is the message that will be recieved
 
@@ -53,7 +54,7 @@ void setup()
 	DDRD |= (1 << RED_LIGHT); //set PD7 to output for LED
 	DDRD |= (1 << GREEN_LIGHT);
 	DDRD |= (1 << YELLOW_LIGHT);
-	DDRD |= (1 << BLUE_LIGHT);
+	//DDRD |= (1 << BLUE_LIGHT);
 	
 	PORTB |= (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<ADC_CS) | (1<<SPI_SS); //set these ports to high (required)
 	DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<ADC_CS) | (1<<SPI_SS);  //set these to output
@@ -77,10 +78,14 @@ void setup()
 	EICRA |= (1<<ISC01);
 	BLINK(LIGHT_PORT,YELLOW_LIGHT);
 }
+ISR(INT0_vect)
+{
+	mrf_interrupt_handler();
+}
 
 void handle_rx(){
 	//if(mrf_get_bufferPHY()){} //not needed
-	PORTD |= (1<<BLUE_LIGHT); //this does not light up; this loop never enters
+	//PORTD |= (1<<BLUE_LIGHT); //this does not light up; this loop never enters
 	uint8_t * rx_data = mrf_get_rxdata();
 	if(*rx_data >= 100) BLINK(LIGHT_PORT,GREEN_LIGHT);
 	
@@ -102,7 +107,7 @@ int main(void)
 {
 	setup();
     /* Replace with your application code */
-	BLINK(LIGHT_PORT,BLUE_LIGHT);
+	//BLINK(LIGHT_PORT,BLUE_LIGHT);
 	while (1) 
     {	
 		mrf_check_flags(&handle_rx, &handle_tx); //is this happening too quickly??

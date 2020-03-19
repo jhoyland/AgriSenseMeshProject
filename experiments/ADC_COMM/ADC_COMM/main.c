@@ -65,6 +65,7 @@ void setup(){
 	BLINK(LIGHT_PORT,GREEN_LIGHT);
 	spi_setup();
 	BLINK(LIGHT_PORT,GREEN_LIGHT);
+	BLINK(LIGHT_PORT,BLUE_LIGHT);
 	mrf_reset();
 	BLINK(LIGHT_PORT,RED_LIGHT);
 	mrf_init();
@@ -100,6 +101,7 @@ void handle_tx(){ //a successful transmission involves sending and receiving a m
 	else{
 		//transmitted and not received acknowledgment
 		BLINK(LIGHT_PORT,RED_LIGHT);
+		BLINK(LIGHT_PORT,BLUE_LIGHT);
 		BLINK(LIGHT_PORT,RED_LIGHT);
 		
 	}
