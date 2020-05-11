@@ -20,7 +20,7 @@
 #include <string.h>
 #include "blinkin.h"
 
-#define ASMP_PANID 0xcafe //sets ID for entire network
+#define ASMP_PANID 0xCAFE //sets ID for entire network
 #define DEVICE_01 0x0001
 #define DEVICE_02 0x0002
 #define DEVICE_03 0x0003
@@ -53,8 +53,8 @@ void setup()
 	DDRD |= (1 << YELLOW_LIGHT);
 	DDRD |= (1 << GREEN_LIGHT);
 	
-	PORTB |= (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<ADC_CS) | (1<<SPI_SS); //set these ports to high (required)
-	DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<ADC_CS) | (1<<SPI_SS);  //set these to output
+	PORTB |= (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<ADC_CS) | (1<<SPI_SS) | (1<<MRF_CS) ; //set these ports to high (required)
+	DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<ADC_CS) | (1<<SPI_SS) | (1<<MRF_CS) ;  //set these to output
 	DDRB &= ~(1<<SPI_MISO);	//master in slave out, input on attiny
 	
 	spi_setup();
@@ -73,7 +73,8 @@ void setup()
 	neighbor_status = STATUS_NO_NEIGHBORS;  //default to no neighbors on boot
 	command_status = STATUS_STANDBY;		//default to standby on successful startup
 	BLINK(LIGHT_PORT,YELLOW_LIGHT);
-	
+	BLINK(LIGHT_PORT,GREEN_LIGHT);
+	BLINK(LIGHT_PORT,RED_LIGHT);
 	
 }
 /*struct neighbors() //datatype containing the neighbors for a node
@@ -102,6 +103,7 @@ void handle_tx()
 }*/
 ISR(INT0_vect) //for when the MRF interrupts (sending or receiving a message)
 {
+	BLINK(LIGHT_PORT,GREEN_LIGHT);
 	mrf_interrupt_handler();
 }
 
@@ -172,11 +174,12 @@ void ping_respond(uint16_t target) //do I really want to pass a whole message in
 
 void COMMAND_HANDLER(uint8_t* message) //the received data buffer goes in here
 {
+	BLINK(LIGHT_PORT,RED_LIGHT);
 	//this only enters from handle_rx, confirms the message is for this device. A message has been recieved.
 	//CASES:
 	/*-------------------------------GENERIC PING----------------------------------------------------------------*/
 	//PING (the easiest one, independent of a status)
-	if( (bytes_to_word(&message[PK_CMD_HI]) == CMD_ECHO) && (bytes_to_word(&message[PK_CMD_DATA_0]) == 0x0000)) //no extra command data, just echo
+	if( (bytes_to_word(&message[PK_COMMAND_HEADER + PK_CMD_HI]) == CMD_ECHO) )// && (bytes_to_word(&message[PK_COMMAND_HEADER + PK_CMD_DATA_1]) == 0x0000)) //no extra command data, just echo
 	{
 		BLINK(LIGHT_PORT,RED_LIGHT);
 		//need to respond to the ping (CMD ECHO). The node I am responding to will acknowledge the transmission, and then the node
@@ -190,6 +193,7 @@ void COMMAND_HANDLER(uint8_t* message) //the received data buffer goes in here
 		//just received "ping"
 		//need to let the node sending it know that 2-way communication is established. This means a downstairs neighbor exists
 		//and the lower node should have an upstairs neighbor
+		BLINK(LIGHT_PORT,GREEN_LIGHT);
 		word_to_bytes(&transmit_command_header[PK_CMD_DATA_0],CMD_ACK);
 	}
 	/*----------------------------------END GENERIC PING---------------------------------------------------------*/
@@ -239,6 +243,7 @@ void COMMAND_HANDLER(uint8_t* message) //the received data buffer goes in here
 
 void handle_rx()
 {
+	BLINK(LIGHT_PORT,RED_LIGHT);
 	running_status |= (1<<RU_RX_HANDLE);
 
 	memcpy(recieved_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()*sizeof(uint8_t)); //makes a copy of the rx data to a buffer
@@ -246,6 +251,7 @@ void handle_rx()
 	//check the addressing bit to determine what should be done
 	if( bytes_to_word(&recieved_data_buffer[PK_DEST_ADDR_HI]) == THIS_DEVICE ) //a message specifically for this node
 	{
+		BLINK(LIGHT_PORT,RED_LIGHT);
 		//enqueue( &command_queue, &recieved_data_buffer[PK_COMMAND_HEADER] ); 
 		// TO DO: Check that enqueue worked. Currently the command is lost if queue is full - should send error to base in this case
 		COMMAND_HANDLER(recieved_data_buffer); //puts the received data buffer into this
@@ -286,6 +292,7 @@ int main(void)
     while (1) 
     {
 		mrf_check_flags(&handle_rx,&handle_tx);
+		//_delay_ms(10);
 		//BLINK(LIGHT_PORT,RED_LIGHT);
     }
 }

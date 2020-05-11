@@ -54,6 +54,7 @@ void setup()
 }
 
 ISR(INT0_vect) {
+	BLINK(LIGHT_PORT,YELLOW_LIGHT);
 	//running_status |= (1<<RU_INTERRUPT);
 	mrf_interrupt_handler(); // mrf24 object interrupt routine
 	//running_status &= ~(1<<RU_INTERRUPT);
@@ -70,6 +71,7 @@ void handle_rx(){
 	
 	uint8_t * rx_data = mrf_get_rxdata();
 	_delay_ms(20);
+	
 	BLINK(LIGHT_PORT,YELLOW_LIGHT);
 	
 	//look at the rx_data and make a decision
