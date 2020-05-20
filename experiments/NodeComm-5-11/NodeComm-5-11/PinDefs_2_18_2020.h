@@ -5,9 +5,10 @@
  *  Author: Michael
  */ 
 
+//This PINDEF file includes all the pins for the micro board topology
 
-#ifndef PINDEFS_1_31_2020_H_
-#define PINDEFS_1_31_2020_H_
+#ifndef PINDEFS_2_18_2020_H_
+#define PINDEFS_2_18_2020_H_
 
 
 #define MRF_INT     PD2		// <-- Interrupt line
@@ -29,7 +30,7 @@
 
 //Lights for diagnostics
 #define LIGHT_PORT PORTD
-#define BLUE_LIGHT PD4
+//#define BLUE_LIGHT PD4 //NO MORE BLUE LIGHT
 #define RED_LIGHT PD7
 #define YELLOW_LIGHT PD6
 #define GREEN_LIGHT PD5
@@ -44,9 +45,9 @@
 #define D1	PB0
 
 //SPI Pins
-//#define SPI_MOSI PB3
-//#define SPI_MISO PB4
-//#define SPI_SCK PB5
+#define SPI_MOSI PB3
+#define SPI_MISO PB4
+#define SPI_SCK PB5
 #define SPI_SS PB2
 
 
