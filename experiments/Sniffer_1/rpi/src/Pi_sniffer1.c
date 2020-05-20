@@ -4,12 +4,14 @@ It does this by looking for packets on the same PANID (0xCAFE) */
 #include <stdio.h>
 #include <sys/time.h>
 #include <wiringPi.h>
+#include <wiringPiSPI.h> /*JAMES: Added this - was causing implicit declaration warning*/
 #include <string.h>
 #include "simple_queue.h"
 #include "mrf24jpi.h"
 #include "pktspec.h"
 #include "netspec.h"
 #include "cmdspec.h"
+#include "bitmanip.h"/*JAMES: Added this - was causing implicit declaration warning*/
 
 //which GPIO pin we're using
 #define INT_PIN 0 //the interrupt pin
@@ -158,7 +160,8 @@ void send_ping(uint16_t target, uint8_t* buff)
 {	
 	set_packet_size(buff,PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER);
     	set_target_node(buff,target);
-	set_command(buff,CMD_PING,0,0);
+      /*JAMES: Added 1,2 to produce test out put in CMD_DATA*/
+	set_command(buff,CMD_PING,1,2);
  	set_request_id(buff);
 	send_command(target, buff);
 }
@@ -168,10 +171,17 @@ uint16_t get_source_node_address(uint8_t* msg)
 {
     return bytes_to_word(& msg[PK_SRC_ADDR_HI]);
 }
-
+ 
 uint8_t get_message_size(uint8_t* msg)
 {
-    return bytes_to_word(& msg[PK_COMMAND_HEADER + PK_SZ_PACKET]);
+  /*
+    JAMES: You don't need to "bytes_to_word" the message size, it's only a single 
+    byte, you can just return it
+
+
+    return bytes_to_word(& msg[PK_COMMAND_HEADER + PK_SZ_PACKET]);*/
+
+  return msg[PK_COMMAND_HEADER + PK_SZ_PACKET];
 }
 
 uint16_t get_command(uint8_t* msg)
@@ -201,10 +211,12 @@ void main()
 {
 	setup();
 	printf("\nSetup Complete");
-	//send_ping(0x0001,transmit_data_buffer);
+	send_ping(0x0001,transmit_data_buffer);  /*JAMES:uncommented*/
 	printf("\nMessage Sent\n");
 	print_message(transmit_data_buffer);
-	printf("\n%x",bytes_to_word(&transmit_data_buffer[9]));
+  /* JAMES: Again this will combine bytes 9 and 10 of the buffer into a single 16-bit value */
+	/*printf("\n%x",bytes_to_word(&transmit_data_buffer[9]));*/
+  printf("\n%x",transmit_data_buffer[9]);
 	fflush(stdout);
 	while(1)
 	{
