@@ -39,7 +39,7 @@ void spi_transfer_byte(uint8_t* bout, uint8_t* bin)
 {
 	/*Outgoing data into data register*/
 	//PORTD |= (1<<GREEN_LIGHT);
-	_delay_ms(100);
+	///_delay_ms(100);  <<<<< ---------James : Another 0.1 SECOND delay before each byte
 	DATAREG = *bout;
 	while(! SPI_BYTE_XFER_DONE)
 	{
@@ -62,19 +62,19 @@ void spi_transfer_nbytes(uint8_t* out, uint8_t* in, uint8_t n, uint8_t cs)
 	DDRD |= (1<<RED_LIGHT);
 	DDRD |= (1<<GREEN_LIGHT);
 	PORTD |= (1<<BLUE_LIGHT);*/
-	_delay_ms(1000);
+	//_delay_ms(1000);  <<< ---- James: This was your 1 SECOND delay per transfer
 	//PORTD &= ~(1<<BLUE_LIGHT);
 	CS_PORT &= ~(1<<cs); /*Select slave chip*/
 	while(n)
 	{
-		PORTD |= (1<<RED_LIGHT);
+		//PORTD |= (1<<RED_LIGHT);
 		//_delay_ms(1000);
-		PORTD &= ~(1<<RED_LIGHT);
+		//PORTD &= ~(1<<RED_LIGHT);
 		//_delay_ms(1000);
 		spi_transfer_byte(out,in);    /*transfer byte */
-		PORTD |= (1<<RED_LIGHT);
+		//PORTD |= (1<<RED_LIGHT);
 		//_delay_ms(1000);
-		PORTD &= ~(1<<RED_LIGHT);
+		//PORTD &= ~(1<<RED_LIGHT);
 		//_delay_ms(1000);
 		/*advance iterators*/
 		out = out + 1;
