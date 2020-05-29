@@ -144,6 +144,12 @@
     <Compile Include="node_statuses.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Packet_Setup.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Packet_Setup.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="packet_specs.h">
       <SubType>compile</SubType>
     </Compile>

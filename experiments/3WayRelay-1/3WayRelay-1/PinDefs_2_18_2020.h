@@ -21,6 +21,7 @@
 #define SPI_MOSI    PB3		// --> SPI MOSI line
 #define SPI_MISO    PB4		// <-- SPI MISO line
 #define SPI_SCK     PB5		// --> SPI Clock line
+#define SPI_SS PB2
 
 //ALL CS pins must be on PORTB
 // SPI Chip select lines
@@ -44,11 +45,7 @@
 //#define USCK PB2 //get rid of??
 #define D1	PB0
 
-//SPI Pins
-#define SPI_MOSI PB3
-#define SPI_MISO PB4
-#define SPI_SCK PB5
-#define SPI_SS PB2
+
 
 
 

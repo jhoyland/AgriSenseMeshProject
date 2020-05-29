@@ -2,9 +2,6 @@
 #include "tinyspi.h"
 //#define F_CPU 8000000UL
 
-#define RED_LIGHT PD7
-//#define BLUE_LIGHT PD4
-#define GREEN_LIGHT PD5
 
 void spi_set_data_direction(uint8_t d)
 {

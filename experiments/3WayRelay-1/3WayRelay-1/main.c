@@ -19,6 +19,7 @@
 #include "packet_specs.h"
 #include <string.h>
 #include "blinkin.h"
+#include "Packet_Setup.h"
 
 #define ASMP_PANID 0xCAFE //sets ID for entire network
 #define DEVICE_01 0x0001
@@ -29,7 +30,7 @@
 #define THIS_DEVICE 0x0001 //change this on each node you program
 #define LAST_NODE DEVICE_03
 
-uint16_t message; //this is the message that will be sent
+//uint16_t message; //this is the message that will be sent
 uint8_t target_address;
 
 uint8_t* active_command;
@@ -49,9 +50,11 @@ uint8_t LOWER_NEIGHBOR_ADDRESS = 0x0000; //default to no neighbors
 
 void setup()
 {
+	
 	DDRD |= (1 << RED_LIGHT); //set PD7 to output for LED
 	DDRD |= (1 << YELLOW_LIGHT);
 	DDRD |= (1 << GREEN_LIGHT);
+	//BLINK(LIGHT_PORT,GREEN_LIGHT);
 	
 	PORTB |= (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<ADC_CS) | (1<<SPI_SS) | (1<<MRF_CS) ; //set these ports to high (required)
 	DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<ADC_CS) | (1<<SPI_SS) | (1<<MRF_CS) ;  //set these to output
@@ -67,24 +70,13 @@ void setup()
 	EIMSK |= (1<<INT0);
 	EICRA |= (1<<ISC01);
 	
-	transmit_command_header = & transmit_data_buffer[PK_COMMAND_HEADER]; //from sensenode.c
-	
+	transmit_command_header = &transmit_data_buffer[PK_COMMAND_HEADER]; //from sensenode.c
 	
 	neighbor_status = STATUS_NO_NEIGHBORS;  //default to no neighbors on boot
 	command_status = STATUS_STANDBY;		//default to standby on successful startup
-	BLINK(LIGHT_PORT,YELLOW_LIGHT);
 	BLINK(LIGHT_PORT,GREEN_LIGHT);
-	BLINK(LIGHT_PORT,RED_LIGHT);
 	
 }
-/*struct neighbors() //datatype containing the neighbors for a node
-{
-	uint8_t neighbor_pi[PK_SZ_ADDR_HEADER]; //Pi
-	uint8_t neighbor_1[PK_SZ_ADDR_HEADER];	//node 0x0001
-	uint8_t neighbor_2[PK_SZ_ADDR_HEADER];	//node 0x0002
-	uint8_t neighbor_3[PK_SZ_ADDR_HEADER];	//node 0x0003
-}*/
-
 
 
 
@@ -93,109 +85,70 @@ void handle_tx()
 	
 }
 
-/*void wait_for_response()
-{	int i = 0;
-	while(i < 2000) //too long??
-	{	
-		mrf_check_flags(&handle_rx, &handle_tx);
-		i++;
-	}
-}*/
+
 ISR(INT0_vect) //for when the MRF interrupts (sending or receiving a message)
 {
-	BLINK(LIGHT_PORT,GREEN_LIGHT);
+	running_status |= (1<<RU_INTERRUPT);
+	//BLINK(LIGHT_PORT,GREEN_LIGHT);
 	mrf_interrupt_handler();
+	running_status &= ~(1<<RU_INTERRUPT);
 }
 
-void find_upstairs_neighbor()
-{
+
 	
-}
-
-void set_down_address(uint8_t address)
-{
-	//word_to_bytes(&transmit_command_header[PK_CMD_HI],CMD_SET_DOWN_NEIGHBOR);
-}
-
-
-void COLLECT_PAR()
-{
-	//collect data from ADC
-	//put into a message
-	//send downstream	
-}
-void COLLECT_MOISTURE()
-{
-	//collect data from ADC
-	//put into a message
-	//send downstream
-	
-}
-void SLEEP_ROUTINE()
-{
-	//idk
-}
-void send_upstream(uint8_t* message)
-{
-	if((THIS_DEVICE != LAST_NODE) && (neighbor_status == STATUS_TWO_NEIGHBORS))// TODO: make a flag for upstream neighbor
-	{
-		uint8_t target_address = UPPER_NEIGHBOR_ADDRESS; //TODO: make sure this is always validated
-		mrf_send16(target_address,message,(message[PK_COMMAND_HEADER]+message[PK_SZ_PACKET])); //should ensure this is the right size
-	}	
-	//else break; //can't send upstream if this is the last node!
-}
-void send_downstream(uint8_t* message)
-{
-	
-}
 //PINGS:
 //REQUESTING A RESPONSE: tell it to "echo"
 //RESPONDING: say "ping"
-void ping(uint16_t target, uint8_t* message)
+/*void ping(uint16_t target, uint8_t* buff)
 {	//node_status = 1; //currently waiting for something
-	word_to_bytes(&transmit_command_header[PK_CMD_HI],CMD_ECHO);//puts the echo command into the command header
-	mrf_send16(target,message,message[PK_COMMAND_HEADER] + message[PK_SZ_PACKET]); //message saying ECHO
-}
+	word_to_bytes(buff[PK_CMD_HI],CMD_ECHO);//puts the echo command into the command header
+	mrf_send16(target,buff,buff[PK_COMMAND_HEADER] + message[PK_SZ_PACKET]); //message saying ECHO
+}*/
 
 
-void ping_respond(uint16_t target) //do I really want to pass a whole message into this function?
+void ping_respond(uint16_t target, uint8_t* buff)
 {
+	//this command should just send back to the neighbor that it was pinged.
+	BLINK(LIGHT_PORT,GREEN_LIGHT);
+	//put info into the sending buffer
+	Set_Packet_Size(buff,PK_SZ_ADDR_HEADER+PK_SZ_CMD_HEADER);
+	Set_Target_Node(buff,target);
+	Set_Command(buff,CMD_PING,1,2,3,4); //1,2,3,4 are just random numbers for this
 	
-	//this command should just send back to the neighbor that it was pinged. Do I want A third message sent in to confirm that the
-	//two have clear communication??	
-	word_to_bytes(&transmit_command_header[PK_CMD_HI],CMD_PING); //puts PING in the command header of the message it's sending
+	//testing to see if the sending package has nothing in it...
+	if(bytes_to_word(&buff[PK_COMMAND_HEADER+PK_CMD_HI]) == CMD_PING) BLINK(LIGHT_PORT,YELLOW_LIGHT);
 	
-	//TODO: Update message so that it contains the ping. Does this already happen?
-	//I really need a printout to see what this returns
-	mrf_send16(target,transmit_data_buffer,transmit_data_buffer[PK_COMMAND_HEADER + PK_SZ_PACKET]); //does the data buffer get updated?
+	mrf_send16(target,buff,buff[PK_COMMAND_HEADER + PK_SZ_PACKET]);
 	
 }
 
 
 void COMMAND_HANDLER(uint8_t* message) //the received data buffer goes in here
 {
-	BLINK(LIGHT_PORT,RED_LIGHT);
+	//BLINK(LIGHT_PORT,RED_LIGHT);
 	//this only enters from handle_rx, confirms the message is for this device. A message has been recieved.
 	//CASES:
 	/*-------------------------------GENERIC PING----------------------------------------------------------------*/
-	//PING (the easiest one, independent of a status)
-	if( (bytes_to_word(&message[PK_COMMAND_HEADER + PK_CMD_HI]) == CMD_ECHO) )// && (bytes_to_word(&message[PK_COMMAND_HEADER + PK_CMD_DATA_1]) == 0x0000)) //no extra command data, just echo
+	//PING: Should respond that a ping was received by the correct node.
+	if( (bytes_to_word(&message[PK_COMMAND_HEADER + PK_CMD_HI]) == CMD_PING) )// && (bytes_to_word(&message[PK_COMMAND_HEADER + PK_CMD_DATA_1]) == 0x0000)) //no extra command data, just echo
 	{
-		BLINK(LIGHT_PORT,RED_LIGHT);
-		//need to respond to the ping (CMD ECHO). The node I am responding to will acknowledge the transmission, and then the node
-		//can set the original node as a neighbor, then continue the network setup
-		ping_respond(bytes_to_word(&message[PK_SRC_ADDR_HI])); //puts the received data buffer into ping_respond
+		BLINK(LIGHT_PORT,YELLOW_LIGHT);
+		//respond to the PI with your own message
+		ping_respond(bytes_to_word(&message[PK_SRC_ADDR_HI]),transmit_data_buffer); //respond with the transmit data buffer
+		_delay_ms(100);
+		//respond to another node
+		if(THIS_DEVICE != DEVICE_02) ping_respond(DEVICE_02,transmit_data_buffer); //testing to see if I'm sending garbage
 	}
 	//if a node receives "PING" (should only get it after asking for an echo)
-	if( (bytes_to_word(&message[PK_CMD_HI]) == CMD_PING) && (bytes_to_word(&message[PK_CMD_DATA_0]) == 0x0000) )
-	{
+	//if( (bytes_to_word(&message[PK_CMD_HI]) == CMD_PING) && (bytes_to_word(&message[PK_CMD_DATA_0]) == 0x0000) )
+	//{
 		//no extra command data
 		//just received "ping"
 		//need to let the node sending it know that 2-way communication is established. This means a downstairs neighbor exists
 		//and the lower node should have an upstairs neighbor
-		BLINK(LIGHT_PORT,GREEN_LIGHT);
-		word_to_bytes(&transmit_command_header[PK_CMD_DATA_0],CMD_ACK);
-	}
+		//BLINK(LIGHT_PORT,GREEN_LIGHT);
+		//word_to_bytes(&transmit_command_header[PK_CMD_DATA_0],CMD_ACK);
+	//}
 	/*----------------------------------END GENERIC PING---------------------------------------------------------*/
 	
 	
@@ -249,9 +202,9 @@ void handle_rx()
 	memcpy(recieved_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()*sizeof(uint8_t)); //makes a copy of the rx data to a buffer
 
 	//check the addressing bit to determine what should be done
-	if( bytes_to_word(&recieved_data_buffer[PK_DEST_ADDR_HI]) == THIS_DEVICE ) //a message specifically for this node
+	if(bytes_to_word(&recieved_data_buffer[PK_DEST_ADDR_HI]) == THIS_DEVICE ) //a message specifically for this node
 	{
-		BLINK(LIGHT_PORT,RED_LIGHT);
+		BLINK(LIGHT_PORT,GREEN_LIGHT);
 		//enqueue( &command_queue, &recieved_data_buffer[PK_COMMAND_HEADER] ); 
 		// TO DO: Check that enqueue worked. Currently the command is lost if queue is full - should send error to base in this case
 		COMMAND_HANDLER(recieved_data_buffer); //puts the received data buffer into this
@@ -262,19 +215,12 @@ void handle_rx()
 		//from a raspberry pi, or another node, to all nodes
 		//should probably give a unique identifier for this??
 		//word_to_bytes(&transmit_data_buffer[PK_CMD_HI], )
-		
-		
 		//send_error(bytes_to_word(& recieved_data_buffer[PK_DEST_ADDR_HI]));
 		/*
 		recieved_data_buffer[PK_COMMAND_HEADER + PK_HOP_COUNT] ++;
-
 		if(recieved_data_buffer[PK_DEST_ADDR_HI] == PI_ADDR_HI && recieved_data_buffer[PK_DEST_ADDR_LO] == PI_ADDR_LO)
-
 			send_downstream(recieved_data_buffer);
-
-		else
-
-			send_upstream(recieved_data_buffer);*/
+		else send_upstream(recieved_data_buffer);*/
 
 	}
 

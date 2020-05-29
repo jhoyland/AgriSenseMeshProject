@@ -31,9 +31,9 @@
 //Lights for diagnostics
 #define LIGHT_PORT PORTD
 //#define BLUE_LIGHT PD4 //NO MORE BLUE LIGHT
-#define RED_LIGHT PD7
+#define RED_LIGHT PD5
 #define YELLOW_LIGHT PD6
-#define GREEN_LIGHT PD5
+#define GREEN_LIGHT PD7
 
 //Chip select lines.  You don't need CS_SR - you're not using a shift register
 #define CS_SR	PB3 /*Shift Register*/ //MOSI line
@@ -46,10 +46,6 @@
 //#define USCK PB2 //get rid of??
 #define D1	PB0
 
-//SPI Pins  ///  You already defined these above
-#define SPI_MOSI PB3
-#define SPI_MISO PB4
-#define SPI_SCK PB5
 // This port is for if the microcontroller is the slave on an SPI system, I don't hink you need it here
 #define SPI_SS PB2
 
