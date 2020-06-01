@@ -1,0 +1,606 @@
+Archive member included to satisfy reference by file (symbol)
+
+c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+                              C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o (exit)
+c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
+                              main.o (__do_clear_bss)
+
+Allocating common symbols
+Common symbol       size              file
+
+mrf_flags           0x1               mrf24j.o
+flag_got_tx         0x1               mrf24j.o
+message             0x2               main.o
+flag_got_rx         0x1               mrf24j.o
+adc_buffer          0x3               spi-master-adc1.o
+mrf_reg_TXSTAT      0x1               main.o
+isr_lock            0x1               main.o
+
+Discarded input sections
+
+ .data          0x00000000        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+ .bss           0x00000000        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+ .text          0x00000000        0x0 main.o
+ .data          0x00000000        0x0 main.o
+ .bss           0x00000000        0x0 main.o
+ .text          0x00000000        0x0 mrf24j.o
+ .data          0x00000000        0x0 mrf24j.o
+ .bss           0x00000000        0x0 mrf24j.o
+ .text.mrf_read_long
+                0x00000000       0x36 mrf24j.o
+ .text.mrf_set_promiscuous
+                0x00000000       0x14 mrf24j.o
+ .text.mrf_get_rxinfo
+                0x00000000        0xc mrf24j.o
+ .text.mrf_get_txinfo
+                0x00000000        0xc mrf24j.o
+ .text.mrf_get_rxbuf
+                0x00000000        0x6 mrf24j.o
+ .text.mrf_rx_datalength
+                0x00000000        0xa mrf24j.o
+ .text.mrf_set_ignoreBytes
+                0x00000000        0xa mrf24j.o
+ .text.mrf_set_bufferPHY
+                0x00000000       0x1c mrf24j.o
+ .text.mrf_set_palna
+                0x00000000       0x18 mrf24j.o
+ .text.mrf_rx_flush
+                0x00000000        0x8 mrf24j.o
+ .text.mrf_rx_disable
+                0x00000000        0x8 mrf24j.o
+ .text.mrf_rx_enable
+                0x00000000        0x8 mrf24j.o
+ .text.mrf_interrupt_handler
+                0x00000000      0x118 mrf24j.o
+ .bss.rx_buf    0x00000000       0x7f mrf24j.o
+ .text          0x00000000        0x0 spi-master-adc1.o
+ .data          0x00000000        0x0 spi-master-adc1.o
+ .bss           0x00000000        0x0 spi-master-adc1.o
+ .text          0x00000000        0x0 tinyspi.o
+ .data          0x00000000        0x0 tinyspi.o
+ .bss           0x00000000        0x0 tinyspi.o
+ .text.spi_set_data_direction
+                0x00000000       0x14 tinyspi.o
+ .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .text.libgcc.mul
+                0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .text.libgcc.div
+                0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .text.libgcc   0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .text.libgcc.prologue
+                0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .text.libgcc.builtins
+                0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .text.libgcc.fmul
+                0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .text.libgcc.fixed
+                0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
+ .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
+ .text.libgcc.mul
+                0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
+ .text.libgcc.div
+                0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
+ .text.libgcc   0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
+ .text.libgcc.prologue
+                0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
+ .text.libgcc.builtins
+                0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
+ .text.libgcc.fmul
+                0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
+ .text.libgcc.fixed
+                0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x00000000         0x00002000         xr
+data             0x00800060         0x0000ffa0         rw !x
+eeprom           0x00810000         0x00010000         rw !x
+fuse             0x00820000         0x00000003         rw !x
+lock             0x00830000         0x00000400         rw !x
+signature        0x00840000         0x00000400         rw !x
+user_signatures  0x00850000         0x00000400         rw !x
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+Address of section .data set to 0x800100
+LOAD C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+LOAD main.o
+LOAD mrf24j.o
+LOAD spi-master-adc1.o
+LOAD tinyspi.o
+START GROUP
+LOAD c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libm.a
+END GROUP
+START GROUP
+LOAD c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a
+LOAD c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libm.a
+LOAD c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a
+LOAD C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25\libattiny88.a
+END GROUP
+                0x00002000                __TEXT_REGION_LENGTH__ = DEFINED (__TEXT_REGION_LENGTH__)?__TEXT_REGION_LENGTH__:0x2000
+                0x0000ffa0                __DATA_REGION_LENGTH__ = DEFINED (__DATA_REGION_LENGTH__)?__DATA_REGION_LENGTH__:0xffa0
+                0x00010000                __EEPROM_REGION_LENGTH__ = DEFINED (__EEPROM_REGION_LENGTH__)?__EEPROM_REGION_LENGTH__:0x10000
+                [0x00000003]                __FUSE_REGION_LENGTH__ = DEFINED (__FUSE_REGION_LENGTH__)?__FUSE_REGION_LENGTH__:0x400
+                0x00000400                __LOCK_REGION_LENGTH__ = DEFINED (__LOCK_REGION_LENGTH__)?__LOCK_REGION_LENGTH__:0x400
+                0x00000400                __SIGNATURE_REGION_LENGTH__ = DEFINED (__SIGNATURE_REGION_LENGTH__)?__SIGNATURE_REGION_LENGTH__:0x400
+                0x00000400                __USER_SIGNATURE_REGION_LENGTH__ = DEFINED (__USER_SIGNATURE_REGION_LENGTH__)?__USER_SIGNATURE_REGION_LENGTH__:0x400
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x00000000      0x5b0
+ *(.vectors)
+ .vectors       0x00000000       0x28 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+                0x00000000                __vector_default
+                0x00000000                __vectors
+ *(.vectors)
+ *(.progmem.gcc*)
+                0x00000028                . = ALIGN (0x2)
+                0x00000028                __trampolines_start = .
+ *(.trampolines)
+ .trampolines   0x00000028        0x0 linker stubs
+ *(.trampolines*)
+                0x00000028                __trampolines_end = .
+ *libprintf_flt.a:*(.progmem.data)
+ *libc.a:*(.progmem.data)
+ *(.progmem*)
+                0x00000028                . = ALIGN (0x2)
+ *(.jumptables)
+ *(.jumptables*)
+ *(.lowtext)
+ *(.lowtext*)
+                0x00000028                __ctors_start = .
+ *(.ctors)
+                0x00000028                __ctors_end = .
+                0x00000028                __dtors_start = .
+ *(.dtors)
+                0x00000028                __dtors_end = .
+ SORT(*)(.ctors)
+ SORT(*)(.dtors)
+ *(.init0)
+ .init0         0x00000028        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+                0x00000028                __init
+ *(.init0)
+ *(.init1)
+ *(.init1)
+ *(.init2)
+ .init2         0x00000028        0xc C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+ *(.init2)
+ *(.init3)
+ *(.init3)
+ *(.init4)
+ .init4         0x00000034       0x10 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_clear_bss.o)
+                0x00000034                __do_clear_bss
+ *(.init4)
+ *(.init5)
+ *(.init5)
+ *(.init6)
+ *(.init6)
+ *(.init7)
+ *(.init7)
+ *(.init8)
+ *(.init8)
+ *(.init9)
+ .init9         0x00000044        0x4 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+ *(.init9)
+ *(.text)
+ .text          0x00000048        0x2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+                0x00000048                __vector_1
+                0x00000048                __vector_12
+                0x00000048                __bad_interrupt
+                0x00000048                __vector_6
+                0x00000048                __vector_3
+                0x00000048                __vector_11
+                0x00000048                __vector_13
+                0x00000048                __vector_17
+                0x00000048                __vector_19
+                0x00000048                __vector_7
+                0x00000048                __vector_5
+                0x00000048                __vector_4
+                0x00000048                __vector_9
+                0x00000048                __vector_2
+                0x00000048                __vector_15
+                0x00000048                __vector_8
+                0x00000048                __vector_14
+                0x00000048                __vector_10
+                0x00000048                __vector_16
+                0x00000048                __vector_18
+                0x0000004a                . = ALIGN (0x2)
+ *(.text.*)
+ .text.handle_rx
+                0x0000004a        0x6 main.o
+                0x0000004a                handle_rx
+ .text.handle_tx
+                0x00000050       0x96 main.o
+                0x00000050                handle_tx
+ .text.setup    0x000000e6       0xc4 main.o
+                0x000000e6                setup
+ .text.pollButton
+                0x000001aa        0x8 main.o
+                0x000001aa                pollButton
+ .text.loop     0x000001b2       0x76 main.o
+                0x000001b2                loop
+ .text.main     0x00000228        0x6 main.o
+                0x00000228                main
+ .text.mrf_reset
+                0x0000022e       0x1e mrf24j.o
+                0x0000022e                mrf_reset
+ .text.mrf_read_short
+                0x0000024c       0x22 mrf24j.o
+                0x0000024c                mrf_read_short
+ .text.mrf_write_short
+                0x0000026e       0x1a mrf24j.o
+                0x0000026e                mrf_write_short
+ .text.mrf_write_long
+                0x00000288       0x2e mrf24j.o
+                0x00000288                mrf_write_long
+ .text.mrf_get_pan
+                0x000002b6       0x1e mrf24j.o
+                0x000002b6                mrf_get_pan
+ .text.mrf_set_pan
+                0x000002d4       0x14 mrf24j.o
+                0x000002d4                mrf_set_pan
+ .text.mrf_address16_write
+                0x000002e8       0x14 mrf24j.o
+                0x000002e8                mrf_address16_write
+ .text.mrf_address16_read
+                0x000002fc       0x1e mrf24j.o
+                0x000002fc                mrf_address16_read
+ .text.mrf_send16
+                0x0000031a       0xb8 mrf24j.o
+                0x0000031a                mrf_send16
+ .text.mrf_set_interrupts
+                0x000003d2        0xc mrf24j.o
+                0x000003d2                mrf_set_interrupts
+ .text.mrf_set_channel
+                0x000003de       0x1e mrf24j.o
+                0x000003de                mrf_set_channel
+ .text.mrf_init
+                0x000003fc       0x88 mrf24j.o
+                0x000003fc                mrf_init
+ .text.mrf_check_flags
+                0x00000484       0x34 mrf24j.o
+                0x00000484                mrf_check_flags
+ .text.mrf_get_bufferPHY
+                0x000004b8        0x8 mrf24j.o
+                0x000004b8                mrf_get_bufferPHY
+ .text.mrf_get_rxdata
+                0x000004c0        0x6 mrf24j.o
+                0x000004c0                mrf_get_rxdata
+ .text.mrf_tx_ok
+                0x000004c6        0x8 mrf24j.o
+                0x000004c6                mrf_tx_ok
+ .text.get_adc_value
+                0x000004ce       0x3a spi-master-adc1.o
+                0x000004ce                get_adc_value
+ .text.spi_setup
+                0x00000508        0x6 tinyspi.o
+                0x00000508                spi_setup
+ .text.spi_transfer_byte
+                0x0000050e       0x20 tinyspi.o
+                0x0000050e                spi_transfer_byte
+ .text.spi_transfer_nbytes
+                0x0000052e       0x7e tinyspi.o
+                0x0000052e                spi_transfer_nbytes
+                0x000005ac                . = ALIGN (0x2)
+ *(.fini9)
+ .fini9         0x000005ac        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+                0x000005ac                _exit
+                0x000005ac                exit
+ *(.fini9)
+ *(.fini8)
+ *(.fini8)
+ *(.fini7)
+ *(.fini7)
+ *(.fini6)
+ *(.fini6)
+ *(.fini5)
+ *(.fini5)
+ *(.fini4)
+ *(.fini4)
+ *(.fini3)
+ *(.fini3)
+ *(.fini2)
+ *(.fini2)
+ *(.fini1)
+ *(.fini1)
+ *(.fini0)
+ .fini0         0x000005ac        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ *(.fini0)
+                0x000005b0                _etext = .
+
+.data           0x00800100        0x0 load address 0x000005b0
+                [!provide]                PROVIDE (__data_start, .)
+ *(.data)
+ *(.data*)
+ *(.gnu.linkonce.d*)
+ *(.rodata)
+ *(.rodata*)
+ *(.gnu.linkonce.r*)
+                0x00800100                . = ALIGN (0x2)
+                0x00800100                _edata = .
+                [!provide]                PROVIDE (__data_end, .)
+
+.bss            0x00800100       0x87
+                0x00800100                PROVIDE (__bss_start, .)
+ *(.bss)
+ *(.bss*)
+ .bss.mrf_spi_buffer
+                0x00800100        0x3 mrf24j.o
+ .bss.tx_info   0x00800103        0x1 mrf24j.o
+ .bss.rx_info   0x00800104       0x77 mrf24j.o
+ .bss.ignoreBytes
+                0x0080017b        0x2 mrf24j.o
+ *(COMMON)
+ COMMON         0x0080017d        0x4 main.o
+                0x0080017d                message
+                0x0080017f                mrf_reg_TXSTAT
+                0x00800180                isr_lock
+ COMMON         0x00800181        0x3 mrf24j.o
+                0x00800181                mrf_flags
+                0x00800182                flag_got_tx
+                0x00800183                flag_got_rx
+ COMMON         0x00800184        0x3 spi-master-adc1.o
+                0x00800184                adc_buffer
+                0x00800187                PROVIDE (__bss_end, .)
+                0x000005b0                __data_load_start = LOADADDR (.data)
+                0x000005b0                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x00800187        0x0
+                [!provide]                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                [!provide]                PROVIDE (__noinit_end, .)
+                0x00800187                _end = .
+                [!provide]                PROVIDE (__heap_start, .)
+
+.eeprom         0x00810000        0x0
+ *(.eeprom*)
+                0x00810000                __eeprom_end = .
+
+.fuse
+ *(.fuse)
+ *(.lfuse)
+ *(.hfuse)
+ *(.efuse)
+
+.lock
+ *(.lock*)
+
+.signature
+ *(.signature*)
+
+.user_signatures
+ *(.user_signatures*)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment        0x00000000       0x30
+ *(.comment)
+ .comment       0x00000000       0x30 main.o
+                                 0x31 (size before relaxing)
+ .comment       0x00000030       0x31 mrf24j.o
+ .comment       0x00000030       0x31 spi-master-adc1.o
+ .comment       0x00000030       0x31 tinyspi.o
+
+.note.gnu.avr.deviceinfo
+                0x00000000       0x3c
+ .note.gnu.avr.deviceinfo
+                0x00000000       0x3c C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+
+.note.gnu.build-id
+ *(.note.gnu.build-id)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x00000000      0x1a0
+ *(.debug_aranges)
+ .debug_aranges
+                0x00000000       0x48 main.o
+ .debug_aranges
+                0x00000048      0x100 mrf24j.o
+ .debug_aranges
+                0x00000148       0x20 spi-master-adc1.o
+ .debug_aranges
+                0x00000168       0x38 tinyspi.o
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info     0x00000000     0x1ff8
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x00000000      0x576 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+ .debug_info    0x00000576      0x8d4 main.o
+ .debug_info    0x00000e4a      0xe66 mrf24j.o
+ .debug_info    0x00001cb0      0x134 spi-master-adc1.o
+ .debug_info    0x00001de4      0x214 tinyspi.o
+
+.debug_abbrev   0x00000000      0xb79
+ *(.debug_abbrev)
+ .debug_abbrev  0x00000000      0x52b C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+ .debug_abbrev  0x0000052b      0x166 main.o
+ .debug_abbrev  0x00000691      0x2e4 mrf24j.o
+ .debug_abbrev  0x00000975       0xbf spi-master-adc1.o
+ .debug_abbrev  0x00000a34      0x145 tinyspi.o
+
+.debug_line     0x00000000      0xdaf
+ *(.debug_line .debug_line.* .debug_line_end)
+ .debug_line    0x00000000      0x10f C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+ .debug_line    0x0000010f      0x3dd main.o
+ .debug_line    0x000004ec      0x648 mrf24j.o
+ .debug_line    0x00000b34       0xd1 spi-master-adc1.o
+ .debug_line    0x00000c05      0x1aa tinyspi.o
+
+.debug_frame    0x00000000      0x3a0
+ *(.debug_frame)
+ .debug_frame   0x00000000       0x74 main.o
+ .debug_frame   0x00000074      0x280 mrf24j.o
+ .debug_frame   0x000002f4       0x30 spi-master-adc1.o
+ .debug_frame   0x00000324       0x7c tinyspi.o
+
+.debug_str      0x00000000      0x72e
+ *(.debug_str)
+ .debug_str     0x00000000      0x1d9 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
+ .debug_str     0x000001d9      0x296 main.o
+                                0x2d0 (size before relaxing)
+ .debug_str     0x0000046f      0x25b mrf24j.o
+                                0x503 (size before relaxing)
+ .debug_str     0x000006ca       0x27 spi-master-adc1.o
+                                0x1da (size before relaxing)
+ .debug_str     0x000006f1       0x3d tinyspi.o
+                                0x225 (size before relaxing)
+
+.debug_loc      0x00000000     0x1117
+ *(.debug_loc)
+ .debug_loc     0x00000000      0x678 main.o
+ .debug_loc     0x00000678      0x833 mrf24j.o
+ .debug_loc     0x00000eab       0x50 spi-master-adc1.o
+ .debug_loc     0x00000efb      0x21c tinyspi.o
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+
+.debug_pubtypes
+ *(.debug_pubtypes)
+
+.debug_ranges   0x00000000      0x160
+ *(.debug_ranges)
+ .debug_ranges  0x00000000       0x38 main.o
+ .debug_ranges  0x00000038       0xf0 mrf24j.o
+ .debug_ranges  0x00000128       0x10 spi-master-adc1.o
+ .debug_ranges  0x00000138       0x28 tinyspi.o
+
+.debug_macro
+ *(.debug_macro)
+OUTPUT(ADC_COMM.elf elf32-avr)
+LOAD linker stubs

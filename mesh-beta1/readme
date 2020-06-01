@@ -1,0 +1,89 @@
+mesh-beta1
+
+This is a test of the core functionality of the AgriSenseMeshProject.
+
+Nework Components:
+==================
+
+"Base station": This the computer which co-ordinates the whole network. It's job will be to periodically broadcast a message to request data from the "nodes". It will also process and aggregate the data received from the nodes as well as receive diagnostic and error reports.
+In the current implementation the Base station is a Raspberry Pi computer linked via the SPI interface to a MRF25J40 module
+
+"Node": The node is a microcontroller linked via SPI with an MRF24J40 module, a 12-bit ADC and up to 8 sensors (additional sensors could be added if using the microcontroller's in-built 10-bit ADCs). The nodes respond to requests from the base station by taking data readings from their sensors and returning the results. The nodes also pass messages to their physical neighbor nodes in the network. (see network architecture information below)
+
+Network Architecture:
+====================
+
+The nodes are arranged in grid accross the field. Each node has a network address (short address) made up of 2 bytes. The first byte represents the column number and the second the row number of its position in the grid. The nodes communicate with each other along the rows and columns like so: (addresses are in hexadecimal)
+
+Base Station  --- 1010  --- 1110  --- 1210  --- 1310  --- 1410  --->
+                    |         |         |         |         |
+                  1011      1111      1211      1311      1411
+                    |         |         |         |         |
+                  1012      1112      1212      1312      1412
+                    |         |         |         |         |
+                  1013      1113      1213      1313      1413
+                    |         |         |         |         |
+                    V         V         V         V         V
+                    
+Each node will have two transmission functions:
+
+Send out: Sends the message away from the base to the higher numbered address
+Send in: Sends the message toward the base to the lower numbered address. The corner node (1010) sends this to the base station - this is the only node which communicates directly with the base station.
+
+Message Structure:
+=================
+
+The MRF24J40 module communicates using the IEEE 802.15.4-2003 communcations standard. This standard asserts various things about the structure of message, and addressing format. 
+
+In this implementation we leave the actual communications messaging to the module itself. However out message (referred to as the Physical Payload in the standard) is structured in an application-specific way for our network. This is what we refer to as the message here.
+
+Each message sent by a node or the base station has a 13 byte header:
+
+Byte    def               purpose
+0       SRC_PANID_HI      PanID of message source (MSB)
+1       SRC_PANID_LO      PanID of message source (LSB)
+2       SRC_ADDRESS_HI    Address of message source (MSB)
+3       SRC_ADDRESS_LO    Address of message source (LSB)
+4       DST_PANID_HI      PanID of message destination (MSB)
+5       DST_PANID_LO      PanID of message destination(LSB)
+6       DST_ADDRESS_HI    Address of message destination (MSB) 
+7       DST_ADDRESS_LO    Address of message destination (LSB)
+8       MSG_HOP_COUNT     Counter to store the number of nodes the message passed through
+9       MSG_SZ            Total size of the message including this header
+10       CMD_HI            Command code (MSB)
+11      CMD_LO            Command code (LSB)
+12      CMD_DATA_0        Command data 
+13      CMD_DATA_1        Command data 
+14      MSG_DATA          Beginning of data being sent (if required)
+
+The command codes determine the kind of message being sent. The codes consist of two bytes respresenting a two character mnemonic. There are also two bytes for command data if necessary.
+
+DQ : originating from the base station
+This is a request for data from the target node (or possibly all nodes? - do we need a broadcast mode?).  The CMD_DATA should contain a unique id for the request. The returning node should include this id along with the data or any error message it returns to the base. The purpose of the id is so that if a node ends up returning data after a second request has already been sent the base station knows which request it relates to.
+
+DA : originating from a node
+This is the data sent back to the base. The data starts at MSG_DATA. The command data should contain the id of the data request this data is in reference to.
+
+BY:
+This sends a message consisting of the header and single byte of data (for network diagnostic purposes)
+
+Other suggested command codes to be implemented are
+
+BQ : request battery status
+
+BA : return battery status
+
+XR: return an error message or alert to the base station to a problem
+
+
+
+
+
+
+
+
+
+
+
+
+
