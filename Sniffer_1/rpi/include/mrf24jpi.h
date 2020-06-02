@@ -184,8 +184,10 @@ uint8_t mrf_reg_TXSTAT;
 
 uint8_t isr_lock;
 
-#define GRAB_ISR_MUTEX while(isr_lock);isr_lock=1;
-#define DROP_ISR_MUTEX isr_lock = 0;
+//**JAMES: I commented the MUTEX s out , not sure they're acheiving much anyway!
+
+#define GRAB_ISR_MUTEX //while(isr_lock);isr_lock=1;
+#define DROP_ISR_MUTEX //isr_lock = 0;
 
 
         void mrf_reset(void);

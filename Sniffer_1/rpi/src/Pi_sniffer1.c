@@ -112,7 +112,7 @@ void setup()
     	wiringPiSPISetup (0, 1000000) ;
 
 	// Set pin to output in case it's not
-    	pinMode(INT_PIN, OUTPUT);
+    	pinMode(INT_PIN, INPUT);   // **JAMES I changed this to INPUT - could be firing interrupt randomly
     	pinMode(RESET_PIN, OUTPUT);
     	pullUpDnControl(INT_PIN, PUD_UP); /*Interrupt pin must idle high*/
     	pullUpDnControl(RESET_PIN, PUD_UP); /*Reset pin must idle high*/
