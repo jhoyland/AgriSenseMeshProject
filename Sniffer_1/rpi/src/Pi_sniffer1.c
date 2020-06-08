@@ -25,34 +25,26 @@ uint8_t active_message[PK_SZ_TXRX_BUFFER];
 uint8_t running_status = 0;
 
 
-
-
-
-
 void handle_rx() {
 
     running_status |= (1<<RU_RX_HANDLE);
-
-    uint8_t* recieved_data_pointer = mrf_get_rxdata();
+    mrf_rx_disable();
+    /*uint8_t* recieved_data_pointer = mrf_get_rxdata();
     int j;
     for(j = 0; j < PK_SZ_TXRX_BUFFER; j++)
     {
 	printf("\nGot: %i",recieved_data_pointer[j]);
-    }
-    memcpy(recieved_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()*sizeof(uint8_t)); // Copy the message into the recieved data buffer
+	fflush(stdout);
+    }*/
+    memcpy(recieved_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()); // Copy the message into the recieved data buffer
     //recieved_data_buffer = mrf_get_rxdata();
 
-    //char x[4];
-
-    //x[0] = recieved_data_buffer[0];
-    //x[1] = recieved_data_buffer[1];
-    //x[2] = recieved_data_buffer[2];
-    //x[3] = recieved_data_buffer[3];
     int i;
-    /*for (i = 0; i < PK_SZ_TXRX_BUFFER;i++)
+    for (i = 0; i < PK_SZ_TXRX_BUFFER;i++)
     {
-	printf("\nGot: 0x %i",recieved_data_buffer[i]);
-    }*/
+	printf("\nGot: 0x %x",recieved_data_buffer[i]);
+	fflush(stdout);
+    }
 
     //printf("\nGot: 0x %x", recieved_data_buffer[PK_COMMAND_HEADER + PK_SZ_PACKET]); 
     //fflush(stdout);
@@ -65,6 +57,7 @@ void handle_rx() {
    // {
   //      printf("\nNode message queued");
    // }
+   mrf_rx_enable();
    running_status &=~(1<<RU_RX_HANDLE);
 
 }
@@ -175,7 +168,6 @@ void set_request_id(uint8_t* buff)
 void send_command(uint16_t target, uint8_t* buff)
 {
     mrf_send16(target,buff,buff[PK_COMMAND_HEADER + PK_SZ_PACKET]);
-    printf("0x%x",buff[PK_DEST_PANID_HI]);
 }
 
 
@@ -236,7 +228,7 @@ void main()
 	setup();
 	printf("\nSetup Complete");
 	send_ping(0x0001,transmit_data_buffer);
-	printf("\nMessge Sent\n");
+	printf("\nMessage Sent\n");
 	print_message(transmit_data_buffer);
 	printf("\n%x",bytes_to_word(&transmit_data_buffer[10]));
 	fflush(stdout);

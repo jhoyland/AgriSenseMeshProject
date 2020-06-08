@@ -3,11 +3,13 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <wiringPi.h>
+#include <wiringPiSPI.h>
+#include <string.h>
 #include "mrf24jpi.h"
 #include "cmdspec.h"
 #include "netspec.h"
 #include "pktspec.h"
-#include <string.h>
+
 
 // Which GPIO pin we're using
 
@@ -217,7 +219,7 @@ void setup() {
     mrf_reset(); // Reset the MRF chip
     mrf_init();  // Initialize the MRF  chip
   
-    mrf_set_pan(PAN_ID);    // Set my panID
+    mrf_set_pan(ASMP_PANID);    // Set my panID
   // This is _our_ address
     mrf_address16_write(PI_ADDR);  // Set raspberry pi address
     

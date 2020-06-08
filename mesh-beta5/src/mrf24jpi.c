@@ -126,7 +126,7 @@ uint16_t mrf_address16_read(void) {
  * @param data
  */
 void mrf_send16(uint16_t dest16, uint8_t * data, uint8_t len) {
-    //GRAB_ISR_MUTEX;
+    GRAB_ISR_MUTEX;
     //uint8_t len = strlen(data); // get the length of the char* array
     int i = 0;
     mrf_write_long(i++, bytes_MHR); // header length
@@ -160,7 +160,7 @@ void mrf_send16(uint16_t dest16, uint8_t * data, uint8_t len) {
     }
     // ack on, and go!
     mrf_write_short(MRF_TXNCON, (1<<MRF_TXNACKREQ | 1<<MRF_TXNTRIG));
-    //DROP_ISR_MUTEX;
+    DROP_ISR_MUTEX;
 }
 
 void mrf_set_interrupts(void) {
@@ -231,7 +231,7 @@ void mrf_interrupt_handler(void) {
   /*  printf("Interrupted");
     if(isr_running) return;
         else isr_running = 1;  */  // Prevent multiple interrupt handlers being run
-   printf("\nMrf_Interrupt_handler"); fflush(stdout);
+
     GRAB_ISR_MUTEX;
 
     uint8_t last_interrupt = mrf_read_short(MRF_INTSTAT);
@@ -243,28 +243,20 @@ void mrf_interrupt_handler(void) {
         mrf_rx_disable();
         // read start of rxfifo for, has 2 bytes more added by FCS. frame_length = m + n + 2
         uint8_t frame_length = mrf_read_long(0x300);
-	rx_info.frame_length = frame_length; //06/08/20: fixed undesired behavior (MH)
-	printf("\nFrame length: %i ", frame_length); fflush(stdout);
 
         // buffer all bytes in PHY Payload
         if(mrf_flags | MRF_BUF_PHY){
-	    printf("\nMRF_BUF_PHY Entered"); fflush(stdout);
             int rb_ptr = 0;
             for (i = 0; i < frame_length; i++) { // from 0x301 to (0x301 + frame_length -1)
                 rx_buf[rb_ptr++] = mrf_read_long(0x301 + i);
             }
         }
-	printf("\nPre-Loop"); fflush(stdout);
-        // buffer data bytes: This loop does not enter 06/05/2020
-	printf("\nMrf_rx_datalength: %i ", mrf_rx_datalength()); fflush(stdout);
-	printf("\nMrf_rx_datalength: %i ", mrf_rx_datalength()); fflush(stdout);
+
+        // buffer data bytes
         int rd_ptr = 0;
         // from (0x301 + bytes_MHR) to (0x301 + frame_length - bytes_nodata - 1)
         for (i = 0; i < mrf_rx_datalength(); i++) {
-	    printf("\nIn-loop"); fflush(stdout);
             rx_info.rx_data[rd_ptr++] = mrf_read_long(0x301 + bytes_MHR + i);
-	    printf("\nBuffered_data_bytes");
-	    fflush(stdout);
         }
 
         rx_info.frame_length = frame_length;
