@@ -1,0 +1,837 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"print",
+				"printf\tprintf …"
+			],
+			[
+				"prin",
+				"print_complex"
+			],
+			[
+				"sq",
+				"sqrt_term"
+			],
+			[
+				"out",
+				"output_histogram"
+			],
+			[
+				"pr",
+				"print_histogram"
+			],
+			[
+				"b",
+				"bin_top"
+			],
+			[
+				"bin",
+				"bin_start"
+			],
+			[
+				"f",
+				"fprintf\tfprintf …"
+			],
+			[
+				"sinde",
+				"sindelta2"
+			],
+			[
+				"sin",
+				"sin2ga"
+			],
+			[
+				"cos2",
+				"cos2ga2"
+			],
+			[
+				"sin2",
+				"sin2th2"
+			],
+			[
+				"sub",
+				"substrate_k"
+			],
+			[
+				"set_",
+				"set_aoi"
+			],
+			[
+				"la",
+				"layer_k"
+			],
+			[
+				"prop",
+				"prop_term"
+			],
+			[
+				"fres",
+				"fresnel_rp"
+			],
+			[
+				"fresen",
+				"fresnel_rs"
+			],
+			[
+				"get",
+				"get_layer"
+			],
+			[
+				"set",
+				"set_lambda"
+			],
+			[
+				"layer",
+				"layer_data"
+			],
+			[
+				"TCCR",
+				"TCCR0A"
+			],
+			[
+				"star",
+				"startframe"
+			],
+			[
+				"glass",
+				"glass_k"
+			],
+			[
+				"glas",
+				"glass_n"
+			],
+			[
+				"vi_com",
+				"vi_command_write_int_float"
+			],
+			[
+				"vi",
+				"vi_command_write_int"
+			],
+			[
+				"in",
+				"instrument"
+			],
+			[
+				"return",
+				"returnCount"
+			],
+			[
+				"ret",
+				"returnCount"
+			],
+			[
+				"str",
+				"strlen"
+			],
+			[
+				"bit",
+				"bit_count"
+			],
+			[
+				"uint",
+				"uint16_t"
+			],
+			[
+				"rv",
+				"rvar_old"
+			],
+			[
+				"rme",
+				"rmean"
+			],
+			[
+				"rmean",
+				"rmean_old"
+			],
+			[
+				"old",
+				"old_var"
+			],
+			[
+				"ru",
+				"running_variance"
+			],
+			[
+				"runn",
+				"running_mean"
+			],
+			[
+				"new",
+				"new_mean"
+			],
+			[
+				"sd",
+				"sd"
+			],
+			[
+				"stdio",
+				"stdio.h\tstandard header"
+			],
+			[
+				"inc",
+				"include"
+			],
+			[
+				"std",
+				"stdlib.h\tstandard header"
+			],
+			[
+				"c",
+				"c"
+			],
+			[
+				"spi_t",
+				"spi_tx_buffer_cursor"
+			],
+			[
+				"spi_b",
+				"spi_byte_limit"
+			],
+			[
+				"spi",
+				"spi_rx_buffer_cursor"
+			],
+			[
+				"mean",
+				"mean"
+			],
+			[
+				"st",
+				"stdio.h\tstandard header"
+			],
+			[
+				"SPI",
+				"SPI_MCU_READY"
+			],
+			[
+				"spi_",
+				"spi_master"
+			],
+			[
+				"trans",
+				"transfer_complete"
+			],
+			[
+				"a",
+				"adc_buffer"
+			],
+			[
+				"ini",
+				"initiate_spi_transfer_master"
+			],
+			[
+				"init",
+				"initiate_spi_transfer_slave"
+			],
+			[
+				"ADC",
+				"ADC_VALUE_NONE"
+			],
+			[
+				"AD",
+				"ADC_VALUE_READING"
+			],
+			[
+				"adc",
+				"adc_value_ready"
+			],
+			[
+				"SP",
+				"SPI_ACTIVE"
+			],
+			[
+				"SPI_",
+				"SPI_TO_SUPERMASTER"
+			],
+			[
+				"rx",
+				"spi_rx_buffer"
+			],
+			[
+				"sp",
+				"spi_bus_contention"
+			],
+			[
+				"is",
+				"is_master"
+			],
+			[
+				"u",
+				"uint8_t"
+			],
+			[
+				"re",
+				"request_data"
+			],
+			[
+				"qu",
+				"queue_memory"
+			],
+			[
+				"SZ",
+				"SZ_COMMAND_BUFFER"
+			],
+			[
+				"__Flas",
+				"__FLASH_RED__"
+			],
+			[
+				"ex",
+				"execute_next_command"
+			],
+			[
+				"__",
+				"__FLASH_YELLOW__"
+			],
+			[
+				"command",
+				"command_send_test"
+			],
+			[
+				"tran",
+				"transmit_data_buffer"
+			],
+			[
+				"tr",
+				"transmit_command_header"
+			],
+			[
+				"PK_SZ",
+				"PK_SZ_ADDR_HEADER"
+			],
+			[
+				"PK",
+				"PK_CMD_DATA_0"
+			],
+			[
+				"YE",
+				"__YELLOW_ON__"
+			],
+			[
+				"___",
+				"__FLASH_YELLOW__"
+			],
+			[
+				"mrf_rx",
+				"mrf_rx_enable"
+			],
+			[
+				"to",
+				"toggle"
+			],
+			[
+				"reque",
+				"request"
+			],
+			[
+				"tra",
+				"transmit_data_buffer"
+			],
+			[
+				"send",
+				"send_downstream"
+			],
+			[
+				"led",
+				"led_state"
+			],
+			[
+				"PK_CMD",
+				"PK_CMD_DATA_2"
+			],
+			[
+				"PK_CMD_DATA",
+				"PK_CMD_DATA_2"
+			],
+			[
+				"LED",
+				"LED_1"
+			],
+			[
+				"PK_CMD_",
+				"PK_CMD_DATA_1"
+			],
+			[
+				"uin",
+				"uint8_t"
+			],
+			[
+				"__GRE",
+				"__GREEN_OFF__"
+			],
+			[
+				"__RED",
+				"__RED_ON__"
+			],
+			[
+				"__YE",
+				"__YELLOW_OFF__"
+			],
+			[
+				"__GE",
+				"__GREEN_OFF__"
+			],
+			[
+				"__GREE",
+				"__GREEN_ON__"
+			],
+			[
+				"fla",
+				"flag_got_rx"
+			],
+			[
+				"__FLAS",
+				"__FLASH_GREEN__"
+			],
+			[
+				"PK_DES",
+				"PK_DEST_ADDR_HI"
+			],
+			[
+				"SZ_",
+				"PK_SZ_TXRX_BUFFER"
+			],
+			[
+				"proce",
+				"process_next_node_message"
+			],
+			[
+				"dat",
+				"dat_stderr"
+			],
+			[
+				"channe",
+				"channel_read_ok"
+			],
+			[
+				"P",
+				"PK_DATUM_SIZE"
+			],
+			[
+				"msg",
+				"msg"
+			],
+			[
+				"act",
+				"active_message"
+			],
+			[
+				"PK_SZ_",
+				"PK_SZ_CMD_HEADER"
+			],
+			[
+				"process",
+				"process_node_ping_echo"
+			],
+			[
+				"ac",
+				"active_message"
+			],
+			[
+				"CMD",
+				"CMD_DATA"
+			],
+			[
+				"PK_",
+				"PK_COMMAND_HEADER"
+			],
+			[
+				"mess",
+				"message_queue"
+			],
+			[
+				"rec",
+				"recieved_data_buffer"
+			],
+			[
+				"bytes",
+				"bytes_to_word"
+			],
+			[
+				"targ",
+				"target_node"
+			],
+			[
+				"mrf",
+				"mrf_send16"
+			],
+			[
+				"tae",
+				"target_node"
+			],
+			[
+				"req",
+				"req_id"
+			],
+			[
+				"command_get",
+				"command_get_parameter"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/james/dev/4600F19exam/prob3/main.c",
+		"/home/james/dev/4600F19exam/prob1/main.c",
+		"/home/james/dev/4600F19exam/prob2/main.c",
+		"/home/james/dev/4600F19exam/README",
+		"/home/james/dev/4600F19exam/prob3/data.dat",
+		"/home/james/dev/p4600marking/MHilborn/Phys4600/p4600tasks/task3/task3read.c",
+		"/home/james/dev/4600F19exam/prob3/datagen.c",
+		"/home/james/dev/p4600marking/DShum/phys4600/task2/mean.c",
+		"/functions.c",
+		"/home/james/dev/ellipsometry/include/model.h",
+		"/home/james/dev/Python/sinefit/fitsine.py",
+		"/home/james/dev/Python/wliproc/wlip5.py",
+		"/home/james/dev/Python/sinefit/mydata.dat",
+		"/home/james/dev/ellipsometry/src/ellipsometry.cpp",
+		"/home/james/dev/ellipsometry/Makefile",
+		"/home/james/dev/ellipsometry/src/main.cpp",
+		"/home/james/dev/AgriSenseMeshProject/experiments/rpi-spi-shift/rpi-spi-shift.py",
+		"/home/james/dev/AgriSenseMeshProject/experiments/atmeg-spi-master/spi-master-shift1.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/atmeg-spi-master/spi-master-adc1.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/include/tinyspi.h",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/src/tinyspi.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/Blueberry/avr/src/sensenode.c",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS1120F19/as5.tex",
+		"/home/james/dev/ellipsometry/include/fresnel.h",
+		"/home/james/dev/ellipsometry/include/ellipsometry.h",
+		"/home/james/dev/ellipsometry/src/fresnel.cpp",
+		"/home/james/dev/ellipsometry/src/model.cpp",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/Projects/fitrt/include/scsa.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/Projects/fitrt/include/smanneal.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/Projects/fitrt/include/simfit.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/PARAM.CPP",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/MATRIX.H",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/PARAM.H",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/PARAMDEF.H",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/RTMACROS.H",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/Service.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/Service.cpp",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/sarray.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/WinRT.cpp",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/WinRT.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/WinRTproj.cpp",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/XYDATA.H",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/Material.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/Material.cpp",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/Layers.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/Layers.cpp",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/Ema.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/Ema.cpp",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/Calcnode.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/WinRT/Calcnode.cpp",
+		"/home/james/dev/Python/pymightex/mytexinfo.py",
+		"/home/james/Downloads/SM-series_camera_software_release_v2.0_181212/SDK/Examples/VC_Console_Example/SSClassic_USBCamera_SDK.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/fitrt/Model.cpp",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/fitrt/include/rt32c.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/fitrt/include/matrix.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/fitrt/include/clever.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/fitrt/include/material.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/fitrt/Calcnode.cpp",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/fitrt/include/calcnode.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/fitrt/include/layers.h",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/fitrt/Layers.cpp",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/fitrt/fitrt9.cpp",
+		"/mnt/cifs/Archive/Backups/BAckup 07052016/James Work/Projects/fitrt/fitrt.cpp",
+		"/home/james/Downloads/SM-series_camera_software_release_v2.0_181212/SDK/Examples/VC_Console_Example/VC_Console_Example.cpp",
+		"/home/james/Downloads/SM-series_camera_software_release_v2.0_181212/SDK/Examples/VC_Console_Example/StdAfx.cpp",
+		"/home/james/dev/Python/pymightex/Mightex.py",
+		"/home/james/Downloads/SM-series_camera_software_release_v2.0_181212/SDK/Examples/VC_Console_Example/StdAfx.h",
+		"/home/james/Downloads/SM-series_camera_software_release_v2.0_181212/TWAIN/Mightex SuperSpeed USB SM-Series USB Camera TWAIN Application Guide.pdf",
+		"/home/james/dev/AgriSenseMeshProject/experiments/attiny-spi-master/spi-master-shift1.c",
+		"/home/james/dev/AgriSenseMeshProject/mesh-beta1/avr-src/tinyspi.h",
+		"/home/james/dev/AgriSenseMeshProject/mesh-beta1/avr-src/tinyspi.c",
+		"/home/james/dev/AgriSenseMeshProject/experiments/attiny-spi-master/spi-master-adc1.c",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS1120S20/physics-slides-library.tex",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS1120S20/free-body-diagrams.tex",
+		"/home/james/dev/Python/point1/point1.py",
+		"/home/james/dev/Python/point1/point1cpp.cpp",
+		"/home/james/dev/Python/wliproc/wlip3.py",
+		"/home/james/SpiderOak Hive/James/drawscript",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS1120S20/free-body-diagrams.aux",
+		"/home/james/bin/setup-avr",
+		"/home/james/dev/ellipsometry/src/ellipsometry.h",
+		"/home/james/SpiderOak Hive/James/ReadablePhysics/ReadablePhysics.tex",
+		"/home/james/SpiderOak Hive/James/Learning/LaTex/MyBeamerTemplate.tex",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS2420/PHYS2420/PHYS2420-F18-L8.tex",
+		"/home/james/SpiderOak Hive/James/Learning/LaTex/MyTikzTest.tex",
+		"/home/james/SpiderOak Hive/James/Teaching/PHYS 1120 plan",
+		"/home/james/dev/phys4600f19/task8/src/main.c",
+		"/home/james/dev/i2cOLED/src/twimaster.c",
+		"/home/james/Documents/USB 3.0 Camera (SMX-)/SDK/Examples/VC_Console_Example/VC_Console_Example.cpp",
+		"/home/james/Documents/USB 3.0 Camera (SMX-)/SDK/Examples/VC_Console_Example/StdAfx.cpp",
+		"/home/james/Documents/USB 3.0 Camera (SMX-)/SDK/Examples/VC++/VC_Example.cpp",
+		"/home/james/Documents/USB 3.0 Camera (SMX-)/SDK/Examples/VC++/VC_ExampleDlg.cpp",
+		"/home/james/dev/phys4600f19/template/Makefile",
+		"/home/james/dev/phys4600f19/task5/src/main.c",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS1120 F17/moodquiz2motionforce.tex",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS1120F19/as4.tex",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS1120F19/assignment3.tex",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS1120 F17/moodquiz4torquecircle.tex",
+		"/home/james/dev/newport/newfocus8742/60-usb.rules",
+		"/home/james/dev/newport/newfocus8742/setup.py",
+		"/home/james/dev/newport/newfocus8742/README.rst",
+		"/home/james/bin/mount-home",
+		"/home/james/dev/newport/newfocus8742/test.py",
+		"/home/james/dev/newport/python_newport_controller/newport.py",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS4600F19/adder_circuit.png",
+		"/home/james/SpiderOak Hive/James/Teaching/Current Courses/PHYS1102/P1102-S19-W2.docx",
+		"/home/james/dev/phys4600f19/task6/rigol-dg1000z.c",
+		"/home/james/dev/p4600marking/Manny/MannyProgramming/task4/smoothing_new.c",
+		"/home/james/dev/p4600marking/AChen/phys4600work/task4/test.c",
+		"/home/james/dev/p4600marking/AChen/phys4600work/task4/remove_noice.c",
+		"/home/james/dev/p4600marking/AChen/phys4600work/task5/src/main.c",
+		"/home/james/dev/p4600marking/JLee/repositoryA/task4/src/statistics.c",
+		"/home/james/dev/p4600marking/JLee/repositoryA/task4/src/main.c",
+		"/home/james/dev/p4600marking/Manny/MannyProgramming/task4/Noise.c",
+		"/home/james/dev/p4600marking/BDuong/p4600work/task4/Source/noisysinwave.c",
+		"/home/james/dev/p4600marking/BDuong/p4600work/task4/Source/curvetest.c",
+		"/home/james/dev/p4600marking/BDuong/p4600work/task4/makefile.old",
+		"/home/james/dev/p4600marking/BDuong/p4600work/task4/Comments.txt",
+		"/home/james/dev/p4600marking/BDuong/p4600work/task4/Source/statistics.c",
+		"/home/james/dev/p4600marking/BDuong/p4600work/task4/Makefile",
+		"/home/james/dev/p4600marking/BDuong/p4600work/task3/task3part1.c",
+		"/home/james/dev/p4600marking/BDuong/p4600work/task3/task3part2.c",
+		"/home/james/dev/p4600marking/AChen/phys4600work/task4/curve.h",
+		"/home/james/dev/p4600marking/AChen/phys4600work/task4/random.c",
+		"/home/james/dev/p4600marking/AChen/phys4600work/task4/random.h",
+		"/home/james/dev/p4600marking/AChen/phys4600work/task4/curve.c",
+		"/home/james/dev/p4600marking/AChen/phys4600work/task4/remove_noice.h",
+		"/home/james/dev/p4600marking/AChen/phys4600work/task3/commandline.c"
+	],
+	"find":
+	{
+		"height": 31.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"^\\n",
+			"\\n\\n\\n",
+			" ",
+			"wavenumber",
+			"//DEBUGOUT",
+			"glass_",
+			"pdms_",
+			"DEBUGOUT",
+			"cout",
+			"element_matrix::",
+			"layer_data::",
+			"uint32_t",
+			"uint16_t",
+			" ",
+			"%d",
+			"f(\"S",
+			"svg",
+			"mks.",
+			"ISR",
+			"double",
+			"float",
+			"TX_STAT",
+			"TX",
+			"adc_active_channels_bitmask",
+			"print_message",
+			"case",
+			"new_queue",
+			"__FLASH_RED__",
+			"channel",
+			"__FLASH_RED__",
+			"memset",
+			"set_downstream_address_header",
+			"__YELLOW_ON__",
+			"my_address",
+			"__YELLOW_ON__",
+			"flag_got_tx",
+			"tx_info",
+			"handle_tx",
+			"handle_tex",
+			"mrf_set_bufferPHY",
+			"mrf_flag",
+			"mrf_flags",
+			"wiringPi",
+			"mrf_flags",
+			"sei()",
+			"flag_got_rx",
+			"tx_info",
+			"rx_info",
+			"mrf_rx_enable",
+			"mrf_tx_ok",
+			"mrf_tk_ok",
+			"send_downstream",
+			"req_id",
+			"set_target_node",
+			"transmit_command_header",
+			"transmit_data_buffer",
+			"transmit_command_header",
+			"command_queue",
+			"state",
+			"PK_COMMAND_HEADER",
+			"packet",
+			"PACKET",
+			"packet",
+			"reset"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"",
+			"\\n",
+			",",
+			"cout",
+			"substrate_",
+			"layer_",
+			"//DEBUGOUT",
+			"DEBUGOUT",
+			"data_type",
+			"uint32_t",
+			"",
+			"%lu",
+			"f(\"\\nS"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 31.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "blueberry.sublime-project",
+	"replace":
+	{
+		"height": 58.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

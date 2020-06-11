@@ -36,7 +36,7 @@
 #define PK_SZ_PACKET 1				// Size of the entire message including the header
 #define PK_CMD_HI 2					// MSB of the command word
 #define PK_CMD_LO 3					// LSB of the command word
-#define PK_CMD_DATA_0 4				// Command data bytes: 
+#define PK_CMD_DATA_0 4				// Command data bytes: 0 is req_id
 #define PK_CMD_DATA_1 5				//     These four bytes are used for command specific arguments.
 #define PK_CMD_DATA_2 6				//	   All four bytes must be sent even if not needed for the specific message
 #define PK_CMD_DATA_3 7				//

@@ -15,25 +15,36 @@
 #define SZ_COMMAND PK_SZ_CMD_HEADER
 
 
-uint8_t transmit_data_buffer[PK_SZ_TXRX_BUFFER];
-uint8_t recieved_data_buffer[PK_SZ_TXRX_BUFFER];
-uint8_t queue_memory[SZ_COMMAND * SZ_COMMAND_BUFFER + 1];
-uint8_t test_command[SZ_COMMAND];
-uint8_t error_data_buffer[PK_SZ_ERR_BUFFER];
-uint8_t* transmit_command_header;
-uint8_t adc_buffer[3];
-uint8_t* active_command;
+uint8_t transmit_data_buffer[PK_SZ_TXRX_BUFFER]; // Buffer for transmitted message
+uint8_t recieved_data_buffer[PK_SZ_TXRX_BUFFER]; // Buffer for received message
+uint8_t queue_memory[SZ_COMMAND * SZ_COMMAND_BUFFER + 1];  // Command queue buffer
+uint8_t test_command[SZ_COMMAND];  // test command used for debugging
+uint8_t error_data_buffer[PK_SZ_ERR_BUFFER];  //  Buffer for transmitting error message
+uint8_t* transmit_command_header;   // Convenience pointer to the command portion of the transmit buffer
+uint8_t adc_buffer[3];  // Buffer for transfer for control of the ADC
+uint8_t* active_command;  // Pointer to the current active command - physical memory for this lies in the "data" section of the error buffer so it is 
+							// automatically transmitted as part of any error message
 
-uint8_t startup_status = 0;
-uint8_t running_status = 0;
+// Status flags are set and unset during operation and packaged with error messages
+
+uint8_t startup_status = 0;  // Status flags for during the power-on setup sequence
+uint8_t running_status = 0;  // Status flags for normal operation
+
+// Queue of commands. The queue holds up to SZ_COMMAND_BUFFER commands
 
 struct simple_queue command_queue;
 
+// Currently active ADC channels
+
 uint8_t adc_active_channels_bitmask = 3;
+
+// This node's address
 
 uint16_t my_address;
 
 #define __DIAGNOSTIC_LEDS__
+
+// Diagnostic LEDS for testing
 
 #ifdef __DIAGNOSTIC_LEDS__
 
@@ -67,19 +78,29 @@ uint16_t my_address;
 
 uint16_t big_counter = 0;
 
+// Recieve handler - called by check flags function if a the MRF reports a message has been received
+
 void handle_rx()
 {
 	running_status |= (1<<RU_RX_HANDLE);
 
+	// Copy the received data from the mrf to the received data buffer
+
 	memcpy(recieved_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()*sizeof(uint8_t));
+
+	// Check of the recieved packet is addressed to this node
 
 	if( bytes_to_word(& recieved_data_buffer[PK_DEST_ADDR_HI]) == my_address )
 	{
+		// Queue the received command. Only the command header section of the message is stored in the queue
+
 		enqueue( &command_queue, &recieved_data_buffer[PK_COMMAND_HEADER] ); 
 		// TO DO: Check that enqueue worked. Currently the command is lost if queue is full - should send error to base in this case
 	}
 	else
 	{
+		// TO DO: Send the received data on to the next node
+
 		send_error(bytes_to_word(& recieved_data_buffer[PK_DEST_ADDR_HI]));
 		/*
 		recieved_data_buffer[PK_COMMAND_HEADER + PK_HOP_COUNT] ++;
@@ -96,6 +117,8 @@ void handle_rx()
 
 	running_status &= ~(1<<RU_RX_HANDLE);
 }
+
+// Handles the notification of the transmission of data - doesn't do much yet
 
 void handle_tx()
 {
@@ -118,6 +141,8 @@ void handle_tx()
 
 }
 
+// Read a single value from the ADC chip. This is a 3-byte SPI transfer. Returns the value as a 16 bit unsigned integer
+
 uint16_t get_adc_value(uint8_t chan)
 {
 	adc_buffer[0] = 6 | (chan >>2);
@@ -130,6 +155,9 @@ uint16_t get_adc_value(uint8_t chan)
 	
 	return b2 | (b1<<8);
 }
+
+// Read NP_ADC_N_SAMPLES and find their average and standard deviation. The mean and sd are both 12-bit values which are returned packed
+// into 3 8-bit integers -  problems getting this to work
  
 uint8_t get_packed_data(uint8_t * op, uint8_t ch)
 {
@@ -149,48 +177,49 @@ uint8_t get_packed_data(uint8_t * op, uint8_t ch)
 	mean = mean / NP_ADC_N_SAMPLES;	// Calculate mean
 	serr = sqrt( (serr - NP_ADC_N_SAMPLES*mean*mean)/(NP_ADC_N_SAMPLES*(NP_ADC_N_SAMPLES-1.0)) );  // Calculate standard error
 
-	mean = fmin(mean,4095);
+	mean = fmin(mean,0xFFF);
 	serr = fmax(serr,1);			// Minimum 1 bit error
 
-	data[0] = mean & 4095;
-	data[1] = serr & 4095;
+	data[0] = mean;
+	data[1] = serr;
 
 	if(data[1]==0) data[1] = 1;
-
-	/*uint16_t data1[4];
-	data1[0] = 2345;
-	data1[1] = 678;
-	data1[2] = 3210;
-	data1[3] = 456;
-
-	
-
-	data[0] = get_adc_value(ch);
-	data[1] = get_adc_value(ch);*/
 
 	pack_12bit(op,data); // Pack the data into the supplied array
 
 	return 1;
 }
 
+// Command function for get data request
+// 
+
 void command_get_data(uint8_t* command)
 {
 	running_status |= (1<<RU_DATA_COLLECT);
+
+	// Set the command code in the tx buffer to "DA"
 	word_to_bytes(&transmit_command_header[PK_CMD_HI],CMD_DATA);
 
+	// Copy the request id from the command into the tx buffer as command data
 	transmit_command_header[PK_CMD_DATA_0] = command[PK_CMD_DATA_0]; // REQUEST ID HI
 	transmit_command_header[PK_CMD_DATA_1] = command[PK_CMD_DATA_1]; // REQUEST ID LO
-	uint8_t adc_channel_request_bitmask = command[PK_CMD_DATA_2]; // Requested ADC channels
-	uint8_t adc_read_ok_bitmask = 0;
-	transmit_command_header[PK_SZ_PACKET] = PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER;
-	uint8_t* data_pointer = &transmit_data_buffer[PK_DATA_START];
 
+	// Set the requested ADC channels
+	uint8_t adc_channel_request_bitmask = command[PK_CMD_DATA_2]; // Requested ADC channels
+	uint8_t adc_read_ok_bitmask = 0; // Holds the success status of each channel
+	transmit_command_header[PK_SZ_PACKET] = PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER;  // Initial transmit packet size is just address and command header lengths
+	uint8_t* data_pointer = &transmit_data_buffer[PK_DATA_START];  // Sensor data will be read directly into the transmit buffer data section
+
+
+	// Scan through the ADC channels
 	for(uint8_t i=0;i<ADC_N_CHANNELS;i++)
 	{
+		// ADC read performed if channel 'i' is requested and active
 		if((adc_channel_request_bitmask & adc_active_channels_bitmask) & (1<<i))
 		{
 			if(get_packed_data(data_pointer, i)) 
 			{
+				// ADC read is succesful update read status flag and packet size, move data pointer to next slot
 				adc_read_ok_bitmask |= (1<<i);
 				transmit_command_header[PK_SZ_PACKET] += 3;
 				data_pointer += 3;
@@ -203,7 +232,7 @@ void command_get_data(uint8_t* command)
 	running_status &= ~(1<<RU_DATA_COLLECT);
 
 	transmit_command_header[PK_CMD_DATA_2] = adc_read_ok_bitmask;
-	transmit_command_header[PK_CMD_DATA_3] = adc_channel_request_bitmask;
+	transmit_command_header[PK_CMD_DATA_3] = adc_active_channels_bitmask;
 
 	send_downstream(transmit_data_buffer);
 }

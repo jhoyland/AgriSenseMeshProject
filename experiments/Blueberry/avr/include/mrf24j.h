@@ -4,6 +4,10 @@
  * modified BSD License / apache license
  */
 
+/*
+    MRF24J interface specific commands. Ported to C from Karl's C++ code
+*/
+
 #ifndef LIB_MRF24J_H
 #define LIB_MRF24J_H
 #include <stdint.h>
