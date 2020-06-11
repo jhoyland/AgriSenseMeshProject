@@ -231,7 +231,7 @@ void mrf_interrupt_handler(void) {
   /*  printf("Interrupted");
     if(isr_running) return;
         else isr_running = 1;  */  // Prevent multiple interrupt handlers being run
-   printf("\nMrf_Interrupt_handler"); fflush(stdout);
+   //printf("\nMrf_Interrupt_handler"); fflush(stdout);
     GRAB_ISR_MUTEX;
 
     uint8_t last_interrupt = mrf_read_short(MRF_INTSTAT);
@@ -254,17 +254,17 @@ void mrf_interrupt_handler(void) {
                 rx_buf[rb_ptr++] = mrf_read_long(0x301 + i);
             }
         }
-	printf("\nPre-Loop"); fflush(stdout);
+	//printf("\nPre-Loop"); fflush(stdout);
         // buffer data bytes: This loop does not enter 06/05/2020
-	printf("\nMrf_rx_datalength: %i ", mrf_rx_datalength()); fflush(stdout);
-	printf("\nMrf_rx_datalength: %i ", mrf_rx_datalength()); fflush(stdout);
+	//printf("\nMrf_rx_datalength: %i ", mrf_rx_datalength()); fflush(stdout);
+	//printf("\nMrf_rx_datalength: %i ", mrf_rx_datalength()); fflush(stdout);
         int rd_ptr = 0;
         // from (0x301 + bytes_MHR) to (0x301 + frame_length - bytes_nodata - 1)
         for (i = 0; i < mrf_rx_datalength(); i++) {
-	    printf("\nIn-loop"); fflush(stdout);
+	    //printf("\nIn-loop"); fflush(stdout);
             rx_info.rx_data[rd_ptr++] = mrf_read_long(0x301 + bytes_MHR + i);
-	    printf("\nBuffered_data_bytes");
-	    fflush(stdout);
+	    //printf("\nBuffered_data_bytes");
+	    //fflush(stdout);
         }
 
         rx_info.frame_length = frame_length;
