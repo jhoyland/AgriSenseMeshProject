@@ -10,9 +10,13 @@
 #define PACKET_SETUP_H_
 #include <avr/io.h>
 
+void Set_Dest_Panid(uint8_t*,uint16_t);
+void Set_Src_Panid(uint8_t*,uint16_t);
 void Set_Packet_Size(uint8_t*, uint8_t);
 void Set_Target_Node(uint8_t*, uint16_t);
-void Set_Command(uint8_t*, uint16_t, uint8_t, uint8_t, uint8_t, uint8_t);
+void Set_Command(uint8_t*, uint16_t, /*uint8_t,*/ uint8_t, uint8_t, uint8_t);
+void Set_Src_Node(uint8_t*, uint8_t);
+void Add_Data(uint8_t*,uint16_t);
 
 
 
