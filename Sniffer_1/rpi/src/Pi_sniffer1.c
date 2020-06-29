@@ -18,7 +18,7 @@ It does this by looking for packets on the same PANID (0xCAFE) */
 
 uint8_t req_id; //formerly 16
 uint8_t transmit_data_buffer[PK_SZ_TXRX_BUFFER];
-uint8_t recieved_data_buffer[PK_SZ_TXRX_BUFFER];
+
 uint8_t error_data_buffer[PK_SZ_ERR_BUFFER];
 uint8_t* transmit_command_header;
 uint8_t active_message[PK_SZ_TXRX_BUFFER];
@@ -28,6 +28,7 @@ uint8_t running_status = 0;
 void handle_rx() {
 
     running_status |= (1<<RU_RX_HANDLE);
+  
     mrf_rx_disable();
     /*uint8_t* recieved_data_pointer = mrf_get_rxdata();
     int j;
@@ -36,15 +37,20 @@ void handle_rx() {
 	printf("\nGot: %i",recieved_data_pointer[j]);
 	fflush(stdout);
     }*/
-    memcpy(recieved_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()); // Copy the message into the recieved data buffer
-    //recieved_data_buffer = mrf_get_rxdata();
+    uint8_t buffer_length = mrf_rx_datalength();
+    uint8_t recieved_data_buffer[buffer_length];
+    memset(recieved_data_buffer,0,buffer_length); //clear the buffer to 0
+    memcpy(recieved_data_buffer,mrf_get_rxdata(),buffer_length); // Copy the message into the recieved data buffer
+    printf("\nBuffer length: %i",buffer_length);
 
     int i;
-    for (i = 0; i < PK_SZ_TXRX_BUFFER;i++)
+    for (i = 0; i < buffer_length; i++)
     {
 	printf("\nGot: 0x %x",recieved_data_buffer[i]);
 	fflush(stdout);
     }
+    //clear the buffer
+    //memcpy(recieved_data_buffer,0,mrf_rx_datalength());
 
     //printf("\nGot: 0x %x", recieved_data_buffer[PK_COMMAND_HEADER + PK_SZ_PACKET]); 
     //fflush(stdout);
