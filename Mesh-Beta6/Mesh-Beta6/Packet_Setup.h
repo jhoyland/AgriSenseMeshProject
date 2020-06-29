@@ -10,6 +10,7 @@
 #define PACKET_SETUP_H_
 #include <avr/io.h>
 
+void clear_buffer(uint8_t*);
 void Pk_Set_Dest_Panid(uint8_t*,uint16_t);
 void Pk_Set_Src_Panid(uint8_t*,uint16_t);
 void Pk_Set_Packet_Size(uint8_t*, uint8_t);

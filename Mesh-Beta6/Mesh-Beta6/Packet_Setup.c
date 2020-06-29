@@ -10,16 +10,19 @@
 #include "bitmanip.h"
 #include "packet_specs.h"
 
-void Pk_Set_Dest_Panid(uint8_t* buff, uint16_t panid)
+/*void Pk_Set_Dest_Panid(uint8_t* buff, uint16_t panid)
 {
 	word_to_bytes(&buff[PK_DEST_PANID_HI],panid);
-}
+}*/
 
-void Pk_Set_Src_Panid(uint8_t* buff, uint16_t panid)
+/*void Pk_Set_Src_Panid(uint8_t* buff, uint16_t panid)
 {
 	word_to_bytes(&buff[PK_SRC_PANID_HI],panid);
+}*/
+void clear_buffer(uint8_t* buff)
+{
+	memset(buff,0,PK_SZ_TXRX_BUFFER);
 }
-
 void Pk_Set_Packet_Size(uint8_t* buff, uint8_t sz)
 {
 	buff[PK_COMMAND_HEADER + PK_SZ_PACKET] = sz;

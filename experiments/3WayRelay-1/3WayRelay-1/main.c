@@ -94,6 +94,7 @@ ISR(INT0_vect) //for when the MRF interrupts (sending or receiving a message)
 {
 	running_status |= (1<<RU_INTERRUPT);
 	//BLINK(LIGHT_PORT,GREEN_LIGHT);
+	//gets here fine on reboot and comm
 	mrf_interrupt_handler();
 	running_status &= ~(1<<RU_INTERRUPT);
 }
@@ -110,18 +111,19 @@ ISR(INT0_vect) //for when the MRF interrupts (sending or receiving a message)
 }*/
 void send_message(uint16_t target, uint8_t* buff)
 {
-	Set_Dest_Panid(buff,PAN_ID); //this really isn't necessary
-	Set_Src_Panid(buff,PAN_ID);  //nor is this
-	Set_Packet_Size(buff,PK_SZ_TXRX_BUFFER); //maybe not this either
-	Set_Target_Node(buff,target);
-	Set_Src_Node(buff,THIS_DEVICE);
+	Pk_Set_Dest_Panid(buff,PAN_ID); //this really isn't necessary
+	Pk_Set_Src_Panid(buff,PAN_ID);  //nor is this
+	Pk_Set_Packet_Size(buff,PK_SZ_TXRX_BUFFER); //maybe not this either, could be done in setup? Left in for dynamic possibility
+	Pk_Set_Target_Node(buff,target);
+	Pk_Set_Src_Node(buff,THIS_DEVICE);
+	//memset(buff+PK_DATA_START,0,4); //see if this clears my random data
 	mrf_send16(target,buff,PK_SZ_TXRX_BUFFER);
 }
 
 void ping_respond(uint16_t target, uint8_t* buff)
 {
 	//this command will respond to a ping
-	Set_Command(buff,CMD_PING,/*1,*/2,3,4); //1,2,3,4 are just random numbers for this
+	Pk_Set_Command(buff,CMD_PING,/*1,*/2,3,4); //1,2,3,4 are just random numbers for this
 	send_message(target,buff);
 	//mrf_send16(target,buff,buff[PK_COMMAND_HEADER + PK_SZ_PACKET]);
 	
@@ -131,7 +133,7 @@ void get_data(uint16_t target, uint8_t* buff)
 {
 	//rather, "tell the next node to get data" -> should be "request data"
 	BLINK(LIGHT_PORT,YELLOW_LIGHT);
-	Set_Command(buff,CMD_DATA,/*1,*/2,3,4); //1,2,3,4 are just random numbers for this
+	Pk_Set_Command(buff,CMD_DATA,/*1,*/2,3,4); //1,2,3,4 are just random numbers for this
 	send_message(target,buff);
 	//mrf_send16(target,buff,buff[PK_COMMAND_HEADER + PK_SZ_PACKET]);
 }
@@ -140,7 +142,8 @@ void forward_data(uint16_t target, uint8_t* forward_buff)
 {
 	//takes the "forwarding buff" (the message recieved), changes the command, and then transmits it with new
 	//addressing header info
-	Set_Command(forward_buff,CMD_TO_END,/*1,*/2,3,4);
+	Pk_Set_Command(forward_buff,CMD_TO_END,/*1,*/2,3,4);
+	//memset(forward_buff+PK_DATA_START,0,4); //see if this clears my random data
 	send_message(target,forward_buff);
 	//mrf_send16(target,trans_buff,trans_buff[PK_COMMAND_HEADER+PK_SZ_PACKET]);
 }
@@ -163,7 +166,7 @@ void COMMAND_HANDLER(uint8_t* message) //the received data buffer goes in here
 	if((bytes_to_word(&message[PK_COMMAND_HEADER + PK_CMD_HI]) == CMD_TO_END)) //want to send this up to the pi
 	{
 		BLINK(LIGHT_PORT,RED_LIGHT); BLINK(LIGHT_PORT,YELLOW_LIGHT);
-		forward_data(PI_ADDR,message);
+		forward_data(PI_ADDR,message); //simply transmit the recieved message to the pi
 		memset(message,0,PK_SZ_TXRX_BUFFER); //is this required??
 	}
 	//if a node receives "PING" (should only get it after asking for an echo)
@@ -185,7 +188,7 @@ void COMMAND_HANDLER(uint8_t* message) //the received data buffer goes in here
 		//currently should only get this as node 2
 		BLINK(LIGHT_PORT,YELLOW_LIGHT);
 		//transmit_data_buffer[PK_COMMAND_HEADER+PK_CMD_DATA_0] = 0x0D; //my secret message: Will this show up??
-		Add_Data(transmit_data_buffer,0x5555);
+		Pk_Add_Data(transmit_data_buffer,0x5555);
 		//transmit_data_buffer[PK_DATA_START] = 11;
 		//send it back to node 1
 		//Set_Command(message,CMD_TO_END,1,2,3,4);
@@ -246,16 +249,7 @@ void handle_rx()
 	}
 	else
 	{
-		if( bytes_to_word(&recieved_data_buffer[PK_DEST_ADDR_HI]) == CMD_SET_NEIGHBOR); //we are in network setup mode. This message comes
-		//from a raspberry pi, or another node, to all nodes
-		//should probably give a unique identifier for this??
-		//word_to_bytes(&transmit_data_buffer[PK_CMD_HI], )
-		//send_error(bytes_to_word(& recieved_data_buffer[PK_DEST_ADDR_HI]));
-		/*
-		recieved_data_buffer[PK_COMMAND_HEADER + PK_HOP_COUNT] ++;
-		if(recieved_data_buffer[PK_DEST_ADDR_HI] == PI_ADDR_HI && recieved_data_buffer[PK_DEST_ADDR_LO] == PI_ADDR_LO)
-			send_downstream(recieved_data_buffer);
-		else send_upstream(recieved_data_buffer);*/
+		
 
 	}
 
