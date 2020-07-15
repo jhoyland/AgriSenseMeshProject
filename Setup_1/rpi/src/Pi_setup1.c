@@ -37,20 +37,21 @@ void handle_rx() {
 	printf("\nGot: %i",recieved_data_pointer[j]);
 	fflush(stdout);
     }*/
-    uint8_t buffer_length = mrf_rx_datalength();
+
+    uint8_t buffer_length = mrf_rx_datalength(); 
     uint8_t recieved_data_buffer[buffer_length];
-    memset(recieved_data_buffer,0,buffer_length); //clear the buffer to 0
+    memset(recieved_data_buffer,1,buffer_length); //clear the buffer to 1
     memcpy(recieved_data_buffer,mrf_get_rxdata(),buffer_length); // Copy the message into the recieved data buffer
     printf("\nBuffer length: %i",buffer_length);
 
     int i;
     for (i = 0; i < buffer_length; i++)
     {
-	printf("\nGot: 0x %x",recieved_data_buffer[i]);
+	printf("\nGot: %d 0x %x", i, recieved_data_buffer[i]);
 	fflush(stdout);
     }
     //clear the buffer
-    //memcpy(recieved_data_buffer,0,mrf_rx_datalength());
+    memset(recieved_data_buffer,0,buffer_length);
 
     //printf("\nGot: 0x %x", recieved_data_buffer[PK_COMMAND_HEADER + PK_SZ_PACKET]); 
     //fflush(stdout);
@@ -64,6 +65,7 @@ void handle_rx() {
   //      printf("\nNode message queued");
    // }
    mrf_rx_enable();
+   //setup(); //experimenting
    running_status &=~(1<<RU_RX_HANDLE);
 
 }
@@ -91,10 +93,10 @@ void handle_tx() {
 void set_packet_header(uint8_t* buff)
 {
 
-    buff[PK_DEST_PANID_HI] = PAN_ID_HI;
-    buff[PK_DEST_PANID_LO] = PAN_ID_LO;
-    buff[PK_SRC_PANID_HI] = PAN_ID_HI;
-    buff[PK_SRC_PANID_LO] = PAN_ID_LO;
+    //buff[PK_DEST_PANID_HI] = PAN_ID_HI; //no longer needed bits
+    //buff[PK_DEST_PANID_LO] = PAN_ID_LO;
+    //buff[PK_SRC_PANID_HI] = PAN_ID_HI;
+    //buff[PK_SRC_PANID_LO] = PAN_ID_LO;
     buff[PK_SRC_ADDR_HI] = PI_ADDR_HI;
     buff[PK_SRC_ADDR_LO] = PI_ADDR_LO;
     buff[PK_COMMAND_HEADER+PK_HOP_COUNT] = 0;
@@ -155,9 +157,10 @@ void set_target_node(uint8_t* buff,uint16_t target_node)
     word_to_bytes(& buff[PK_DEST_ADDR_HI], target_node);
 }
 
-void set_command(uint8_t* buff, uint16_t cmd_id, uint8_t cmd2, uint8_t cmd3, uint8_t cmd4)
+void set_command(uint8_t* buff, uint16_t cmd_id, uint8_t cmd1, uint8_t cmd2, uint8_t cmd3, uint8_t cmd4)
 {
     word_to_bytes(& buff[PK_COMMAND_HEADER + PK_CMD_HI], cmd_id);
+    buff[PK_COMMAND_HEADER + PK_CMD_DATA_0] = cmd1;
     buff[PK_COMMAND_HEADER + PK_CMD_DATA_1] = cmd2; 
     buff[PK_COMMAND_HEADER + PK_CMD_DATA_2] = cmd3; 
     buff[PK_COMMAND_HEADER + PK_CMD_DATA_3] = cmd4;
@@ -176,23 +179,24 @@ void send_command(uint16_t target, uint8_t* buff)
     mrf_send16(target,buff,buff[PK_COMMAND_HEADER + PK_SZ_PACKET]);
 }
 
-
+//specific functions for pinging and initializing setup routine
 void send_ping(uint16_t target, uint8_t* buff)
 {	
 	set_packet_size(buff,PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER);
     	set_target_node(buff,target);
-	set_command(buff,CMD_PING,1,2,3);
+	set_command(buff,CMD_PING,0,1,2,3);
  	set_request_id(buff);
 	send_command(target, buff);
 }
 
 void send_setup(uint16_t target, uint8_t* buff)
 {
-	set_packet_size(buff,PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER);
+	set_packet_size(buff,PK_SZ_TXRX_BUFFER); //packet will always have all 40
     	set_target_node(buff,target);
-	set_command(buff,CMD_SETUP,1,2,3);
+	set_command(buff,CMD_SETUP,0,0,0,0);
  	set_request_id(buff);
 	send_command(target, buff);
+	memset(buff,0,sizeof(buff));
 }
 
 //For getting data from the message
@@ -238,14 +242,14 @@ void print_message(uint8_t * msg)
     printf("\n===============================================\n");
 }
 
-void main()
+void main() //just send the setup routine
 {
 	setup();
-	printf("\nSetup Complete");
-	send_ping(0x0001,transmit_data_buffer);
-	printf("\nMessage Sent\n");
+	printf("\nSetup Complete"); fflush(stdout);
+	send_setup(0x0001,transmit_data_buffer); fflush(stdout);
+	printf("\nMessage Sent\n"); fflush(stdout);
 	print_message(transmit_data_buffer);
-	printf("\n%x",bytes_to_word(&transmit_data_buffer[10]));
+	//printf("\n%x",bytes_to_word(&transmit_data_buffer[10]));
 	fflush(stdout);
 	while(1)
 	{
