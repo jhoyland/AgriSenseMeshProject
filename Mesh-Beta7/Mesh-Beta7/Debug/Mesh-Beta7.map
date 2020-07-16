@@ -8,28 +8,24 @@ c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/..
                               main.o (__do_clear_bss)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memcpy.o)
                               main.o (memcpy)
+c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memset.o)
+                              main.o (memset)
 
 Allocating common symbols
 Common symbol       size              file
 
-node_status         0x1               main.o
-active_command      0x2               main.o
 mrf_flags           0x1               mrf24j.o
-recieved_data_buffer
-                    0x28              main.o
 flag_got_tx         0x1               mrf24j.o
 transmit_data_buffer
                     0x28              main.o
-neighbor_status     0x1               main.o
-recieved_command_header
-                    0x2               main.o
-transmit_command_header
-                    0x2               main.o
+downstairs_neighbor
+                    0x6               main.o
 flag_got_rx         0x1               mrf24j.o
 mrf_reg_TXSTAT      0x1               main.o
 isr_lock            0x1               main.o
-target_address      0x1               main.o
-command_status      0x1               main.o
+upstairs_neighbor   0x6               main.o
+received_data_buffer
+                    0x28              main.o
 
 Discarded input sections
 
@@ -45,13 +41,14 @@ Discarded input sections
  .text          0x00000000        0x0 main.o
  .data          0x00000000        0x0 main.o
  .bss           0x00000000        0x0 main.o
- .text.ping_respond
-                0x00000000       0x2e main.o
- .text.loop     0x00000000        0x2 main.o
- .bss.LOWER_NEIGHBOR_ADDRESS
+ .text.set_downstairs_neighbor
+                0x00000000       0x18 main.o
+ .bss.neighbor_count
                 0x00000000        0x1 main.o
- .bss.UPPER_NEIGHBOR_ADDRESS
-                0x00000000        0x1 main.o
+ .data.pi_address
+                0x00000000        0x2 main.o
+ .data.node_list
+                0x00000000        0x6 main.o
  .text          0x00000000        0x0 mrf24j.o
  .data          0x00000000        0x0 mrf24j.o
  .bss           0x00000000        0x0 mrf24j.o
@@ -78,6 +75,10 @@ Discarded input sections
  .text          0x00000000        0x0 Packet_Setup.o
  .data          0x00000000        0x0 Packet_Setup.o
  .bss           0x00000000        0x0 Packet_Setup.o
+ .text.clear_buffer
+                0x00000000        0xc Packet_Setup.o
+ .text.Pk_Add_Data
+                0x00000000        0x6 Packet_Setup.o
  .text          0x00000000        0x0 tinyspi.o
  .data          0x00000000        0x0 tinyspi.o
  .bss           0x00000000        0x0 tinyspi.o
@@ -134,6 +135,9 @@ Discarded input sections
  .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memcpy.o)
  .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memcpy.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memcpy.o)
+ .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memset.o)
+ .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memset.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memset.o)
 
 Memory Configuration
 
@@ -263,7 +267,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x896
+.text           0x00000000      0x73e
  *(.vectors)
  .vectors       0x00000000       0x28 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
                 0x00000000                __vector_default
@@ -350,125 +354,116 @@ END GROUP
                 0x00000074        0x8 bitmanip.o
                 0x00000074                word_to_bytes
  .text.handle_tx
-                0x0000007c        0x2 main.o
+                0x0000007c       0x1e main.o
                 0x0000007c                handle_tx
- .text.setup    0x0000007e       0x90 main.o
-                0x0000007e                setup
  .text.__vector_1
-                0x0000010e       0x5a main.o
-                0x0000010e                __vector_1
+                0x0000009a       0x5a main.o
+                0x0000009a                __vector_1
  .text.send_message
-                0x00000168       0x4a main.o
-                0x00000168                send_message
- .text.get_data
-                0x000001b2       0x4a main.o
-                0x000001b2                get_data
- .text.forward_data
-                0x000001fc       0x2e main.o
-                0x000001fc                forward_data
+                0x000000f4       0x50 main.o
+                0x000000f4                send_message
+ .text.setup_network
+                0x00000144        0xc main.o
+                0x00000144                setup_network
  .text.COMMAND_HANDLER
-                0x0000022a      0x114 main.o
-                0x0000022a                COMMAND_HANDLER
+                0x00000150       0x38 main.o
+                0x00000150                COMMAND_HANDLER
  .text.handle_rx
-                0x0000033e       0x5a main.o
-                0x0000033e                handle_rx
- .text.main     0x00000398        0xe main.o
-                0x00000398                main
+                0x00000188       0x50 main.o
+                0x00000188                handle_rx
+ .text.setup    0x000001d8       0x6e main.o
+                0x000001d8                setup
+ .text.main     0x00000246        0xe main.o
+                0x00000246                main
  .text.mrf_reset
-                0x000003a6       0x1e mrf24j.o
-                0x000003a6                mrf_reset
+                0x00000254       0x1e mrf24j.o
+                0x00000254                mrf_reset
  .text.mrf_read_short
-                0x000003c4       0x22 mrf24j.o
-                0x000003c4                mrf_read_short
+                0x00000272       0x22 mrf24j.o
+                0x00000272                mrf_read_short
  .text.mrf_read_long
-                0x000003e6       0x36 mrf24j.o
-                0x000003e6                mrf_read_long
+                0x00000294       0x36 mrf24j.o
+                0x00000294                mrf_read_long
  .text.mrf_write_short
-                0x0000041c       0x1a mrf24j.o
-                0x0000041c                mrf_write_short
+                0x000002ca       0x1a mrf24j.o
+                0x000002ca                mrf_write_short
  .text.mrf_write_long
-                0x00000436       0x2e mrf24j.o
-                0x00000436                mrf_write_long
+                0x000002e4       0x2e mrf24j.o
+                0x000002e4                mrf_write_long
  .text.mrf_get_pan
-                0x00000464       0x1e mrf24j.o
-                0x00000464                mrf_get_pan
+                0x00000312       0x1e mrf24j.o
+                0x00000312                mrf_get_pan
  .text.mrf_set_pan
-                0x00000482       0x14 mrf24j.o
-                0x00000482                mrf_set_pan
+                0x00000330       0x14 mrf24j.o
+                0x00000330                mrf_set_pan
  .text.mrf_address16_write
-                0x00000496       0x14 mrf24j.o
-                0x00000496                mrf_address16_write
+                0x00000344       0x14 mrf24j.o
+                0x00000344                mrf_address16_write
  .text.mrf_address16_read
-                0x000004aa       0x1e mrf24j.o
-                0x000004aa                mrf_address16_read
+                0x00000358       0x1e mrf24j.o
+                0x00000358                mrf_address16_read
  .text.mrf_send16
-                0x000004c8       0xca mrf24j.o
-                0x000004c8                mrf_send16
+                0x00000376       0xca mrf24j.o
+                0x00000376                mrf_send16
  .text.mrf_set_interrupts
-                0x00000592        0xc mrf24j.o
-                0x00000592                mrf_set_interrupts
+                0x00000440        0xc mrf24j.o
+                0x00000440                mrf_set_interrupts
  .text.mrf_set_channel
-                0x0000059e       0x1e mrf24j.o
-                0x0000059e                mrf_set_channel
+                0x0000044c       0x1e mrf24j.o
+                0x0000044c                mrf_set_channel
  .text.mrf_init
-                0x000005bc       0x88 mrf24j.o
-                0x000005bc                mrf_init
+                0x0000046a       0x88 mrf24j.o
+                0x0000046a                mrf_init
  .text.mrf_check_flags
-                0x00000644       0x34 mrf24j.o
-                0x00000644                mrf_check_flags
+                0x000004f2       0x34 mrf24j.o
+                0x000004f2                mrf_check_flags
  .text.mrf_rx_datalength
-                0x00000678        0xa mrf24j.o
-                0x00000678                mrf_rx_datalength
+                0x00000526        0xa mrf24j.o
+                0x00000526                mrf_rx_datalength
  .text.mrf_rx_disable
-                0x00000682        0x8 mrf24j.o
-                0x00000682                mrf_rx_disable
+                0x00000530        0x8 mrf24j.o
+                0x00000530                mrf_rx_disable
  .text.mrf_rx_enable
-                0x0000068a        0x8 mrf24j.o
-                0x0000068a                mrf_rx_enable
+                0x00000538        0x8 mrf24j.o
+                0x00000538                mrf_rx_enable
  .text.mrf_interrupt_handler
-                0x00000692      0x118 mrf24j.o
-                0x00000692                mrf_interrupt_handler
+                0x00000540      0x118 mrf24j.o
+                0x00000540                mrf_interrupt_handler
  .text.mrf_get_rxdata
-                0x000007aa        0x6 mrf24j.o
-                0x000007aa                mrf_get_rxdata
- .text.Pk_Set_Dest_Panid
-                0x000007b0        0x4 Packet_Setup.o
-                0x000007b0                Pk_Set_Dest_Panid
- .text.Pk_Set_Src_Panid
-                0x000007b4        0x6 Packet_Setup.o
-                0x000007b4                Pk_Set_Src_Panid
+                0x00000658        0x6 mrf24j.o
+                0x00000658                mrf_get_rxdata
  .text.Pk_Set_Packet_Size
-                0x000007ba        0x6 Packet_Setup.o
-                0x000007ba                Pk_Set_Packet_Size
+                0x0000065e        0x6 Packet_Setup.o
+                0x0000065e                Pk_Set_Packet_Size
  .text.Pk_Set_Target_Node
-                0x000007c0        0x6 Packet_Setup.o
-                0x000007c0                Pk_Set_Target_Node
+                0x00000664        0x4 Packet_Setup.o
+                0x00000664                Pk_Set_Target_Node
  .text.Pk_Set_Command
-                0x000007c6       0x26 Packet_Setup.o
-                0x000007c6                Pk_Set_Command
+                0x00000668       0x26 Packet_Setup.o
+                0x00000668                Pk_Set_Command
  .text.Pk_Set_Src_Node
-                0x000007ec        0x8 Packet_Setup.o
-                0x000007ec                Pk_Set_Src_Node
- .text.Pk_Add_Data
-                0x000007f4        0x6 Packet_Setup.o
-                0x000007f4                Pk_Add_Data
+                0x0000068e        0x6 Packet_Setup.o
+                0x0000068e                Pk_Set_Src_Node
  .text.spi_setup
-                0x000007fa        0x6 tinyspi.o
-                0x000007fa                spi_setup
+                0x00000694        0x6 tinyspi.o
+                0x00000694                spi_setup
  .text.spi_transfer_byte
-                0x00000800       0x14 tinyspi.o
-                0x00000800                spi_transfer_byte
+                0x0000069a       0x14 tinyspi.o
+                0x0000069a                spi_transfer_byte
  .text.spi_transfer_nbytes
-                0x00000814       0x6c tinyspi.o
-                0x00000814                spi_transfer_nbytes
+                0x000006ae       0x6c tinyspi.o
+                0x000006ae                spi_transfer_nbytes
  .text.avr-libc
-                0x00000880       0x12 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memcpy.o)
-                0x00000880                memcpy
-                0x00000892                . = ALIGN (0x2)
+                0x0000071a       0x12 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memcpy.o)
+                0x0000071a                memcpy
+ .text.avr-libc
+                0x0000072c        0xe c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memset.o)
+                0x0000072c                memset
+                0x0000073a                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000892        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
-                0x00000892                _exit
-                0x00000892                exit
+ .fini9         0x0000073a        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+                0x0000073a                _exit
+                0x0000073a                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -487,58 +482,51 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000892        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .fini0         0x0000073a        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
  *(.fini0)
-                0x00000896                _etext = .
+                0x0000073e                _etext = .
 
-.data           0x00800100        0x2 load address 0x00000896
+.data           0x00800100        0x0 load address 0x0000073e
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
- .data.PAN_ID   0x00800100        0x2 main.o
-                0x00800100                PAN_ID
  *(.gnu.linkonce.d*)
  *(.rodata)
  *(.rodata*)
  *(.gnu.linkonce.r*)
-                0x00800102                . = ALIGN (0x2)
-                0x00800102                _edata = .
-                0x00800102                PROVIDE (__data_end, .)
+                0x00800100                . = ALIGN (0x2)
+                0x00800100                _edata = .
+                0x00800100                PROVIDE (__data_end, .)
 
-.bss            0x00800102      0x15c
-                0x00800102                PROVIDE (__bss_start, .)
+.bss            0x00800100      0x15e
+                0x00800100                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  .bss.running_status
-                0x00800102        0x1 main.o
-                0x00800102                running_status
+                0x00800100        0x1 main.o
+                0x00800100                running_status
  .bss.mrf_spi_buffer
-                0x00800103        0x3 mrf24j.o
- .bss.tx_info   0x00800106        0x1 mrf24j.o
- .bss.rx_info   0x00800107       0x77 mrf24j.o
+                0x00800101        0x3 mrf24j.o
+ .bss.tx_info   0x00800104        0x1 mrf24j.o
+ .bss.rx_info   0x00800105       0x77 mrf24j.o
  .bss.ignoreBytes
-                0x0080017e        0x2 mrf24j.o
- .bss.rx_buf    0x00800180       0x7f mrf24j.o
+                0x0080017c        0x2 mrf24j.o
+ .bss.rx_buf    0x0080017e       0x7f mrf24j.o
  *(COMMON)
- COMMON         0x008001ff       0x5c main.o
-                0x008001ff                node_status
-                0x00800200                active_command
-                0x00800202                recieved_data_buffer
-                0x0080022a                transmit_data_buffer
-                0x00800252                neighbor_status
-                0x00800253                recieved_command_header
-                0x00800255                transmit_command_header
-                0x00800257                mrf_reg_TXSTAT
-                0x00800258                isr_lock
-                0x00800259                target_address
-                0x0080025a                command_status
+ COMMON         0x008001fd       0x5e main.o
+                0x008001fd                transmit_data_buffer
+                0x00800225                downstairs_neighbor
+                0x0080022b                mrf_reg_TXSTAT
+                0x0080022c                isr_lock
+                0x0080022d                upstairs_neighbor
+                0x00800233                received_data_buffer
  COMMON         0x0080025b        0x3 mrf24j.o
                 0x0080025b                mrf_flags
                 0x0080025c                flag_got_tx
                 0x0080025d                flag_got_rx
                 0x0080025e                PROVIDE (__bss_end, .)
-                0x00000896                __data_load_start = LOADADDR (.data)
-                0x00000898                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x0000073e                __data_load_start = LOADADDR (.data)
+                0x0000073e                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x0080025e        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
@@ -613,78 +601,78 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0x230
+.debug_aranges  0x00000000      0x218
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x38 bitmanip.o
  .debug_aranges
-                0x00000038       0x70 main.o
+                0x00000038       0x60 main.o
  .debug_aranges
-                0x000000a8      0x100 mrf24j.o
+                0x00000098      0x100 mrf24j.o
  .debug_aranges
-                0x000001a8       0x50 Packet_Setup.o
+                0x00000198       0x48 Packet_Setup.o
  .debug_aranges
-                0x000001f8       0x38 tinyspi.o
+                0x000001e0       0x38 tinyspi.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x25ec
+.debug_info     0x00000000     0x219a
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x576 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
  .debug_info    0x00000576      0x1a5 bitmanip.o
- .debug_info    0x0000071b      0xbd6 main.o
- .debug_info    0x000012f1      0xe92 mrf24j.o
- .debug_info    0x00002183      0x30e Packet_Setup.o
- .debug_info    0x00002491      0x15b tinyspi.o
+ .debug_info    0x0000071b      0x805 main.o
+ .debug_info    0x00000f20      0xe92 mrf24j.o
+ .debug_info    0x00001db2      0x28d Packet_Setup.o
+ .debug_info    0x0000203f      0x15b tinyspi.o
 
-.debug_abbrev   0x00000000      0xc4d
+.debug_abbrev   0x00000000      0xc86
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x52b C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
  .debug_abbrev  0x0000052b       0xe4 bitmanip.o
- .debug_abbrev  0x0000060f      0x1c0 main.o
- .debug_abbrev  0x000007cf      0x2e4 mrf24j.o
- .debug_abbrev  0x00000ab3       0xcc Packet_Setup.o
- .debug_abbrev  0x00000b7f       0xce tinyspi.o
+ .debug_abbrev  0x0000060f      0x1f9 main.o
+ .debug_abbrev  0x00000808      0x2e4 mrf24j.o
+ .debug_abbrev  0x00000aec       0xcc Packet_Setup.o
+ .debug_abbrev  0x00000bb8       0xce tinyspi.o
 
-.debug_line     0x00000000      0xf46
+.debug_line     0x00000000      0xe20
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x10f C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
  .debug_line    0x0000010f      0x10f bitmanip.o
- .debug_line    0x0000021e      0x45d main.o
- .debug_line    0x0000067b      0x64e mrf24j.o
- .debug_line    0x00000cc9      0x153 Packet_Setup.o
- .debug_line    0x00000e1c      0x12a tinyspi.o
+ .debug_line    0x0000021e      0x34d main.o
+ .debug_line    0x0000056b      0x64e mrf24j.o
+ .debug_line    0x00000bb9      0x13d Packet_Setup.o
+ .debug_line    0x00000cf6      0x12a tinyspi.o
 
-.debug_frame    0x00000000      0x590
+.debug_frame    0x00000000      0x50c
  *(.debug_frame)
  .debug_frame   0x00000000       0x54 bitmanip.o
- .debug_frame   0x00000054      0x194 main.o
- .debug_frame   0x000001e8      0x28c mrf24j.o
- .debug_frame   0x00000474       0xa0 Packet_Setup.o
- .debug_frame   0x00000514       0x7c tinyspi.o
+ .debug_frame   0x00000054      0x120 main.o
+ .debug_frame   0x00000174      0x28c mrf24j.o
+ .debug_frame   0x00000400       0x90 Packet_Setup.o
+ .debug_frame   0x00000490       0x7c tinyspi.o
 
-.debug_str      0x00000000      0x920
+.debug_str      0x00000000      0x8a3
  *(.debug_str)
  .debug_str     0x00000000      0x1d9 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
- .debug_str     0x000001d9      0x1a7 bitmanip.o
-                                0x1e6 (size before relaxing)
- .debug_str     0x00000380      0x2dd main.o
-                                0x495 (size before relaxing)
- .debug_str     0x0000065d      0x249 mrf24j.o
-                                0x509 (size before relaxing)
- .debug_str     0x000008a6       0x3d Packet_Setup.o
-                                0x25d (size before relaxing)
- .debug_str     0x000008e3       0x3d tinyspi.o
-                                0x1e0 (size before relaxing)
+ .debug_str     0x000001d9      0x199 bitmanip.o
+                                0x1d8 (size before relaxing)
+ .debug_str     0x00000372      0x255 main.o
+                                0x417 (size before relaxing)
+ .debug_str     0x000005c7      0x249 mrf24j.o
+                                0x4fb (size before relaxing)
+ .debug_str     0x00000810       0x56 Packet_Setup.o
+                                0x233 (size before relaxing)
+ .debug_str     0x00000866       0x3d tinyspi.o
+                                0x1d2 (size before relaxing)
 
-.debug_loc      0x00000000     0x171a
+.debug_loc      0x00000000     0x1258
  *(.debug_loc)
  .debug_loc     0x00000000      0x148 bitmanip.o
- .debug_loc     0x00000148      0x8f4 main.o
- .debug_loc     0x00000a3c      0x879 mrf24j.o
- .debug_loc     0x000012b5      0x2d9 Packet_Setup.o
- .debug_loc     0x0000158e      0x18c tinyspi.o
+ .debug_loc     0x00000148      0x4df main.o
+ .debug_loc     0x00000627      0x879 mrf24j.o
+ .debug_loc     0x00000ea0      0x22c Packet_Setup.o
+ .debug_loc     0x000010cc      0x18c tinyspi.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -704,15 +692,15 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000      0x1e0
+.debug_ranges   0x00000000      0x1c8
  *(.debug_ranges)
  .debug_ranges  0x00000000       0x28 bitmanip.o
- .debug_ranges  0x00000028       0x60 main.o
- .debug_ranges  0x00000088       0xf0 mrf24j.o
- .debug_ranges  0x00000178       0x40 Packet_Setup.o
- .debug_ranges  0x000001b8       0x28 tinyspi.o
+ .debug_ranges  0x00000028       0x50 main.o
+ .debug_ranges  0x00000078       0xf0 mrf24j.o
+ .debug_ranges  0x00000168       0x38 Packet_Setup.o
+ .debug_ranges  0x000001a0       0x28 tinyspi.o
 
 .debug_macro
  *(.debug_macro)
-OUTPUT(3WayRelay-1.elf elf32-avr)
+OUTPUT(Mesh-Beta7.elf elf32-avr)
 LOAD linker stubs

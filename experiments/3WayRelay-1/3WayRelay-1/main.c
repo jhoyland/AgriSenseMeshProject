@@ -118,6 +118,8 @@ void send_message(uint16_t target, uint8_t* buff)
 	Pk_Set_Src_Node(buff,THIS_DEVICE);
 	//memset(buff+PK_DATA_START,0,4); //see if this clears my random data
 	mrf_send16(target,buff,PK_SZ_TXRX_BUFFER);
+	//mrf_reset(); //experimenting
+	//mrf_init();
 }
 
 void ping_respond(uint16_t target, uint8_t* buff)
