@@ -43,7 +43,7 @@ void Pk_Set_Command(uint8_t* buff, uint16_t cmd_id, /*uint8_t cmd2,*/ uint8_t cm
 	buff[PK_COMMAND_HEADER+PK_CMD_DATA_3] = cmd5;
 }
 
-void Pk_Set_Src_Node(uint8_t* buff, uint8_t origin)
+void Pk_Set_Src_Node(uint8_t* buff, uint16_t origin)
 {
 	//used for setting where this particular packet is coming from: the source of "data" would be held
 	//later in the packet, in the data bytes.
