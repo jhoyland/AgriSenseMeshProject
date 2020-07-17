@@ -39,6 +39,7 @@ volatile uint8_t flag_got_rx;
 volatile uint8_t flag_got_tx;
 
 static rx_info_t rx_info;
+static rx_info_t rx_data_buffer; //newly added 17/7/2020
 static tx_info_t tx_info;
 
 static uint8_t mrf_spi_buffer[3];
@@ -236,8 +237,10 @@ void mrf_interrupt_handler(void) {
     GRAB_ISR_MUTEX;
 
     uint8_t last_interrupt = mrf_read_short(MRF_INTSTAT);
+    printf("\nLast interrupt %i",last_interrupt); fflush(stdout);
     if (last_interrupt & MRF_I_RXIF) {
         flag_got_rx++;
+	printf("\nFlag got rx: %i", flag_got_rx); fflush(stdout);
         // read out the packet data...
         //cli();
         mrf_rx_disable();
@@ -254,15 +257,20 @@ void mrf_interrupt_handler(void) {
             for (i = 0; i < frame_length; i++) { // from 0x301 to (0x301 + frame_length -1)
                 rx_buf[rb_ptr++] = mrf_read_long(0x301 + i);
             }
+
         }
 	//printf("\nPre-Loop"); fflush(stdout);
 	printf("\nMrf_rx_datalength: %i ", mrf_rx_datalength()); fflush(stdout);
         int rd_ptr = 0;
         // from (0x301 + bytes_MHR) to (0x301 + frame_length - bytes_nodata - 1)
         for (i = 0; i < mrf_rx_datalength(); i++) {
-            rx_info.rx_data[rd_ptr++] = mrf_read_long(0x301 + bytes_MHR + i);
-	    
+            rx_info.rx_data[rd_ptr++] = mrf_read_long(0x301 + bytes_MHR + i); 
         }
+	 for (i = 0; i < mrf_rx_datalength(); i++) //experimenting
+    {
+	printf("\nGot: %d 0x %x", i, rx_info.rx_data[i]); //this is my data!
+	fflush(stdout);
+    }
 
         rx_info.frame_length = frame_length;
         // same as datasheet 0x301 + (m + n + 2) <-- frame_length
@@ -270,7 +278,7 @@ void mrf_interrupt_handler(void) {
         // same as datasheet 0x301 + (m + n + 3) <-- frame_length + 1
         rx_info.rssi = mrf_read_long(0x301 + frame_length + 1);
 
-        mrf_rx_enable();
+        //mrf_rx_enable(); //suggested by james
     //    sei();
     }
     if (last_interrupt & MRF_I_TXNIF) {
@@ -335,6 +343,11 @@ int mrf_rx_datalength(void) {
     return rx_info.frame_length - bytes_nodata;
 }
 
+int mrf_rx_buffer_datalength(void)
+{
+    return rx_data_buffer.frame_length - bytes_nodata;
+}
+
 void mrf_set_ignoreBytes(int ib) {
     // some modules behaviour
     ignoreBytes = ib;
@@ -378,6 +391,11 @@ void mrf_rx_disable(void) {
 
 void mrf_rx_enable(void) {
     mrf_write_short(MRF_BBREG1, 0x00);  // RXDECINV - enable receiver
+}
+
+uint8_t* mrf_get_rx_data_buffer() //17/7/2020
+{
+        return rx_data_buffer.rx_data;
 }
 
 uint8_t* mrf_get_rxdata()

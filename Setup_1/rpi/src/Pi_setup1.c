@@ -29,27 +29,20 @@ void handle_rx() {
 
     running_status |= (1<<RU_RX_HANDLE);
   
-    mrf_rx_disable();
-    /*uint8_t* recieved_data_pointer = mrf_get_rxdata();
-    int j;
-    for(j = 0; j < PK_SZ_TXRX_BUFFER; j++)
-    {
-	printf("\nGot: %i",recieved_data_pointer[j]);
-	fflush(stdout);
-    }*/
+    //mrf_rx_disable(); //suggested by james
 
     uint8_t buffer_length = mrf_rx_datalength(); 
     uint8_t recieved_data_buffer[buffer_length];
-    memset(recieved_data_buffer,1,buffer_length); //clear the buffer to 1
+    //memset(recieved_data_buffer,1,buffer_length); //clear the buffer to 1
     memcpy(recieved_data_buffer,mrf_get_rxdata(),buffer_length); // Copy the message into the recieved data buffer
-    printf("\nBuffer length: %i",buffer_length);
+    printf("\nmrf_rx_datalength(setup): %i",buffer_length);
 
-    int i;
+    /*int i;
     for (i = 0; i < buffer_length; i++)
     {
 	printf("\nGot: %d 0x %x", i, recieved_data_buffer[i]);
 	fflush(stdout);
-    }
+    }*/
     //clear the buffer
     memset(recieved_data_buffer,0,buffer_length);
 
@@ -107,7 +100,6 @@ void setup()
 {
  	//setup_queue(&message_queue,SZ_MESSAGE_QUEUE,SZ_MESSAGE,0);
     	transmit_command_header = &(transmit_data_buffer[PK_COMMAND_HEADER]);
-
 
     	wiringPiSetup();
     	wiringPiSPISetup (0, 1000000) ;
