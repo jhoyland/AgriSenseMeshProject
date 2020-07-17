@@ -31,11 +31,10 @@ void handle_rx() {
   
     //mrf_rx_disable(); //suggested by james
 
-    uint8_t buffer_length = mrf_rx_datalength(); 
+    uint8_t buffer_length = mrf_rx_buffer_datalength(); // formerly mrf_rx_datalength(); 
     uint8_t recieved_data_buffer[buffer_length];
-    //memset(recieved_data_buffer,1,buffer_length); //clear the buffer to 1
     memcpy(recieved_data_buffer,mrf_get_rxdata(),buffer_length); // Copy the message into the recieved data buffer
-    printf("\nmrf_rx_datalength(setup): %i",buffer_length);
+    printf("\nmrf_rx_buffer_datalength(setup): %i",buffer_length);
 
     /*int i;
     for (i = 0; i < buffer_length; i++)

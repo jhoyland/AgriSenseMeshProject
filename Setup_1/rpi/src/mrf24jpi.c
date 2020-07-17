@@ -228,6 +228,7 @@ void mrf_init(void) {
  * continue working.
  * Only the most recent data is ever kept.
  */
+
 void mrf_interrupt_handler(void) {
        printf("Interrupted\n"); fflush(stdout);
        int i = 0;
@@ -248,7 +249,7 @@ void mrf_interrupt_handler(void) {
         uint8_t frame_length = mrf_read_long(0x300);
 	printf("\nFrame length: %d ", frame_length); fflush(stdout); //this is coming out as 0
 	rx_info.frame_length = frame_length; //06/08/20: fixed undesired behavior (MH)
-	
+	rx_data_buffer.frame_length = frame_length;
 
         // buffer all bytes in PHY Payload
         if(mrf_flags | MRF_BUF_PHY){
@@ -266,7 +267,9 @@ void mrf_interrupt_handler(void) {
         for (i = 0; i < mrf_rx_datalength(); i++) {
             rx_info.rx_data[rd_ptr++] = mrf_read_long(0x301 + bytes_MHR + i); 
         }
-	 for (i = 0; i < mrf_rx_datalength(); i++) //experimenting
+	memcpy(rx_data_buffer.rx_data,rx_info.rx_data,mrf_rx_datalength()); //should copy to new buffer 17/7/20
+	
+        for (i = 0; i < mrf_rx_datalength(); i++) //experimenting
     {
 	printf("\nGot: %d 0x %x", i, rx_info.rx_data[i]); //this is my data!
 	fflush(stdout);
