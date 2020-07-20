@@ -55,6 +55,7 @@ static uint8_t mrf_spi_buffer[3];
 
 
 volatile uint8_t mrf_flags;
+uint8_t message_status;
 
 
 void mrf_reset(void) {
@@ -230,7 +231,7 @@ void mrf_init(void) {
  */
 
 void mrf_interrupt_handler(void) {
-       printf("Interrupted\n"); fflush(stdout);
+       printf("\nInterrupted\n"); fflush(stdout);
        int i = 0;
     /* if(isr_running) return;
         else isr_running = 1;  */  // Prevent multiple interrupt handlers being run
@@ -260,20 +261,20 @@ void mrf_interrupt_handler(void) {
             }
 
         }
-	//printf("\nPre-Loop"); fflush(stdout);
-	printf("\nMrf_rx_datalength: %i ", mrf_rx_datalength()); fflush(stdout);
+	//printf("\nMrf_rx_datalength: %i ", mrf_rx_datalength()); fflush(stdout);
+	//rx_data_buffer.frame_length = mrf_rx_datalength();
+	printf("\nrx_data_buffer.frame_length = %i",rx_data_buffer.frame_length); fflush(stdout);
         int rd_ptr = 0;
         // from (0x301 + bytes_MHR) to (0x301 + frame_length - bytes_nodata - 1)
         for (i = 0; i < mrf_rx_datalength(); i++) {
             rx_info.rx_data[rd_ptr++] = mrf_read_long(0x301 + bytes_MHR + i); 
         }
 	memcpy(rx_data_buffer.rx_data,rx_info.rx_data,mrf_rx_datalength()); //should copy to new buffer 17/7/20
-	
         for (i = 0; i < mrf_rx_datalength(); i++) //experimenting
-    {
-	printf("\nGot: %d 0x %x", i, rx_info.rx_data[i]); //this is my data!
+   /* {
+	printf("\nGot: %d 0x %x", i, rx_data_buffer.rx_data[i]); //this is my data!
 	fflush(stdout);
-    }
+    }*/
 
         rx_info.frame_length = frame_length;
         // same as datasheet 0x301 + (m + n + 2) <-- frame_length
@@ -293,10 +294,10 @@ void mrf_interrupt_handler(void) {
         tx_info.retries = mrf_reg_TXSTAT >> 6;
         tx_info.channel_busy = (mrf_reg_TXSTAT & (1 << CCAFAIL));
     }
+	set_message_status(1);
    // isr_running = 0;
-	
-	printf("No longer interrupted\n"); fflush(stdout);
     DROP_ISR_MUTEX;
+
 }
 
 
@@ -406,8 +407,16 @@ uint8_t* mrf_get_rxdata()
 	return rx_info.rx_data;
 }
 
-
 uint8_t mrf_tx_ok()
 {
 	return tx_info.tx_ok;
+}
+
+void set_message_status(uint8_t value)
+{
+	message_status = value;
+}
+uint8_t get_message_status()
+{
+	return message_status;
 }

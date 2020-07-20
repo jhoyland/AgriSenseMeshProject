@@ -225,11 +225,13 @@ uint8_t isr_lock;
         void mrf_get_txinfo(tx_info_t **);
         
         uint8_t * mrf_get_rxdata();
+	uint8_t * mrf_get_rx_data_buffer(); //20/7/2020
         uint8_t mrf_tx_ok();
 
         uint8_t * mrf_get_rxbuf(void);
 
         int mrf_rx_datalength(void);
+	int mrf_rx_buffer_datalength(void);
 
         void mrf_set_ignoreBytes(int ib);
 
@@ -250,6 +252,8 @@ uint8_t isr_lock;
         void mrf_interrupt_handler(void);
 
         void mrf_check_flags(void (*rx_handler)(void), void (*tx_handler)(void));
+	void set_message_status(uint8_t);
+	uint8_t get_message_status();
 
 
 #endif  /* LIB_MRF24J_H */
