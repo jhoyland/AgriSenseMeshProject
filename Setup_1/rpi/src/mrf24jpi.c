@@ -294,7 +294,7 @@ void mrf_interrupt_handler(void) {
         tx_info.retries = mrf_reg_TXSTAT >> 6;
         tx_info.channel_busy = (mrf_reg_TXSTAT & (1 << CCAFAIL));
     }
-	set_message_status(1);
+    set_message_status(1);
    // isr_running = 0;
     DROP_ISR_MUTEX;
 

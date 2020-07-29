@@ -12,6 +12,7 @@ It does this by looking for packets on the same PANID (0xCAFE) */
 #include "netspec.h"
 #include "cmdspec.h"
 #include "bitmanip.h"
+#include "setup.h"
 
 //which GPIO pin we're using
 #define INT_PIN 0 //the interrupt pin
@@ -45,10 +46,10 @@ void handle_rx() {
 		fflush(stdout);
 	}*/	
     
-
    mrf_rx_enable();
    running_status &=~(1<<RU_RX_HANDLE);
    printf("\nExiting handle_rx"); fflush(stdout);
+   //print_received_message(); fflush(stdout); //segmentation fault if processed here
 
 }
 
@@ -59,12 +60,14 @@ void print_received_message()
 	uint8_t received_data_buffer[buffer_length];
 	memcpy(received_data_buffer,mrf_get_rx_data_buffer(),buffer_length); // Copy the message into the recieved data buffer
  	int i = 0;
-	for(i = 0; i < buffer_length; i++)
-	{
-		printf("\ngot(PM): %i 0x %x", i, received_data_buffer[i+1]);
-		fflush(stdout);
-	}
-	 
+	if(buffer_length > 50) {printf("\nIncorrect Message"); fflush(stdout);}
+	else{
+		for(i = 0; i < buffer_length; i++)
+		{
+			printf("\ngot(PM): %i 0x %x", i, received_data_buffer[i]);
+			fflush(stdout);
+		}
+	     } 
 }
 
 // This is called by the interrupt handler when transmit has completed and the receiver has acknowledged
@@ -250,7 +253,7 @@ void main() //just send the setup routine
 	while(1)
 	{
 		mrf_check_flags(&handle_rx, &handle_tx);
-		if (get_message_status() == 1) {print_received_message(); set_message_status(0);}
+		if (get_message_status() == 1) {print_received_message();  set_message_status(0);}
 	}
 	
 	

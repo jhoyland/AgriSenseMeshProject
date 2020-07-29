@@ -1,0 +1,1 @@
+void print_received_message(void);
