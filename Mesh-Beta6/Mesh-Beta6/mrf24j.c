@@ -152,12 +152,12 @@ void mrf_send16(uint16_t dest16, uint8_t * data, uint8_t len) {
     // All testing seems to indicate that the next two bytes are ignored.
     //2 bytes on FCS appended by TXMAC
     i+=ignoreBytes;
-	int j = i; //temporary variable for experimentation
+	//int j = i; //temporary variable for experimentation
     int q;
     for (q = 0; q < len; q++) {
         mrf_write_long(i++, data[q]);
     }
-	mrf_write_long(j,len); //experiment
+	//mrf_write_long(j,len); //experiment
     //sei();
     // ack on, and go!
     mrf_write_short(MRF_TXNCON, (1<<MRF_TXNACKREQ | 1<<MRF_TXNTRIG));
