@@ -98,10 +98,10 @@ void send_message(uint16_t target, uint8_t* buff)
 	Pk_Set_Target_Node(buff,target);
 	Pk_Set_Packet_Size(buff,PK_SZ_TXRX_BUFFER);
 	Pk_Set_Command(buff,CMD_PING,0,0,0);
-	memset(buff,1,PK_SZ_TXRX_BUFFER);
+	//memset(buff,1,PK_SZ_TXRX_BUFFER);
 	mrf_send16(target,buff,PK_SZ_TXRX_BUFFER);
 	//_delay_ms(100);
-	//setup(); //just a guess
+	setup(); //just a guess
 }
 
 void setup()

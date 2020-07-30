@@ -55,6 +55,8 @@
 //node statuses
 #define IDLE 0x0000
 #define SETTING_UP 0x0001
+#define WAITING_FOR_RESPONSE 0x0002
+#define MESSAGE_RECEIVED 0x0003
 
 #define NP_ADC_ACTIVE_CH 0
 #define NP_ADC_N_SAMPLES 256
