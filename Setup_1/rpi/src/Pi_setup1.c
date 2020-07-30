@@ -18,54 +18,53 @@ It does this by looking for packets on the same PANID (0xCAFE) */
 
 uint8_t req_id; //formerly 16
 uint8_t transmit_data_buffer[PK_SZ_TXRX_BUFFER];
+uint8_t received_data_buffer[PK_SZ_TXRX_BUFFER];
 
 uint8_t error_data_buffer[PK_SZ_ERR_BUFFER];
 uint8_t* transmit_command_header;
 uint8_t active_message[PK_SZ_TXRX_BUFFER];
 uint8_t running_status = 0;
+uint8_t got_message;
 
 
 void handle_rx() {
+    printf("\nEntering Handle_rx (setup)"); fflush(stdout);
 
     running_status |= (1<<RU_RX_HANDLE);
   
-    mrf_rx_disable();
-    /*uint8_t* recieved_data_pointer = mrf_get_rxdata();
-    int j;
-    for(j = 0; j < PK_SZ_TXRX_BUFFER; j++)
-    {
-	printf("\nGot: %i",recieved_data_pointer[j]);
-	fflush(stdout);
-    }*/
-    uint8_t buffer_length = mrf_rx_datalength();
-    uint8_t recieved_data_buffer[buffer_length];
-    memset(recieved_data_buffer,0,buffer_length); //clear the buffer to 0
-    memcpy(recieved_data_buffer,mrf_get_rxdata(),buffer_length); // Copy the message into the recieved data buffer
-    printf("\nBuffer length: %i",buffer_length);
+    //mrf_rx_disable(); //suggested by james
 
-    int i;
-    for (i = 0; i < buffer_length; i++)
-    {
-	printf("\nGot: 0x %x",recieved_data_buffer[i]);
-	fflush(stdout);
-    }
-    //clear the buffer
-    //memcpy(recieved_data_buffer,0,mrf_rx_datalength());
+    //uint8_t buffer_length = mrf_rx_datalength();//mrf_rx_buffer_datalength(); // formerly mrf_rx_datalength(); 
+    //printf("\nbuffer_length (setup) %i",buffer_length); fflush(stdout);
+    //memcpy(received_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()); // Copy the message into the recieved data buffer
+    //printf("\nmrf_rx_buffer_datalength(setup): %i",buffer_length);
+    /*int i = 0;
+	for(i = 0; i < buffer_length; i++)
+	{
+		printf("\ngot: %i 0x %x", i, received_data_buffer[i]);
+		fflush(stdout);
+	}*/	
+    
 
-    //printf("\nGot: 0x %x", recieved_data_buffer[PK_COMMAND_HEADER + PK_SZ_PACKET]); 
-    //fflush(stdout);
-
-   // if(! enqueue( &message_queue, recieved_data_buffer ))                               // Try to queue the received message
-   // {
-   //     printf("\nCommand queue full. Lost node message");
-   // }
-   // else
-   // {
-  //      printf("\nNode message queued");
-   // }
    mrf_rx_enable();
    running_status &=~(1<<RU_RX_HANDLE);
+   printf("\nExiting handle_rx"); fflush(stdout);
 
+}
+
+void print_received_message()
+{
+	uint8_t buffer_length = mrf_rx_buffer_datalength();
+	printf("buffer length:(PM) %i" , buffer_length);
+	uint8_t received_data_buffer[buffer_length];
+	memcpy(received_data_buffer,mrf_get_rx_data_buffer(),buffer_length); // Copy the message into the recieved data buffer
+ 	int i = 0;
+	for(i = 0; i < buffer_length; i++)
+	{
+		printf("\ngot(PM): %i 0x %x", i, received_data_buffer[i+1]);
+		fflush(stdout);
+	}
+	 
 }
 
 // This is called by the interrupt handler when transmit has completed and the receiver has acknowledged
@@ -91,10 +90,10 @@ void handle_tx() {
 void set_packet_header(uint8_t* buff)
 {
 
-    buff[PK_DEST_PANID_HI] = PAN_ID_HI;
-    buff[PK_DEST_PANID_LO] = PAN_ID_LO;
-    buff[PK_SRC_PANID_HI] = PAN_ID_HI;
-    buff[PK_SRC_PANID_LO] = PAN_ID_LO;
+    //buff[PK_DEST_PANID_HI] = PAN_ID_HI; //no longer needed bits
+    //buff[PK_DEST_PANID_LO] = PAN_ID_LO;
+    //buff[PK_SRC_PANID_HI] = PAN_ID_HI;
+    //buff[PK_SRC_PANID_LO] = PAN_ID_LO;
     buff[PK_SRC_ADDR_HI] = PI_ADDR_HI;
     buff[PK_SRC_ADDR_LO] = PI_ADDR_LO;
     buff[PK_COMMAND_HEADER+PK_HOP_COUNT] = 0;
@@ -105,7 +104,6 @@ void setup()
 {
  	//setup_queue(&message_queue,SZ_MESSAGE_QUEUE,SZ_MESSAGE,0);
     	transmit_command_header = &(transmit_data_buffer[PK_COMMAND_HEADER]);
-
 
     	wiringPiSetup();
     	wiringPiSPISetup (0, 1000000) ;
@@ -155,9 +153,10 @@ void set_target_node(uint8_t* buff,uint16_t target_node)
     word_to_bytes(& buff[PK_DEST_ADDR_HI], target_node);
 }
 
-void set_command(uint8_t* buff, uint16_t cmd_id, uint8_t cmd2, uint8_t cmd3, uint8_t cmd4)
+void set_command(uint8_t* buff, uint16_t cmd_id, uint8_t cmd1, uint8_t cmd2, uint8_t cmd3, uint8_t cmd4)
 {
     word_to_bytes(& buff[PK_COMMAND_HEADER + PK_CMD_HI], cmd_id);
+    buff[PK_COMMAND_HEADER + PK_CMD_DATA_0] = cmd1;
     buff[PK_COMMAND_HEADER + PK_CMD_DATA_1] = cmd2; 
     buff[PK_COMMAND_HEADER + PK_CMD_DATA_2] = cmd3; 
     buff[PK_COMMAND_HEADER + PK_CMD_DATA_3] = cmd4;
@@ -176,23 +175,24 @@ void send_command(uint16_t target, uint8_t* buff)
     mrf_send16(target,buff,buff[PK_COMMAND_HEADER + PK_SZ_PACKET]);
 }
 
-
+//specific functions for pinging and initializing setup routine
 void send_ping(uint16_t target, uint8_t* buff)
 {	
 	set_packet_size(buff,PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER);
     	set_target_node(buff,target);
-	set_command(buff,CMD_PING,1,2,3);
+	set_command(buff,CMD_PING,0,1,2,3);
  	set_request_id(buff);
 	send_command(target, buff);
 }
 
 void send_setup(uint16_t target, uint8_t* buff)
 {
-	set_packet_size(buff,PK_SZ_ADDR_HEADER + PK_SZ_CMD_HEADER);
+	set_packet_size(buff,PK_SZ_TXRX_BUFFER); //packet will always have all 40
     	set_target_node(buff,target);
-	set_command(buff,CMD_SETUP,1,2,3);
+	set_command(buff,CMD_SETUP,0,0,0,0);
  	set_request_id(buff);
 	send_command(target, buff);
+	memset(buff,0,sizeof(buff));
 }
 
 //For getting data from the message
@@ -238,18 +238,19 @@ void print_message(uint8_t * msg)
     printf("\n===============================================\n");
 }
 
-void main()
+void main() //just send the setup routine
 {
 	setup();
-	printf("\nSetup Complete");
-	send_ping(0x0001,transmit_data_buffer);
-	printf("\nMessage Sent\n");
+	printf("\nSetup Complete"); fflush(stdout);
+	send_setup(0x0001,transmit_data_buffer); fflush(stdout);
+	printf("\nMessage Sent\n"); fflush(stdout);
 	print_message(transmit_data_buffer);
-	printf("\n%x",bytes_to_word(&transmit_data_buffer[10]));
+	//printf("\n%x",bytes_to_word(&transmit_data_buffer[10]));
 	fflush(stdout);
 	while(1)
 	{
 		mrf_check_flags(&handle_rx, &handle_tx);
+		if (get_message_status() == 1) {print_received_message(); set_message_status(0);}
 	}
 	
 	
