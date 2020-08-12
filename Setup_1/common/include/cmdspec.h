@@ -31,6 +31,7 @@
 #define CMD_PING 0x4552						// Ping:  
 #define CMD_ECHO 0x4543
 #define CMD_SETUP 0x4555
+#define CMD_SET_LIGHT  0x00DD
 #define CMD_GET_PARAMETER 0x5047
 #define CMD_SET_PARAMETER 0x5053
 #define CMD_QSTATUS 0x5153

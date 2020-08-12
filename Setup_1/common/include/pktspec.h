@@ -19,16 +19,18 @@
 
 // Addressing header bytes
 #define PK_SZ_ADDR_HEADER 4
-//#define PK_DEST_PANID_HI 0
+//#define PK_DEST_PANID_HI 0 //sending to this node
 //#define PK_DEST_PANID_LO 1
 #define PK_DEST_ADDR_HI 0
 #define PK_DEST_ADDR_LO 1
+#define PK_FINAL_ADDR_HI 2 //final address for message
+#define PK_FINAL_ADDR_LO 3
 //#define PK_SRC_PANID_HI 4
 //#define PK_SRC_PANID_LO 5
-#define PK_SRC_ADDR_HI 2	// column no
-#define PK_SRC_ADDR_LO 3	// row no
+#define PK_SRC_ADDR_HI 4	
+#define PK_SRC_ADDR_LO 5	
 
-#define PK_COMMAND_HEADER 4
+#define PK_COMMAND_HEADER 6
 
 // Command header bytes
 #define PK_SZ_CMD_HEADER 8		
@@ -40,9 +42,9 @@
 #define PK_CMD_DATA_1 5				//     These four bytes are used for command specific arguments.
 #define PK_CMD_DATA_2 6				//	   All four bytes must be sent even if not needed for the specific message
 #define PK_CMD_DATA_3 7				//
-
+//#define PK_DATA_DIRECTION 8			//data direction: 0 for up, 1 for down
 // Body
-#define PK_DATA_START 16			// Actual data starts here
+#define PK_DATA_START 14			// Actual data starts here
 
 #define PK_DATUM_SIZE 3				// Size of individual data item. Three bytes are used to pack 2 x 12 bit values representing mean and sd.
 
