@@ -20,6 +20,10 @@
 #define GREEN_LIGHT PD5
 
 #define YELLOW_LIGHT PD6
+/*
+#define RED_LIGHT PD5
+#define YELLOW_LIGHT PD6
+#define GREEN_LIGHT PD7*/
 
 #define CS_SR	PB3 /*Shift Register*/
 #define ADC_CS	PB7 /* MCP3208 */
@@ -62,13 +66,15 @@ void loop(){
 		if(get_adc_value(0) > 100)
 		{
 		PORTD |= (1<<GREEN_LIGHT); //if the ADC value returns, light green
-		PORTD |= (1<<BLUE_LIGHT);
+		PORTD &= ~(1<<RED_LIGHT);
+		//PORTD |= (1<<BLUE_LIGHT);
 		//_delay_ms(1000);
 	    }
 		else 
 		{
+			PORTD &= ~(1<<GREEN_LIGHT);
 			PORTD |= (1<<RED_LIGHT); //if ADC value doesn't return, light red
-			PORTD |= (1<<BLUE_LIGHT);
+			//PORTD |= (1<<BLUE_LIGHT);
 		}
 	
 	/*LIGHT BLINKING DEBUG*/

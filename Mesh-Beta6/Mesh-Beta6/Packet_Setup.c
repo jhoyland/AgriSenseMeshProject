@@ -34,6 +34,16 @@ void Pk_Set_Target_Node(uint8_t* buff, uint16_t target_node)
 	word_to_bytes(&buff[PK_DEST_ADDR_HI],target_node);
 }
 
+void Pk_Set_Final_Node(uint8_t* buff, uint16_t target)
+{
+	word_to_bytes(&buff[PK_FINAL_ADDR_HI],target);
+}
+
+/*Pk_Set_Data_Direction(uint8_t* buff, uint8_t direction)
+{
+	buff[PK_COMMAND_HEADER+PK_DATA_DIRECTION] = direction;
+}*/
+
 void Pk_Set_Command(uint8_t* buff, uint16_t cmd_id, uint8_t cmd2, uint8_t cmd3, uint8_t cmd4, uint8_t cmd5)
 {
 	word_to_bytes(&buff[PK_COMMAND_HEADER+PK_CMD_HI],cmd_id);
@@ -50,7 +60,10 @@ void Pk_Set_Src_Node(uint8_t* buff, uint16_t origin)
 	word_to_bytes(&buff[PK_SRC_ADDR_HI],origin);
 }
 
-void Pk_Add_Data(uint8_t* buff, uint16_t data)
-{
-	word_to_bytes(&buff[PK_COMMAND_HEADER+PK_DATA_START],data);
+void Pk_Add_Data(uint8_t* buff, uint16_t data, uint8_t data_location)
+{   //adds data in two byte elements
+	//TODO: Make this a pack_12_bits function due to ADC values being 12 bits
+	//TODO: incorporate "hop count"?
+	word_to_bytes(&buff[PK_COMMAND_HEADER+PK_DATA_START+data_location*3],data);
+	//location*2 to separate data [0,1],[1,2],[3,4] etc.
 }

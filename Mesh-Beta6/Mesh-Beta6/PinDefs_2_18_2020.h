@@ -31,7 +31,6 @@
 
 //Lights for diagnostics
 #define LIGHT_PORT PORTD
-//#define BLUE_LIGHT PD4 //NO MORE BLUE LIGHT
 #define RED_LIGHT PD5
 #define YELLOW_LIGHT PD6
 #define GREEN_LIGHT PD7

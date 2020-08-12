@@ -159,6 +159,12 @@
     <Compile Include="PinDefs_2_18_2020.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="spi-master-adc1.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="spi-master-adc1.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="tinyspi.c">
       <SubType>compile</SubType>
     </Compile>

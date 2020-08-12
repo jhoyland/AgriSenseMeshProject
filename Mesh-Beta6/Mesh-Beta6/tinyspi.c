@@ -57,9 +57,7 @@ void spi_transfer_nbytes(uint8_t* out, uint8_t* in, uint8_t n, uint8_t cs)
 	CS_PORT &= ~(1<<cs); /*Select slave chip*/
 	while(n)
 	{
-		
 		spi_transfer_byte(out,in);    /*transfer byte */
-
 		/*advance iterators*/
 		out = out + 1;
 		in = in + 1;

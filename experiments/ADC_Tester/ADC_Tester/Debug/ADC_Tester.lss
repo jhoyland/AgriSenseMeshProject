@@ -135,25 +135,26 @@ void loop(){
   6c:	fb df       	rcall	.-10     	; 0x64 <pollButton>
   6e:	81 11       	cpse	r24, r1
   70:	09 c0       	rjmp	.+18     	; 0x84 <loop+0x18>
-		if(get_adc_value(0) > 200)
+		if(get_adc_value(0) > 100)
   72:	0c d0       	rcall	.+24     	; 0x8c <get_adc_value>
-  74:	89 3c       	cpi	r24, 0xC9	; 201
+  74:	85 36       	cpi	r24, 0x65	; 101
   76:	91 05       	cpc	r25, r1
   78:	18 f0       	brcs	.+6      	; 0x80 <loop+0x14>
 		{
 		PORTD |= (1<<GREEN_LIGHT); //if the ADC value returns, light green
   7a:	5d 9a       	sbi	0x0b, 5	; 11
-		PORTD |= (1<<BLUE_LIGHT);
-  7c:	5c 9a       	sbi	0x0b, 4	; 11
+		PORTD &= ~(1<<RED_LIGHT);
+  7c:	5f 98       	cbi	0x0b, 7	; 11
   7e:	08 95       	ret
+		//PORTD |= (1<<BLUE_LIGHT);
 		//_delay_ms(1000);
 	    }
 		else 
 		{
+			PORTD &= ~(1<<GREEN_LIGHT);
+  80:	5d 98       	cbi	0x0b, 5	; 11
 			PORTD |= (1<<RED_LIGHT); //if ADC value doesn't return, light red
-  80:	5f 9a       	sbi	0x0b, 7	; 11
-			PORTD |= (1<<BLUE_LIGHT);
-  82:	5c 9a       	sbi	0x0b, 4	; 11
+  82:	5f 9a       	sbi	0x0b, 7	; 11
   84:	08 95       	ret
 
 00000086 <main>:

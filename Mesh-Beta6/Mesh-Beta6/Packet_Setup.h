@@ -15,9 +15,11 @@ void Pk_Set_Dest_Panid(uint8_t*,uint16_t);
 void Pk_Set_Src_Panid(uint8_t*,uint16_t);
 void Pk_Set_Packet_Size(uint8_t*, uint8_t);
 void Pk_Set_Target_Node(uint8_t*, uint16_t);
+void Pk_Set_Final_Node(uint8_t*, uint16_t);
 void Pk_Set_Command(uint8_t*, uint16_t, uint8_t, uint8_t, uint8_t, uint8_t);
 void Pk_Set_Src_Node(uint8_t*, uint16_t);
-void Pk_Add_Data(uint8_t*,uint16_t);
+void Pk_Add_Data(uint8_t*,uint16_t,uint8_t); //which bit of data to add
+/*void Pk_Set_Data_Direction(uint8_t*,uint8_t);*/
 
 
 

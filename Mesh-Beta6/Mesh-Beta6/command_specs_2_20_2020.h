@@ -41,6 +41,7 @@
 #define CMD_NETWORK_COMPLETE 0x5555
 #define CMD_TO_PI 0x00CE				//CE: command to end
 #define CMD_TO_DOWNSTAIRS 0x00CD		//CD: Command downstream 
+#define CMD_SET_LIGHT 0x00DD
 
 					
 #define CMD_GET_PARAMETER 0x5047
@@ -57,6 +58,10 @@
 #define SETTING_UP 0x0001
 #define WAITING_FOR_RESPONSE 0x0002
 #define MESSAGE_RECEIVED 0x0003
+
+//data directions
+#define UP 0
+#define DOWN 1
 
 #define NP_ADC_ACTIVE_CH 0
 #define NP_ADC_N_SAMPLES 256

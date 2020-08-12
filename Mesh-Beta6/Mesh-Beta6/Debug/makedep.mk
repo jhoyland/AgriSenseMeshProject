@@ -10,5 +10,7 @@ mrf24j.c
 
 Packet_Setup.c
 
+spi-master-adc1.c
+
 tinyspi.c
 
