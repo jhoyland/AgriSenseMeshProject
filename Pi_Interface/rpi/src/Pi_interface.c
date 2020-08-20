@@ -401,12 +401,13 @@ void process_message()
 	uint8_t buffer_length = mrf_rx_datalength();
 	uint8_t received_data_buffer[buffer_length];
 	memcpy(received_data_buffer,mrf_get_rx_data_buffer(),buffer_length); // Copy the message into the recieved data buffer
-	//record_message(received_data_buffer);
+
+	if(bytes_to_word(&received_data_buffer[PK_DEST_ADDR_HI]) == PI_ADDR) record_message(received_data_buffer); //record data to a notepad
+
 	switch(bytes_to_word(&received_data_buffer[PK_COMMAND_HEADER+PK_CMD_HI]))
 	{
 	  case CMD_MORE_DATA: 
 	  continue_data_request(received_data_buffer[PK_COMMAND_HEADER+PK_ADC_CHANNEL], bytes_to_word(&received_data_buffer[PK_COMMAND_HEADER+PK_CMD_DATA_0]));
-	  
 	  break;
 	  default: break;	
 	}
@@ -417,15 +418,24 @@ void process_message()
 void record_message(uint8_t* buff)
 {	
 	//timestamp bits
-	time_t rawtime;
-	struct tm *info;
-	time(&rawtime);
-	info = localtime(&rawtime);
-	printf("%s",asctime(time));
+	//time_t rawtime = time(NULL);
+	//time(&rawtime);
+	//struct tm *timeinfo = localtime(&rawtime);
+	//printf("\nCurrent time: %s",asctime(&timeinfo));
+
 	//file bits
 	FILE *file;
 	file = fopen("RECORDED_DATA.txt","a+"); //if file doesn't exist, create one. Also append if it does exist.
-	fprintf(file, "%s %s","\n",info);
+
+	//data parsing
+	uint8_t *data = &buff[PK_DATA_START];
+	int i;
+	for(i = 0; i < (PK_SZ_TXRX_BUFFER - PK_DATA_START)/4-2; i++)
+	{
+	 fprintf(file,"\nNode: %.4x Data: %.4x", bytes_to_word(&data[4*i]),bytes_to_word(&data[4*i+2]));
+	}
+	printf("\nAdded Data!"); fflush(stdout);
+	//fprintf(file, "%s %s","\n",info);
 	fclose(file); 
 }
 void main()
@@ -442,7 +452,10 @@ void main()
 	while(1)
 	{
 		mrf_check_flags(&handle_rx, &handle_tx);
-		if (get_message_status() == 1) {print_received_message();  process_message(); set_message_status(0);
+		if (get_message_status() == 1) {
+			print_received_message(); 
+			process_message(); 
+			set_message_status(0);
 		 //request_input();
 		 printf("\nListening for new message...");}
 	}
