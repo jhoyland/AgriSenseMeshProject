@@ -23,7 +23,7 @@
 #include "spi-master-adc1.h"
 
 
-#define THIS_DEVICE 0x0003 //change this to program each node's ID
+#define THIS_DEVICE 0x0002 //change this to program each node's ID
 #define ASMP_PANID 0xCAFE //PANID for the network
 
 uint8_t transmit_data_buffer[PK_SZ_TXRX_BUFFER]; //holds data to be sent
@@ -65,6 +65,7 @@ struct neighbor upstairs_neighbor; //up towards the end of the line
 
 void handle_rx()
 {	
+	
 	memset(received_data_buffer,0,PK_SZ_TXRX_BUFFER);
 	running_status |= (1<<RU_RX_HANDLE);  //MUTEX
 	memcpy(received_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()); //makes a copy of the rx data to a buffer
@@ -143,6 +144,7 @@ void COMMAND_HANDLER(uint8_t* message) //Looks at the command bits and decides w
 
 void collect_data(uint8_t* buff) 
 {
+	memcpy(transmit_data_buffer,buff,PK_SZ_TXRX_BUFFER); //make sure the previous node's data is put in the transmit buffer
 	//The routine:
 	//collect data, send it up. If the buffer is full or the end of the chain is reached, pass it down to the pi for a report
 	
@@ -158,47 +160,59 @@ void collect_data(uint8_t* buff)
 	//with 40 sized buffer we can have 6 nodes with 1 sensor in a chain
 	
 	uint8_t channel = buff[PK_COMMAND_HEADER+PK_ADC_CHANNEL]; //which sensor to look at
-	uint8_t location;// = buff[PK_COMMAND_HEADER+PK_HOP_COUNT]; //where this data is going
-	if(bytes_to_word(&buff[PK_SRC_ADDR_HI]) == pi_address) location = 0; //reset hop counter if this request came from the pi
-	else location = buff[PK_COMMAND_HEADER+PK_HOP_COUNT];
-	hop_count = location;
+	//uint8_t location;// = buff[PK_COMMAND_HEADER+PK_HOP_COUNT]; //where this data is going
 	
+	if(bytes_to_word(&buff[PK_SRC_ADDR_HI]) == pi_address) hop_count = 0; //reset hop counter if this request came from the pi
+	else hop_count = buff[PK_COMMAND_HEADER+PK_HOP_COUNT];
+
 	//if the location is too close to the end of the packet size, this node is going to be the node that has to return data before re-starting
 	//the collection
-	if(location*3+PK_DATA_START+2 > PK_SZ_TXRX_BUFFER) //size of the buffer, should be 127 bits. 2 is the addressing preface bits. 3 is the space an ADC value takes up
+	if(hop_count*4+PK_DATA_START+4 > PK_SZ_TXRX_BUFFER) //size of the buffer, should be 127 bits. 2 is the addressing preface bits. 3 is the space an ADC value takes up
 	{
+	PORTD |= (1<<GREEN_LIGHT);
 	Pk_Set_Command(buff,CMD_TO_PI,CMD_MORE_DATA,buff[PK_DEST_ADDR_HI],buff[PK_DEST_ADDR_LO],1); //let the pi know there's more data to be collected
-	//also places the address of this node in the command buffer
+	//also places the address of this node in the command header
 	send_down_to_pi(buff); //return the buffer that has been received down to the pi.
 	}
 	else
 	{
-		word_to_bytes(&transmit_data_buffer[PK_DATA_START+location*3],THIS_DEVICE);
-		word_to_bytes(&transmit_data_buffer[PK_DATA_START+location*3+2],get_adc_value(channel));
-		++hop_count;
-		++hop_count;
+		PORTD &= ~(1<<GREEN_LIGHT); //turn off green light if it was set earlier
+		Pk_Set_Command(transmit_data_buffer,bytes_to_word(&buff[PK_COMMAND_HEADER+PK_CMD_HI]),buff[PK_COMMAND_HEADER+PK_CMD_DATA_0],buff[PK_COMMAND_HEADER+PK_CMD_DATA_1],buff[PK_COMMAND_HEADER+PK_CMD_DATA_2],buff[PK_COMMAND_HEADER+PK_CMD_DATA_3]);
+		//need to repeat the command into the buffer so if it's sent upstream the node above knows to do this
+		
+		//ACQUIRE DATA
+		word_to_bytes(&transmit_data_buffer[PK_DATA_START+(hop_count*4)],THIS_DEVICE); //loading data into the correct position
+		word_to_bytes(&transmit_data_buffer[PK_DATA_START+(hop_count*4)+2],get_adc_value(channel));
+		
+		++hop_count; //so next node will put data next in sequence
 		Pk_Set_Hop_Count(transmit_data_buffer,hop_count);
+		transmit_data_buffer[PK_COMMAND_HEADER+PK_HOP_COUNT] = hop_count; //making sure??
+		
 		if(THIS_DEVICE != last_node) 
 		{
+			//send_directly_to_pi(transmit_data_buffer);
 			send_upstream(transmit_data_buffer);
-			BLINK(LIGHT_PORT,RED_LIGHT);
 		}
-		else send_down_to_pi(transmit_data_buffer);
-		memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER);
+		//data acquisition complete when we reach the last node
+		else if(THIS_DEVICE == last_node) 
+		{
+			send_down_to_pi(transmit_data_buffer);
+		}
+		//memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER);
+		else send_directly_to_pi(buff);
 	}
 }
 
 void get_adc_data(uint8_t* buff) //this routine is for "individual sampling", it will collect from one ADC channel and send it straight to the pi
 {
-	//TODO: THIS SEEMS TO ENTER REGARDLESS OF INTENDED NODE
 	//gets the ADC value from a channel. Adds it to a buffer
 	BLINK(LIGHT_PORT,RED_LIGHT); BLINK(LIGHT_PORT,RED_LIGHT);
 	memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER); //clear the transmit buffer -> avoid repeat data
 	Pk_Set_Command(transmit_data_buffer,CMD_DATA,0,0,0,0); //need to preserve that this was a data request to the pi
 	uint8_t channel = buff[PK_COMMAND_HEADER+PK_ADC_CHANNEL];
 	uint8_t location = buff[PK_COMMAND_HEADER+PK_HOP_COUNT];
-	word_to_bytes(&transmit_data_buffer[PK_DATA_START+location*3],THIS_DEVICE); //give a prefix to the data with the address
-	word_to_bytes(&transmit_data_buffer[PK_DATA_START+location*3+2],get_adc_value(channel)); //add the data after the address byte
+	word_to_bytes(&transmit_data_buffer[PK_DATA_START+location*4],THIS_DEVICE); //give a prefix to the data with the address
+	word_to_bytes(&transmit_data_buffer[PK_DATA_START+location*4+2],get_adc_value(channel)); //add the data after the address byte
 	send_down_to_pi(transmit_data_buffer);
 	
 }
@@ -225,13 +239,12 @@ void setup_network(uint8_t* message)
 {	
 	//this function should only enter once, when the node is told to setup the network initially
 	//TODO: Have a case where the network is already setup
-	//BLINK(LIGHT_PORT,RED_LIGHT);
 	node_status = SETTING_UP; //flag for set up routine
 	neighbor_count = 0; //default it to 0 -> when setup routine is entered
-	target_index = 0; //default
+	target_index = 0; //default, allows to iterate through the whole list
 	Network_Set = false;
-	upstairs_neighbor.id = 0x0000; //default
-	downstairs_neighbor.id = 0x0000; //default
+	//upstairs_neighbor.id = 0x0000; //default
+	//downstairs_neighbor.id = 0x0000; //default
 	set_downstairs_neighbor(message); //set the downstairs node for this (node that messages will be relayed to) as the person who requested this
 	probe_neighbor_status(node_list[target_index]); //start by searching node 0x0001 -> must wait for a response
 	wait_for_response(message);
@@ -266,8 +279,7 @@ void set_upstairs_neighbor(uint8_t* message) //this function may prove to be my 
 		Network_Set = true;
 		target_index = 0;
 		
-		hop_count = message[PK_COMMAND_HEADER+PK_HOP_COUNT]; //should return 0 from the pi, 1 from 0x0001
-		++hop_count; //no idea why I have to do this twice for it to work
+		hop_count = message[PK_COMMAND_HEADER+PK_HOP_COUNT]; //should return 0 from the pi, 1 from 0x0001, etc.
 		++hop_count;
 		Pk_Set_Hop_Count(transmit_data_buffer,hop_count);
 		//Pk_Add_Data(transmit_data_buffer,THIS_DEVICE,hop_count); //add the address of this buffer to the data.
@@ -286,12 +298,9 @@ void set_upstairs_neighbor(uint8_t* message) //this function may prove to be my 
 			//this node is the last node, relay that info back to the pi
 			upstairs_neighbor.id = 0x9999; //no upstairs neighbor
 			hop_count = message[PK_COMMAND_HEADER+PK_HOP_COUNT];
-			++hop_count; //no idea why I have to do this twice for it to work
 			++hop_count;
-			Pk_Set_Hop_Count(transmit_data_buffer,hop_count); //set the new hop count
-			//PORTD |= (1<<RED_LIGHT);
-			word_to_bytes(&transmit_data_buffer[PK_DATA_START+hop_count],THIS_DEVICE);
-			//PORTD |= (1<<RED_LIGHT);
+			Pk_Set_Hop_Count(transmit_data_buffer,hop_count); //set the new hop count in this device
+			word_to_bytes(&transmit_data_buffer[PK_DATA_START+hop_count+2],THIS_DEVICE);
 			//Pk_Add_Data(transmit_data_buffer,THIS_DEVICE,hop_count);
 			++neighbor_count;
 			last_node = THIS_DEVICE;
@@ -343,6 +352,7 @@ void wait_for_response(uint8_t * message)
 							++hop_count;
 							Pk_Set_Hop_Count(transmit_data_buffer,hop_count); //ensure hop count is preserved
 							Network_Set = true;
+							last_node = THIS_DEVICE;
 							confirm_network_complete();
 							}
 						else probe_neighbor_status(node_list[target_index]);
