@@ -16,9 +16,10 @@ It does this by looking for packets on the same PANID (0xCAFE) */
 
 //which GPIO pin we're using
 #define INT_PIN 0 //the interrupt pin
+#define GATEWAY_NODE 0x0001 //node that is closest to the Pi
 
 uint8_t req_id; //formerly 16
-uint8_t transmit_data_buffer[PK_SZ_TXRX_BUFFER];
+uint8_t transmit_data_buffer[PK_SZ_TXRX_BUFFER]; //currently 40. Too large and nodes cannot program 
 uint8_t received_data_buffer[PK_SZ_TXRX_BUFFER];
 
 uint8_t error_data_buffer[PK_SZ_ERR_BUFFER];
@@ -26,6 +27,7 @@ uint8_t* transmit_command_header;
 uint8_t active_message[PK_SZ_TXRX_BUFFER];
 uint8_t running_status = 0;
 uint8_t got_message;
+
 
 
 void handle_rx() {
@@ -52,28 +54,20 @@ void handle_rx() {
    printf("\nExiting handle_rx"); fflush(stdout);
 }
 
-void print_received_message()
+
+
+void print_received_message() //eventually replace with process message
 {
 	uint8_t buffer_length = mrf_rx_datalength(); /*mrf_rx_buffer_datalength();*/
 	//printf("\nbuffer length:(PM) %i" , buffer_length);
 	uint8_t received_data_buffer[buffer_length];
 	memcpy(received_data_buffer,mrf_get_rx_data_buffer(),buffer_length); // Copy the message into the recieved data buffer
-	//memcpy(active_message,mrf_get_rxdata(),mrf_rx_datalength());
- 	int i = 0;
-	/*if(buffer_length > 50) {printf("\nIncorrect Message"); fflush(stdout);}
-	else{*/
-		for(i = 0; i < buffer_length; i++)
-		{
-			printf("\ngot: %i 0x %x", i, received_data_buffer[i]);
-			fflush(stdout);
-		}
-		/*for(i=0;i<buffer_length;i++)
-		{
-			printf("\ngot(AM): %i 0x %x", i, active_message[i]);
-			fflush(stdout);	
-			
-		}*/
-	     //} 
+ 	int i;
+ 	if(bytes_to_word(&received_data_buffer[PK_DEST_ADDR_HI]) == PI_ADDR)
+	{
+	for(i=0;i<PK_SZ_TXRX_BUFFER;i++){printf("\nReceived: %i %x",i,received_data_buffer[i]); fflush(stdout);}
+	}
+	else {printf("\nGot message, not for the Pi though..."); fflush(stdout);}
 }
 
 // This is called by the interrupt handler when transmit has completed and the receiver has acknowledged
@@ -140,7 +134,7 @@ void setup()
    	// keep_going = 8;
   	req_id = 1;
 	memset(transmit_data_buffer,0,sizeof(transmit_data_buffer));
-    	set_packet_header(transmit_data_buffer);
+    	//set_packet_header(transmit_data_buffer);
 
 }
 
@@ -189,30 +183,44 @@ void set_request_id(uint8_t* buff)
     req_id++;   
 }
 
+void set_adc_channel(uint8_t* buff, uint8_t channel)
+{
+   buff[PK_COMMAND_HEADER+PK_ADC_CHANNEL] = channel;
+}
+
 void send_command(uint16_t target, uint8_t* buff)
 {
+   
     set_packet_size(buff,PK_SZ_TXRX_BUFFER);
     set_source_address(buff,PI_ADDR);
     set_target_node(buff,target);
+    printf("\nSending16..."); fflush(stdout);
     mrf_send16(target,buff,buff[PK_COMMAND_HEADER + PK_SZ_PACKET]);
  
 }
 
-//specific functions for pinging and initializing setup routine
+//specific functions for pinging and initializing setup routine and data collection
 void send_ping(uint16_t target, uint8_t* buff)
 {	
 
 	set_command(buff,CMD_PING,0,1,2,3);
- 	set_request_id(buff);
+ 	//set_request_id(buff);
 	send_command(target, buff);
+}
+
+void send_setup_request()
+{	
+	memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER);
+	send_setup(0x0001,transmit_data_buffer);
 }
 
 void send_setup(uint16_t target, uint8_t* buff)
 {
 	//always to the closest node, in this case 0x0001
+	memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER);
 	set_final_node(buff,target);
 	set_command(buff,CMD_SETUP,0,0,0,0);
- 	set_request_id(buff);
+ 	//set_request_id(buff);
 	send_command(target, buff);
 	//memset(buff,0,sizeof(buff));
 }
@@ -220,6 +228,7 @@ void send_setup(uint16_t target, uint8_t* buff)
 void send_set_light(uint16_t target, uint16_t final_target, uint8_t colour) //sends a message that tells a node to light up something
 {
 	//printf("\ntxrx_buff_size: %i", sizeof(transmit_data_buffer)); fflush(stdout);
+	memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER);
 	set_final_node(transmit_data_buffer,final_target);
 	set_command(transmit_data_buffer,CMD_SET_LIGHT,colour,0,0,0);
 	send_command(target,transmit_data_buffer);
@@ -228,14 +237,17 @@ void send_set_light(uint16_t target, uint16_t final_target, uint8_t colour) //se
 }
 
 
-void send_request_data(uint16_t target, uint16_t final_target, uint8_t channel, uint8_t data_location)
+void send_request_data(uint16_t target, uint16_t final_target, uint8_t channel)
 {
+	memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER);
 	set_final_node(transmit_data_buffer,final_target);
-	set_command(transmit_data_buffer,CMD_DATA,channel,data_location,0,0);
-	set_request_id(transmit_data_buffer);
+	set_adc_channel(transmit_data_buffer,channel);
+	set_command(transmit_data_buffer,CMD_DATA,0,0,0,0);
+	//set_request_id(transmit_data_buffer);
 	send_command(target,transmit_data_buffer);
 	//memset(transmit_data_buffer,0,sizeof(transmit_data_buffer));
 }
+
 //For getting data from the message
 uint16_t get_source_node_address(uint8_t* msg)
 {
@@ -269,46 +281,50 @@ uint16_t get_final_node(uint8_t* msg)
 {
     return bytes_to_word(& msg[PK_FINAL_ADDR_HI]);
 }
+
 void print_message(uint8_t * msg)
 {
     printf("\n\n==============================================="); 
-    printf("\nMessage from node:0x%x",get_source_node_address(msg)); 
-    printf("\nMessage to node:0x%x",get_target_node(msg)); 
+    printf("\nMessage from node:0x%.4x",get_source_node_address(msg)); 
+    printf("\nMessage to node:0x%.4x",get_target_node(msg)); 
 
-    //TODO: I can't seem to get these to return anything useful. They do send the right data. Mystery
-    printf("\nFinal Node: 0x%x",get_final_node(msg)); 
-    printf("\nFinal Node: 0x%x",bytes_to_word(&msg[PK_FINAL_ADDR_HI])/*msg[PK_FINAL_ADDR_HI],msg[PK_FINAL_ADDR_LO]*/); 
+    printf("\nFinal Node: 0x%.4x",get_final_node(msg)); 
+    //printf("\nFinal Node: 0x%.4x",bytes_to_word(&msg[PK_FINAL_ADDR_HI])/*msg[PK_FINAL_ADDR_HI],msg[PK_FINAL_ADDR_LO]*/); 
 
     printf("\nCommand:0x%x ",get_command(msg)); 
-    printf("\nCommand data: 0x%x 0x%x 0x%x 0x%x",get_command_data(msg,0),get_command_data(msg,1),get_command_data(msg,2),get_command_data(msg,3)); 
+    printf("\nCommand data: 0x%.2x 0x%.2x 0x%.2x 0x%.2x",get_command_data(msg,0),get_command_data(msg,1),get_command_data(msg,2),get_command_data(msg,3)); 
     printf("\nMessage size: %d",get_message_size(msg)); 
     //printf("\nSensor data size: %d",get_data_size(msg)); 
     //printf("\nHop count: %d",get_hop_count(msg)); 
     printf("\n===============================================\n");
+    int i;
+    for(i=0;i<PK_SZ_TXRX_BUFFER;i++){printf("\nSent: %i %x",i,transmit_data_buffer[i]);}
+    memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER);
 }
+
 void request_input()
 {	
 	uint8_t command_input;
-	printf("\nEnter a command: 1 for setup 2 for set light 3 for request data "); fflush(stdout);
+	printf("\nMAIN MENU"); fflush(stdout);
+	printf("\nEnter a command: 1 for setup, 2 for set light, 3 for request data from individual node, 4 for collection from all nodes"); fflush(stdout);
 	scanf("%i",&command_input);
 	switch(command_input)
 	{
 	case 1: send_setup_request(); break;
 	case 2: send_light_request(); break;
 	case 3: request_data(); break;
+	case 4: request_all_data(); break;
 	default: break;
 	}
 }
-void send_setup_request()
-{
-	send_setup(0x0001,transmit_data_buffer);
-}
+
 
 void send_light_request()
 {
+	memset(transmit_data_buffer,0,(uint8_t)sizeof(transmit_data_buffer));
 	uint8_t colour_input;
 	uint16_t target_input;
-	printf("\nEnter target node: 1 or 2: "); fflush(stdout);
+	printf("\nEnter target node: Between 1 and 3: "); fflush(stdout);
 	scanf("%u",&target_input);
 	printf("\nEntered: %u", target_input); fflush(stdout);
 	printf("\nEnter 1 for red, 2 for yellow, 3 for green"); fflush(stdout);
@@ -316,32 +332,101 @@ void send_light_request()
 	printf("\nEntered: %u", colour_input);
 	send_set_light(0x0001,target_input,colour_input);
 	int i;
-	for(i=0;i<sizeof(transmit_data_buffer);i++) {printf("\nsent2: %i 0x%x",i,transmit_data_buffer[i]); fflush(stdout);} //THIS IS REQUIRED TO AVOID SEGFAULT DO NOT DELETE
+	for(i=0;i<sizeof(transmit_data_buffer);i++);// {printf("\nsent2: %i 0x%x",i,transmit_data_buffer[i]); fflush(stdout);} //THIS IS REQUIRED TO AVOID SEGFAULT DO NOT DELETE
 	//I have no idea why
 	printf("\nSent Send_set_light"); fflush(stdout);
 	//SEGFAULT happens here??
 }
 void request_data()
 {
-	//COMMAND DATA 0: ADC CHANNEL
-	//COMMAND DATA 1: LOCATION IN BUFFER TO PACK IT (3 bits)
+	//CMD_ADC_CHANNEL: ADC channel to read
+	//PK_HOP_COUNT: LOCATION IN BUFFER TO PACK IT (3 bits)
 	uint8_t channel_input;
 	uint16_t target_input;
 	
-	printf("\nEnter target node: 1 or 2: "); fflush(stdout);
+	printf("\nEnter target node: 1 or 2 or 3: "); fflush(stdout);
 	scanf("%u",&target_input);
 	printf("\nEntered: %u", target_input); //fflush(stdout);
 
 	printf("\nChoose the channel (only 0 works)"); //fflush(stdout);
 	scanf("%u",&channel_input);
 	printf("\nEntered: %u", channel_input);
-
-
-	send_request_data(0x0001,target_input,channel_input,0);
+	send_request_data(GATEWAY_NODE,target_input,channel_input);
 	int i;
-	for(i=0;i<sizeof(transmit_data_buffer);i++) {printf("\nsent2: %i 0x%x",i,transmit_data_buffer[i]); fflush(stdout);} //THIS IS REQUIRED TO AVOID SEGFAULT DO NOT DELETE
-	//I have no idea why
+	for(i=0;i<sizeof(transmit_data_buffer);i++) //{printf("\nsent2: %i 0x%x",i,transmit_data_buffer[i]); fflush(stdout);} //THIS IS REQUIRED TO AVOID SEGFAULT DO NOT DELETE
+	//I have no idea why, I have no idea how I discovered it. You can probably get away without printing it, just iterate through the items
 	printf("\nSent Send_get_data"); fflush(stdout);
+}
+
+void request_all_data()
+{
+	//command data 0: adc channel
+	//command data 1: location in buffer to pack it (3 bytes + 2 bytes for address)
+	//location will be "hop count"
+	uint8_t channel_input;
+	printf("\nWhich channel would you like to read? only 0 works: "); fflush(stdout);
+	scanf("%u",&channel_input);
+	printf("\nEntered: %u",channel_input); fflush(stdout);
+	send_request_all_data(channel_input);
+	int i;
+ 	for(i=0;i<sizeof(transmit_data_buffer);i++);//{printf("\nSent: %x 0x%x",i,transmit_data_buffer[i]); fflush(stdout);}
+}
+void send_request_all_data(uint8_t channel)
+{
+	memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER);
+	set_final_node(transmit_data_buffer,0x0000);
+	printf("\nFinal Node: 0x%.4x",bytes_to_word(&transmit_data_buffer[PK_FINAL_ADDR_HI]));
+	set_adc_channel(transmit_data_buffer,channel);
+	printf("\nADC Channel: 0x%.1x",transmit_data_buffer[PK_COMMAND_HEADER+PK_ADC_CHANNEL]);
+	set_command(transmit_data_buffer,CMD_ALL_DATA,0,0,0,0);
+
+
+	send_command(GATEWAY_NODE,transmit_data_buffer);
+	int i;
+	for(i=0;i<sizeof(transmit_data_buffer);i++);//{printf("\nSent: %i 0x%x",i,transmit_data_buffer[i]); fflush(stdout);} //REQUIRED FOR SOME UNKNOWN REASON	
+}
+
+void continue_data_request(uint8_t channel, uint16_t last_node) //implement this feature later
+{
+	memset(transmit_data_buffer,0,(uint8_t)sizeof(transmit_data_buffer));
+	printf("\nContinuing data request to node 0x%.4x",last_node); fflush(stdout);
+	set_final_node(transmit_data_buffer,last_node);
+	set_adc_channel(transmit_data_buffer, channel);
+	set_command(transmit_data_buffer,CMD_ALL_DATA,0,0,0,0);
+	send_command(GATEWAY_NODE,transmit_data_buffer);
+}
+
+void process_message()
+{
+	uint8_t buffer_length = mrf_rx_datalength();
+	uint8_t received_data_buffer[buffer_length];
+	memcpy(received_data_buffer,mrf_get_rx_data_buffer(),buffer_length); // Copy the message into the recieved data buffer
+	//record_message(received_data_buffer);
+	switch(bytes_to_word(&received_data_buffer[PK_COMMAND_HEADER+PK_CMD_HI]))
+	{
+	  case CMD_MORE_DATA: 
+	  continue_data_request(received_data_buffer[PK_COMMAND_HEADER+PK_ADC_CHANNEL], bytes_to_word(&received_data_buffer[PK_COMMAND_HEADER+PK_CMD_DATA_0]));
+	  
+	  break;
+	  default: break;	
+	}
+	
+
+}
+
+void record_message(uint8_t* buff)
+{	
+	//timestamp bits
+	time_t rawtime;
+	struct tm *info;
+	time(&rawtime);
+	info = localtime(&rawtime);
+	printf("%s",asctime(time));
+	//file bits
+	FILE *file;
+	file = fopen("RECORDED_DATA.txt","a+"); //if file doesn't exist, create one. Also append if it does exist.
+	fprintf(file, "%s %s","\n",info);
+	fclose(file); 
 }
 void main()
 {
@@ -357,7 +442,9 @@ void main()
 	while(1)
 	{
 		mrf_check_flags(&handle_rx, &handle_tx);
-		if (get_message_status() == 1) {print_received_message();  set_message_status(0);}
+		if (get_message_status() == 1) {print_received_message();  process_message(); set_message_status(0);
+		 //request_input();
+		 printf("\nListening for new message...");}
 	}
 	
 	

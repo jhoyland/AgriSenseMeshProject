@@ -1,0 +1,3 @@
+This folder will contain the information reported from the nodes when they perform a data aquisition routine
+
+Format: TIME, NODE_ID, SENSOR_ID (channel), ADC VALUE
