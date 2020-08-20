@@ -20,7 +20,7 @@ void Pk_Set_Command(uint8_t*, uint16_t, uint8_t, uint8_t, uint8_t, uint8_t);
 void Pk_Set_Src_Node(uint8_t*, uint16_t);
 void Pk_Add_Data(uint8_t*,uint16_t,uint8_t); //which bit of data to add
 /*void Pk_Set_Data_Direction(uint8_t*,uint8_t);*/
-
+void Pk_Set_Hop_Count(uint8_t*,uint8_t);
 
 
 #endif /* PACKET_SETUP_H_ */

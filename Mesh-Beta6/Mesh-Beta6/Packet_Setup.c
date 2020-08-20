@@ -11,18 +11,16 @@
 #include "bitmanip.h"
 #include "packet_specs.h"
 
-/*void Pk_Set_Dest_Panid(uint8_t* buff, uint16_t panid)
-{
-	word_to_bytes(&buff[PK_DEST_PANID_HI],panid);
-}*/
 
-/*void Pk_Set_Src_Panid(uint8_t* buff, uint16_t panid)
-{
-	word_to_bytes(&buff[PK_SRC_PANID_HI],panid);
-}*/
 void clear_buffer(uint8_t* buff)
 {
-	memset(buff,0,PK_SZ_TXRX_BUFFER);
+	uint8_t buff_size = sizeof(buff);
+	memset(buff,0,buff_size);
+}
+void clear_data(uint8_t* buff)
+{
+	uint8_t data_size = sizeof(buff);
+	memset(&buff[PK_DATA_START],0,data_size-PK_DATA_START);
 }
 void Pk_Set_Packet_Size(uint8_t* buff, uint8_t sz)
 {
@@ -61,9 +59,13 @@ void Pk_Set_Src_Node(uint8_t* buff, uint16_t origin)
 }
 
 void Pk_Add_Data(uint8_t* buff, uint16_t data, uint8_t data_location)
-{   //adds data in two byte elements
-	//TODO: Make this a pack_12_bits function due to ADC values being 12 bits
+{   //adds data in two byte elements to the data_start area
 	//TODO: incorporate "hop count"?
-	word_to_bytes(&buff[PK_COMMAND_HEADER+PK_DATA_START+data_location*3],data);
+	word_to_bytes(&buff[PK_DATA_START+data_location*3],data);
 	//location*2 to separate data [0,1],[1,2],[3,4] etc.
+}
+
+void Pk_Set_Hop_Count(uint8_t* buff, uint8_t hop_count)
+{
+	buff[PK_COMMAND_HEADER+PK_HOP_COUNT] = hop_count;
 }

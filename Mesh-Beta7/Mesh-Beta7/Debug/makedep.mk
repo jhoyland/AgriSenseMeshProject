@@ -8,6 +8,8 @@ main.c
 
 mrf24j.c
 
+network_setup_functions.c
+
 Packet_Setup.c
 
 tinyspi.c

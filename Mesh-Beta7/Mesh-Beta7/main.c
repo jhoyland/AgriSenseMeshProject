@@ -24,6 +24,7 @@
 #define ASMP_PANID 0xCAFE
 
 uint16_t node_list[3] = {0x0001,0x0002,0x0003}; //list of nodes on the network
+uint8_t target_index;
 uint16_t pi_address = 0x3142;
 
 uint8_t transmit_data_buffer[PK_SZ_TXRX_BUFFER];
@@ -40,8 +41,8 @@ struct neighbor
 	
 };
 
-struct neighbor downstairs_neighbor;
-struct neighbor upstairs_neighbor;
+struct neighbor downstairs_neighbor, upstairs_neighbor;
+
 ISR(INT0_vect)
 {
 	running_status |= (1<<RU_INTERRUPT);
@@ -72,7 +73,7 @@ void COMMAND_HANDLER(uint8_t* message)
 	switch(command)
 	{
 		case CMD_SETUP:
-		setup_network(message);
+		setup_network(message,&upstairs_neighbor,&downstairs_neighbor, &target_index, &neighbor_count, node_list);
 		break;
 	}
 
@@ -134,6 +135,7 @@ void setup()
 	memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER); //clear buffer to 0 on reset
 	memset(received_data_buffer,0,PK_SZ_TXRX_BUFFER); //clear buffer to 0 on reset
 	BLINK(LIGHT_PORT,GREEN_LIGHT);
+	target_index = 0;
 	
 }
 

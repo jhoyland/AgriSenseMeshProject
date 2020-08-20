@@ -40,6 +40,7 @@ C_SRCS +=  \
 ../bitmanip.c \
 ../main.c \
 ../mrf24j.c \
+../network_setup_functions.c \
 ../Packet_Setup.c \
 ../tinyspi.c
 
@@ -54,6 +55,7 @@ OBJS +=  \
 bitmanip.o \
 main.o \
 mrf24j.o \
+network_setup_functions.o \
 Packet_Setup.o \
 tinyspi.o
 
@@ -61,6 +63,7 @@ OBJS_AS_ARGS +=  \
 bitmanip.o \
 main.o \
 mrf24j.o \
+network_setup_functions.o \
 Packet_Setup.o \
 tinyspi.o
 
@@ -68,6 +71,7 @@ C_DEPS +=  \
 bitmanip.d \
 main.d \
 mrf24j.d \
+network_setup_functions.d \
 Packet_Setup.d \
 tinyspi.d
 
@@ -75,6 +79,7 @@ C_DEPS_AS_ARGS +=  \
 bitmanip.d \
 main.d \
 mrf24j.d \
+network_setup_functions.d \
 Packet_Setup.d \
 tinyspi.d
 
@@ -107,6 +112,13 @@ LINKER_SCRIPT_DEP+=
 	
 
 ./mrf24j.o: .././mrf24j.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.3.172\include"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=attiny88 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.3.172\gcc\dev\attiny88" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+./network_setup_functions.o: .././network_setup_functions.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.3.172\include"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=attiny88 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.3.172\gcc\dev\attiny88" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

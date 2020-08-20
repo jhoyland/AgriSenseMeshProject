@@ -32,6 +32,8 @@
 //command bits
 
 #define CMD_DATA 0x4441					// 'DA' Request data: command arguments include a unique request id and a bitmask specifying which channels to read
+#define CMD_ALL_DATA 0x4442				//collects data from all the nodes in the chain and brings it down
+#define CMD_MORE_DATA 0xFF				//
 #define CMD_PING 0x4552					//Ping
 #define CMD_ECHO 0x4543					//echo
 #define CMD_ACK	 0x00AC					//acknowledge

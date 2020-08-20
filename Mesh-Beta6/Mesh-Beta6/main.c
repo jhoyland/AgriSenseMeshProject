@@ -16,30 +16,35 @@
 #include "mrf24j.h"
 #include "bitmanip.h"
 #include "packet_specs.h"
+#include "Packet_Setup.h"
 #include "blinkin.h"
 #include "Packet_Setup.h"
 #include "Network_functions.h"
 #include "spi-master-adc1.h"
 
 
-#define THIS_DEVICE 0x0001 //change this to program each node's ID
+#define THIS_DEVICE 0x0003 //change this to program each node's ID
 #define ASMP_PANID 0xCAFE //PANID for the network
 
 uint8_t transmit_data_buffer[PK_SZ_TXRX_BUFFER]; //holds data to be sent
-uint8_t recieved_data_buffer[PK_SZ_TXRX_BUFFER]; //holds received data
+uint8_t received_data_buffer[PK_SZ_TXRX_BUFFER]; //holds received data
 
 //TODO: Global variables tend to be a bad idea. I should work on making it so these are properly encapsulated
 
 uint16_t node_list[3] = {0x0001,0x0002,0x0003/*,0x0004,0x0005*/}; //list of the node ID's
-uint16_t observed_nodes[5]; //holds the list of nodes that are known to be on the network. This list will build as the message is relayed back to the pi from the end node
-uint8_t target_index; //index of the node list to be searched. Global variable??
 uint8_t node_count = 3; //holds the number of nodes that are in the network (eventually read/write from file) changed to 3 for simplicity
+
+uint8_t target_index; //index of the node list to be searched. Global variable??
 uint8_t neighbor_count; //holds the number of neighbors a node has (should max be 2)
-//uint8_t target_node; //holds the number of nodes searched in a network
+uint8_t hop_count;
+
+
 uint8_t network_status; //status of the network: complete or incomplete (could turn to bool)
 uint8_t node_status; //holds the current node status, setting up or idle right now
+
 uint16_t pi_address = 0x3142; //address of the base raspberry pi
 uint16_t last_node; //final node in the chain
+
 bool Network_Set; //candidate for a global variable I'll use
 
 struct neighbor //node immediately "Adjacent" in the network topology
@@ -52,27 +57,40 @@ struct neighbor //node immediately "Adjacent" in the network topology
 
 
 uint8_t running_status = 0;
+
 struct neighbor downstairs_neighbor; //down the line towards the pi
 struct neighbor upstairs_neighbor; //up towards the end of the line
 
 
 
 void handle_rx()
-{	//TODO: case where network is not set up and the command is not intended for this node
+{	
+	memset(received_data_buffer,0,PK_SZ_TXRX_BUFFER);
 	running_status |= (1<<RU_RX_HANDLE);  //MUTEX
-	memcpy(recieved_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()); //makes a copy of the rx data to a buffer
+	memcpy(received_data_buffer,mrf_get_rxdata(),mrf_rx_datalength()); //makes a copy of the rx data to a buffer
 	BLINK(LIGHT_PORT,GREEN_LIGHT);
-	//INSTRUCTIONS CAN ONLY GO UP, DATA CAN ONLY GO DOWN
-	//WHEN DATA IS ACQUIRED (OR A LIGHT IS ACTIVATED IN THE TEST CASE), THE ONLY COMMAND WILL BE "SEND DOWNSTREAM"
-	//A COMMAND WILL ONLY BE SENT FROM A DOWNSTAIRS NODE
+	
 	//if there is no "final node" selected (for individual node targeting) or this is the "final node", execute the command
-	if((bytes_to_word(&recieved_data_buffer[PK_FINAL_ADDR_HI]) == 0x0000) || (bytes_to_word(&recieved_data_buffer[PK_FINAL_ADDR_HI]) == THIS_DEVICE)) COMMAND_HANDLER(recieved_data_buffer); 
+	if(Network_Set)
+	{
+	if(received_data_buffer[PK_COMMAND_HEADER + PK_CMD_DATA_3] == 1) send_downstream(received_data_buffer); //third data byte being non-zero indicates we are sending messages downstream.
+	//I really should do something better
+	else if((bytes_to_word(&received_data_buffer[PK_FINAL_ADDR_HI]) == 0x0000) || (bytes_to_word(&received_data_buffer[PK_FINAL_ADDR_HI]) == THIS_DEVICE)) 
+		{
+			COMMAND_HANDLER(received_data_buffer);
+		}
 	//case where there is a node being selected but it is not this one:
-	else send_upstream(recieved_data_buffer);
-	/*if(bytes_to_word(&recieved_data_buffer[PK_COMMAND_HEADER+PK_CMD_HI]) == CMD_SETUP) setup_network(recieved_data_buffer); //executes the setup routine, regardless of final target
-	else if(bytes_to_word(&recieved_data_buffer[PK_FINAL_ADDR_HI]) == THIS_DEVICE) COMMAND_HANDLER(recieved_data_buffer); //executes a command
-	else if(THIS_DEVICE != last_node) send_upstream(recieved_data_buffer); //send it upstairs to the next node if it's not intended for this node
-	else {Pk_Add_Data(recieved_data_buffer,0x9999,0); send_directly_to_pi(recieved_data_buffer);} //9999 means something wrong has happened*/
+	else if(bytes_to_word(&received_data_buffer[PK_FINAL_ADDR_HI]) != THIS_DEVICE)
+		{
+			BLINK(LIGHT_PORT,GREEN_LIGHT); send_upstream(received_data_buffer);
+		}
+	}
+	//if the setup routine has not been completed, but there is a message for this node anyway. Ideally for "setup" case
+	else if(bytes_to_word(&received_data_buffer[PK_DEST_ADDR_HI]) == THIS_DEVICE) 
+		{
+			COMMAND_HANDLER(received_data_buffer);
+		}
+	//else send_directly_to_pi(received_data_buffer); //unusual case, error
 	running_status &= ~(1<<RU_RX_HANDLE);
 	
 }
@@ -87,30 +105,27 @@ void COMMAND_HANDLER(uint8_t* message) //Looks at the command bits and decides w
 {	
 	switch(bytes_to_word(&message[PK_COMMAND_HEADER+PK_CMD_HI])) //look at the command given to the node
 	{
-		case CMD_PING: //node is being pinged
-		ping_handler(message);
-		break;
-		case CMD_ECHO: //node pinged responded to a ping
-		echo_handler(message);
-		break;
 		case CMD_DATA:
-		get_adc_data(message); //collect data from the required sensors TODO: Implement ADC collection
+		get_adc_data(message); //collect data from the required sensor, individual ping
 		break;
-		case CMD_SETUP:
+		case CMD_ALL_DATA: //this routine is a chain from all the nodes
+		collect_data(message);
+		break;
+		case CMD_SETUP: //complete?!
 		setup_network(message);//node is now in network setup mode
 		break;
-		case CMD_PROBE_NEIGHBORS: //node has received a request to return the number (and ID?) of its neighbors
+		case CMD_PROBE_NEIGHBORS: //node has received a request to return the number (and ID?) of its neighbors ->complete
 		confirm_neighbor(message);
 		break;
-		case CMD_NEIGHBOR_COUNT: //has received a response containing the number of neighbors (during a setup routine)
+		case CMD_NEIGHBOR_COUNT: //has received a response containing the number of neighbors (during a setup routine) -> complete
 		set_upstairs_neighbor(message);
 		break;
 		case CMD_NETWORK_COMPLETE:
 		set_last_node(message);
-		send_downstream(message);//relay the message down that the network is complete. Should go all the way to the pi.
+		send_down_to_pi(message);//relay the message down that the network is complete. Should go all the way to the pi.
 		break;
 		case CMD_TO_PI:
-		send_directly_to_pi(message);
+		send_down_to_pi(message);
 		break;
 		case CMD_SET_LIGHT:
 		set_light(message);
@@ -123,44 +138,69 @@ void COMMAND_HANDLER(uint8_t* message) //Looks at the command bits and decides w
 }
 
 
-void ping_handler(uint8_t* message) //this loop will only enter upon receiving the message CMD_PING
-{ 
-	if(Network_Set)
+
+
+
+void collect_data(uint8_t* buff) 
+{
+	//The routine:
+	//collect data, send it up. If the buffer is full or the end of the chain is reached, pass it down to the pi for a report
+	
+	//this function will handle the prospect of the message being overloaded
+	//MAX SIZE of message is 127 bytes
+	//NOTE: Going this big is too much for the AVR because of my bloated, amateur code
+	//So we're gonna go with 40 (PK_SZ_TXRX_BUFFER) for now
+	
+	//should check if filling in this last bit, then tell the pi to "continue" the collection to the "final node"
+	//with the first 16 bytes taken up by addressing and command bits, that leaves 111 bytes to use
+	//each data point takes 2 bytes, preceded by an address (2 more bytes) to identify who it's from
+	//this leaves a possibility of ~28 nodes with 1 sensor in a chain
+	//with 40 sized buffer we can have 6 nodes with 1 sensor in a chain
+	
+	uint8_t channel = buff[PK_COMMAND_HEADER+PK_ADC_CHANNEL]; //which sensor to look at
+	uint8_t location;// = buff[PK_COMMAND_HEADER+PK_HOP_COUNT]; //where this data is going
+	if(bytes_to_word(&buff[PK_SRC_ADDR_HI]) == pi_address) location = 0; //reset hop counter if this request came from the pi
+	else location = buff[PK_COMMAND_HEADER+PK_HOP_COUNT];
+	hop_count = location;
+	
+	//if the location is too close to the end of the packet size, this node is going to be the node that has to return data before re-starting
+	//the collection
+	if(location*3+PK_DATA_START+2 > PK_SZ_TXRX_BUFFER) //size of the buffer, should be 127 bits. 2 is the addressing preface bits. 3 is the space an ADC value takes up
 	{
-		//this is to determine if the chain is still present
-		if(message[PK_COMMAND_HEADER+PK_CMD_DATA_0] == 0)
-		{ //first "Accessory bit" is 0: This is just a boring ping									  
-			Pk_Set_Command(message,CMD_ECHO,0,0,0,0); //respond with "echo" in the command location
-			send_message(bytes_to_word(&message[PK_SRC_ADDR_HI]),message); //send it back to the originator
-		}
-		if(message[PK_COMMAND_HEADER+PK_CMD_DATA_0] == 1)
-		{ 
-			//first accessory bit is 1: functionality not defined yet
-		}
+	Pk_Set_Command(buff,CMD_TO_PI,CMD_MORE_DATA,buff[PK_DEST_ADDR_HI],buff[PK_DEST_ADDR_LO],1); //let the pi know there's more data to be collected
+	//also places the address of this node in the command buffer
+	send_down_to_pi(buff); //return the buffer that has been received down to the pi.
 	}
 	else
 	{
-		//send a message stating that the network has to be set up before you can ping??
+		word_to_bytes(&transmit_data_buffer[PK_DATA_START+location*3],THIS_DEVICE);
+		word_to_bytes(&transmit_data_buffer[PK_DATA_START+location*3+2],get_adc_value(channel));
+		++hop_count;
+		++hop_count;
+		Pk_Set_Hop_Count(transmit_data_buffer,hop_count);
+		if(THIS_DEVICE != last_node) 
+		{
+			send_upstream(transmit_data_buffer);
+			BLINK(LIGHT_PORT,RED_LIGHT);
+		}
+		else send_down_to_pi(transmit_data_buffer);
+		memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER);
 	}
 }
 
-void echo_handler(uint8_t* message) //haven't decided what I want to do with this
+void get_adc_data(uint8_t* buff) //this routine is for "individual sampling", it will collect from one ADC channel and send it straight to the pi
 {
-	
-} 
-
-void get_adc_data(uint8_t* buff) //buff is the message
-{
+	//TODO: THIS SEEMS TO ENTER REGARDLESS OF INTENDED NODE
 	//gets the ADC value from a channel. Adds it to a buffer
-	uint8_t channel = buff[PK_COMMAND_HEADER+PK_CMD_DATA_0];
-	uint8_t location = buff[PK_COMMAND_HEADER+PK_CMD_DATA_1];
-	uint8_t data_buffer[3]; //temporary little buffer to add the ADC data to
-	memset(data_buffer,0,sizeof(data_buffer));
-	//uint16_t data = get_adc_value(channel); //collect the data as one 16 bit value
-	//word_to_bytes(data_buffer,data); //puts the data into the data buffer
-	word_to_bytes(&transmit_data_buffer[PK_DATA_START+location*3],get_adc_value(channel));
+	BLINK(LIGHT_PORT,RED_LIGHT); BLINK(LIGHT_PORT,RED_LIGHT);
+	memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER); //clear the transmit buffer -> avoid repeat data
+	Pk_Set_Command(transmit_data_buffer,CMD_DATA,0,0,0,0); //need to preserve that this was a data request to the pi
+	uint8_t channel = buff[PK_COMMAND_HEADER+PK_ADC_CHANNEL];
+	uint8_t location = buff[PK_COMMAND_HEADER+PK_HOP_COUNT];
+	word_to_bytes(&transmit_data_buffer[PK_DATA_START+location*3],THIS_DEVICE); //give a prefix to the data with the address
+	word_to_bytes(&transmit_data_buffer[PK_DATA_START+location*3+2],get_adc_value(channel)); //add the data after the address byte
+	send_down_to_pi(transmit_data_buffer);
 	
-	send_downstream(transmit_data_buffer);
 }
 
 void set_light(uint8_t* message)
@@ -185,9 +225,11 @@ void setup_network(uint8_t* message)
 {	
 	//this function should only enter once, when the node is told to setup the network initially
 	//TODO: Have a case where the network is already setup
+	//BLINK(LIGHT_PORT,RED_LIGHT);
 	node_status = SETTING_UP; //flag for set up routine
-	neighbor_count = 0; //default it to 0 -> when routine is entered
+	neighbor_count = 0; //default it to 0 -> when setup routine is entered
 	target_index = 0; //default
+	Network_Set = false;
 	upstairs_neighbor.id = 0x0000; //default
 	downstairs_neighbor.id = 0x0000; //default
 	set_downstairs_neighbor(message); //set the downstairs node for this (node that messages will be relayed to) as the person who requested this
@@ -218,14 +260,21 @@ void set_upstairs_neighbor(uint8_t* message) //this function may prove to be my 
 	{
 		//in this case: node has successfully probed a "neighborless" node
 		//the probed node is now an upstairs neighbor
+		PORTD &= ~(1<<GREEN_LIGHT); //turn off green light from searching
 		upstairs_neighbor.id = bytes_to_word(&message[PK_SRC_ADDR_HI]);
 		++neighbor_count; //increase the amount of neighbors. Generally speaking, this should always result in 2.
-		if(neighbor_count >= 2) Network_Set = true;
-		//if(Network_Set) {PORTD |= (1<<RED_LIGHT); PORTD &= ~(1<<GREEN_LIGHT);}
-		node_status = IDLE;
+		Network_Set = true;
 		target_index = 0;
-		//if(neighbor_count >2 ) PORTD|= (1<<YELLOW_LIGHT); //seeing if I'm over-counting neighbors
+		
+		hop_count = message[PK_COMMAND_HEADER+PK_HOP_COUNT]; //should return 0 from the pi, 1 from 0x0001
+		++hop_count; //no idea why I have to do this twice for it to work
+		++hop_count;
+		Pk_Set_Hop_Count(transmit_data_buffer,hop_count);
+		//Pk_Add_Data(transmit_data_buffer,THIS_DEVICE,hop_count); //add the address of this buffer to the data.
+		word_to_bytes(&transmit_data_buffer[PK_DATA_START+hop_count],THIS_DEVICE);
+		//so the operator knows the nodes available
 		continue_setup(upstairs_neighbor.id);
+		node_status = IDLE;
 	}
 	else 
 	{	
@@ -236,17 +285,20 @@ void set_upstairs_neighbor(uint8_t* message) //this function may prove to be my 
 		{
 			//this node is the last node, relay that info back to the pi
 			upstairs_neighbor.id = 0x9999; //no upstairs neighbor
+			hop_count = message[PK_COMMAND_HEADER+PK_HOP_COUNT];
+			++hop_count; //no idea why I have to do this twice for it to work
+			++hop_count;
+			Pk_Set_Hop_Count(transmit_data_buffer,hop_count); //set the new hop count
+			//PORTD |= (1<<RED_LIGHT);
+			word_to_bytes(&transmit_data_buffer[PK_DATA_START+hop_count],THIS_DEVICE);
+			//PORTD |= (1<<RED_LIGHT);
+			//Pk_Add_Data(transmit_data_buffer,THIS_DEVICE,hop_count);
 			++neighbor_count;
 			last_node = THIS_DEVICE;
 			target_index = 0;
-			//if(Network_Set) {PORTD |= (1<<RED_LIGHT); PORTD &= ~(1<<GREEN_LIGHT);}
-			//Pk_Add_Data(transmit_data_buffer,0x9999); //look for this message
+			Network_Set=true;
 			confirm_network_complete();
 		}
-		/*else
-		{
-			wait_for_response(message);
-		}*/ //is this needed?
 	}
 }
 
@@ -274,7 +326,7 @@ void wait_for_response(uint8_t * message)
 		++overflow_counter; //increment overflow counter
 		//So what happens now? If I get a message that I'm waiting for (the command) this function needs to exit.
 		//if I get something else, or nothing at all, the function needs to continue
-		if(overflow_counter >= 10 ) //by calculator 39 ~= 10 seconds
+		if(overflow_counter >= 10 ) //by calculator 39 ~= 10 seconds. Change to 39 for final setup
 			{
 				probe_neighbor_status(node_list[target_index]);
 				++repeat_counter;
@@ -285,7 +337,14 @@ void wait_for_response(uint8_t * message)
 						++target_index;
 						repeat_counter = 0;
 						overflow_counter = 0;
-						if(target_index > node_count) confirm_network_complete();
+						if(target_index > node_count)
+						 {
+							hop_count = message[PK_COMMAND_HEADER+PK_HOP_COUNT];
+							++hop_count;
+							Pk_Set_Hop_Count(transmit_data_buffer,hop_count); //ensure hop count is preserved
+							Network_Set = true;
+							confirm_network_complete();
+							}
 						else probe_neighbor_status(node_list[target_index]);
 					}
 				}
@@ -294,34 +353,29 @@ void wait_for_response(uint8_t * message)
 }
 
 
-void send_directly_to_pi(uint8_t* buff)
+void send_directly_to_pi(uint8_t* buff) //unusual case where a major glitch happens?
 {
-	BLINK(LIGHT_PORT,YELLOW_LIGHT);
-	//mrf_send16(pi_address,buff,PK_SZ_TXRX_BUFFER);
 	send_message(pi_address,buff);
 }
 
 void send_down_to_pi(uint8_t* buff) //sends the message down the nodes until it reaches the pi
-{
-	
+{									//preserves the message but indicates to the downstream node that it must continue sending downstream
+	memcpy(transmit_data_buffer,buff,PK_SZ_TXRX_BUFFER);
+	transmit_data_buffer[PK_COMMAND_HEADER + PK_CMD_DATA_3] = 1; //non-zero bit indicates that the node needs to send it down
+	send_downstream(transmit_data_buffer);
 }
 
 void send_downstream(uint8_t* buff)
 {   
-	//TODO: Check if it has a downstairs neighbor, not if the network is set
-	//This function should always enter the downstairs neighbor as the "final node", as it will propogate down to the pi.
-	if(Network_Set)
+	// Check if it has a downstairs neighbor
+	if(downstairs_neighbor.id != 0x0000)
 	{
-		if(THIS_DEVICE == last_node) Pk_Add_Data(buff,0x7777,0); //testing
-		Pk_Set_Final_Node(buff,downstairs_neighbor.id);
 		send_message(downstairs_neighbor.id,buff);
 	}
-	else
+	else //no downstairs neighbor exists, ERROR
 	{
-		Pk_Set_Command(transmit_data_buffer,CMD_TO_PI,0,0,0,0);
-		Pk_Add_Data(transmit_data_buffer,0x8888,0);
 		PORTD |= (1<<GREEN_LIGHT);
-		send_message(pi_address,buff);
+		send_directly_to_pi(buff);
 	}
 
 }
@@ -334,8 +388,9 @@ void send_upstream(uint8_t* buff)
 	}
 	else
 	{
-		Pk_Set_Command(buff,bytes_to_word(&buff[PK_CMD_HI]),9,0,0,0); //add a bit to indicate an error has ocurred
-		send_message(downstairs_neighbor.id,buff);
+		Pk_Set_Command(buff,bytes_to_word(&buff[PK_COMMAND_HEADER + PK_CMD_HI]),0,0,0,9); //add a bit to indicate an error has ocurred
+		send_down_to_pi(buff);
+		//send_message(downstairs_neighbor.id,buff);
 	}
 }
 
@@ -346,7 +401,8 @@ void confirm_network_complete() //relays the fact that the network has reached t
 	Pk_Set_Command(transmit_data_buffer,CMD_NETWORK_COMPLETE,0,0,0,0);
 	word_to_bytes(&transmit_data_buffer[PK_COMMAND_HEADER+PK_CMD_DATA_0],THIS_DEVICE); //writes the address of this node to the CMD_DATA_0 and CMD_DATA_1
 	//used so nodes know what the last node is
-	send_downstream(transmit_data_buffer);	//send it downstream
+	send_down_to_pi(transmit_data_buffer);
+	//send_downstream(transmit_data_buffer);	//send it downstream
 }
 
 void set_last_node(uint8_t* buff)
@@ -375,9 +431,6 @@ void send_message(uint16_t target, uint8_t* buff) //sends a message to the targe
 	Pk_Set_Packet_Size(buff,PK_SZ_TXRX_BUFFER); //this should be a function that finds the packet size maybe?
 	Pk_Set_Target_Node(buff,target);
 	Pk_Set_Src_Node(buff,THIS_DEVICE);
-	//if(bytes_to_word(&buff[PK_COMMAND_HEADER+PK_CMD_HI]) == CMD_PROBE_NEIGHBORS) Pk_Set_Final_Node(buff,target); //why was this here?
-	//_delay_ms(200); //this is very important maybe?
-	//mrf_send16(pi_address,buff,PK_SZ_TXRX_BUFFER); //for debugging
 	BLINK(LIGHT_PORT,YELLOW_LIGHT);
 	mrf_send16(target,buff,PK_SZ_TXRX_BUFFER);
 	
@@ -415,13 +468,14 @@ void setup()
 	EICRA |= (1<<ISC01);
 	
 	memset(transmit_data_buffer,0,PK_SZ_TXRX_BUFFER); //clear buffer to 0 on reset, possibly not needed
-	memset(recieved_data_buffer,0,PK_SZ_TXRX_BUFFER); //clear buffer to 0 on reset
+	memset(received_data_buffer,0,PK_SZ_TXRX_BUFFER); //clear buffer to 0 on reset
 	
 	Network_Set = false; //default to network setup: No down or up neighbor
 	node_status = IDLE; //default to idle
 	neighbor_count = 0; //setup resets these values to 0
 	target_index = 0;
 	last_node = 0x0000;
+	hop_count = 0;
 	
 	BLINK(LIGHT_PORT,GREEN_LIGHT);
 }

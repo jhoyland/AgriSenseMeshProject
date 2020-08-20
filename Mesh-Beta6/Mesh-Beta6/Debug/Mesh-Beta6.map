@@ -15,8 +15,6 @@ Common symbol       size              file
 node_status         0x1               main.o
 neighbor_count      0x1               main.o
 mrf_flags           0x1               mrf24j.o
-recieved_data_buffer
-                    0x28              main.o
 flag_got_tx         0x1               mrf24j.o
 transmit_data_buffer
                     0x28              main.o
@@ -25,13 +23,15 @@ Network_Set         0x1               main.o
 downstairs_neighbor
                     0x5               main.o
 target_index        0x1               main.o
-observed_nodes      0xa               main.o
 flag_got_rx         0x1               mrf24j.o
 network_status      0x1               main.o
 adc_buffer          0x3               spi-master-adc1.o
 mrf_reg_TXSTAT      0x1               main.o
 isr_lock            0x1               main.o
+hop_count           0x1               main.o
 upstairs_neighbor   0x5               main.o
+received_data_buffer
+                    0x28              main.o
 
 Discarded input sections
 
@@ -47,10 +47,6 @@ Discarded input sections
  .text          0x00000000        0x0 main.o
  .data          0x00000000        0x0 main.o
  .bss           0x00000000        0x0 main.o
- .text.echo_handler
-                0x00000000        0x2 main.o
- .text.send_down_to_pi
-                0x00000000        0x2 main.o
  .text          0x00000000        0x0 mrf24j.o
  .data          0x00000000        0x0 mrf24j.o
  .bss           0x00000000        0x0 mrf24j.o
@@ -78,7 +74,11 @@ Discarded input sections
  .data          0x00000000        0x0 Packet_Setup.o
  .bss           0x00000000        0x0 Packet_Setup.o
  .text.clear_buffer
-                0x00000000        0xc Packet_Setup.o
+                0x00000000        0x8 Packet_Setup.o
+ .text.clear_data
+                0x00000000       0x14 Packet_Setup.o
+ .text.Pk_Add_Data
+                0x00000000       0x18 Packet_Setup.o
  .text          0x00000000        0x0 spi-master-adc1.o
  .data          0x00000000        0x0 spi-master-adc1.o
  .bss           0x00000000        0x0 spi-master-adc1.o
@@ -268,7 +268,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0xbea
+.text           0x00000000      0xd78
  *(.vectors)
  .vectors       0x00000000       0x28 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
                 0x00000000                __vector_default
@@ -369,150 +369,153 @@ END GROUP
  .text.send_message
                 0x000000d0       0x4e main.o
                 0x000000d0                send_message
- .text.ping_handler
-                0x0000011e       0x3a main.o
-                0x0000011e                ping_handler
  .text.continue_setup
-                0x00000158       0x30 main.o
-                0x00000158                continue_setup
+                0x0000011e       0x30 main.o
+                0x0000011e                continue_setup
  .text.send_directly_to_pi
-                0x00000188       0x2a main.o
-                0x00000188                send_directly_to_pi
+                0x0000014e        0xe main.o
+                0x0000014e                send_directly_to_pi
  .text.send_downstream
-                0x000001b2       0x7c main.o
-                0x000001b2                send_downstream
+                0x0000015c       0x1c main.o
+                0x0000015c                send_downstream
+ .text.send_down_to_pi
+                0x00000178       0x1e main.o
+                0x00000178                send_down_to_pi
  .text.get_adc_data
-                0x0000022e       0x2a main.o
-                0x0000022e                get_adc_data
+                0x00000196       0x9e main.o
+                0x00000196                get_adc_data
  .text.confirm_network_complete
-                0x00000258       0x36 main.o
-                0x00000258                confirm_network_complete
+                0x00000234       0x36 main.o
+                0x00000234                confirm_network_complete
  .text.set_upstairs_neighbor
-                0x0000028e       0x70 main.o
-                0x0000028e                set_upstairs_neighbor
+                0x0000026a       0xc8 main.o
+                0x0000026a                set_upstairs_neighbor
  .text.send_upstream
-                0x000002fe       0x4a main.o
-                0x000002fe                send_upstream
+                0x00000332       0x48 main.o
+                0x00000332                send_upstream
+ .text.collect_data
+                0x0000037a       0xe4 main.o
+                0x0000037a                collect_data
  .text.probe_neighbor_status
-                0x00000348       0x5a main.o
-                0x00000348                probe_neighbor_status
+                0x0000045e       0x5a main.o
+                0x0000045e                probe_neighbor_status
  .text.wait_for_response
-                0x000003a2       0xb2 main.o
-                0x000003a2                wait_for_response
+                0x000004b8       0xd6 main.o
+                0x000004b8                wait_for_response
  .text.setup_network
-                0x00000454       0x46 main.o
-                0x00000454                setup_network
+                0x0000058e       0x4a main.o
+                0x0000058e                setup_network
  .text.confirm_neighbor
-                0x0000049a       0x40 main.o
-                0x0000049a                confirm_neighbor
+                0x000005d8       0x40 main.o
+                0x000005d8                confirm_neighbor
  .text.COMMAND_HANDLER
-                0x000004da       0x84 main.o
-                0x000004da                COMMAND_HANDLER
+                0x00000618       0x84 main.o
+                0x00000618                COMMAND_HANDLER
  .text.handle_rx
-                0x0000055e       0x6c main.o
-                0x0000055e                handle_rx
+                0x0000069c       0xca main.o
+                0x0000069c                handle_rx
  .text.__vector_1
-                0x000005ca       0x5a main.o
-                0x000005ca                __vector_1
- .text.setup    0x00000624       0x86 main.o
-                0x00000624                setup
- .text.main     0x000006aa       0x18 main.o
-                0x000006aa                main
+                0x00000766       0x5a main.o
+                0x00000766                __vector_1
+ .text.setup    0x000007c0       0x8a main.o
+                0x000007c0                setup
+ .text.main     0x0000084a       0x18 main.o
+                0x0000084a                main
  .text.mrf_reset
-                0x000006c2       0x1e mrf24j.o
-                0x000006c2                mrf_reset
+                0x00000862       0x1e mrf24j.o
+                0x00000862                mrf_reset
  .text.mrf_read_short
-                0x000006e0       0x22 mrf24j.o
-                0x000006e0                mrf_read_short
+                0x00000880       0x22 mrf24j.o
+                0x00000880                mrf_read_short
  .text.mrf_read_long
-                0x00000702       0x36 mrf24j.o
-                0x00000702                mrf_read_long
+                0x000008a2       0x36 mrf24j.o
+                0x000008a2                mrf_read_long
  .text.mrf_write_short
-                0x00000738       0x1a mrf24j.o
-                0x00000738                mrf_write_short
+                0x000008d8       0x1a mrf24j.o
+                0x000008d8                mrf_write_short
  .text.mrf_write_long
-                0x00000752       0x2e mrf24j.o
-                0x00000752                mrf_write_long
+                0x000008f2       0x2e mrf24j.o
+                0x000008f2                mrf_write_long
  .text.mrf_get_pan
-                0x00000780       0x1e mrf24j.o
-                0x00000780                mrf_get_pan
+                0x00000920       0x1e mrf24j.o
+                0x00000920                mrf_get_pan
  .text.mrf_set_pan
-                0x0000079e       0x14 mrf24j.o
-                0x0000079e                mrf_set_pan
+                0x0000093e       0x14 mrf24j.o
+                0x0000093e                mrf_set_pan
  .text.mrf_address16_write
-                0x000007b2       0x14 mrf24j.o
-                0x000007b2                mrf_address16_write
+                0x00000952       0x14 mrf24j.o
+                0x00000952                mrf_address16_write
  .text.mrf_address16_read
-                0x000007c6       0x1e mrf24j.o
-                0x000007c6                mrf_address16_read
+                0x00000966       0x1e mrf24j.o
+                0x00000966                mrf_address16_read
  .text.mrf_send16
-                0x000007e4       0xb8 mrf24j.o
-                0x000007e4                mrf_send16
+                0x00000984       0xb8 mrf24j.o
+                0x00000984                mrf_send16
  .text.mrf_set_interrupts
-                0x0000089c        0xc mrf24j.o
-                0x0000089c                mrf_set_interrupts
+                0x00000a3c        0xc mrf24j.o
+                0x00000a3c                mrf_set_interrupts
  .text.mrf_set_channel
-                0x000008a8       0x1e mrf24j.o
-                0x000008a8                mrf_set_channel
+                0x00000a48       0x1e mrf24j.o
+                0x00000a48                mrf_set_channel
  .text.mrf_init
-                0x000008c6       0x88 mrf24j.o
-                0x000008c6                mrf_init
+                0x00000a66       0x88 mrf24j.o
+                0x00000a66                mrf_init
  .text.mrf_check_flags
-                0x0000094e       0x34 mrf24j.o
-                0x0000094e                mrf_check_flags
+                0x00000aee       0x34 mrf24j.o
+                0x00000aee                mrf_check_flags
  .text.mrf_rx_datalength
-                0x00000982        0xa mrf24j.o
-                0x00000982                mrf_rx_datalength
+                0x00000b22        0xa mrf24j.o
+                0x00000b22                mrf_rx_datalength
  .text.mrf_rx_disable
-                0x0000098c        0x8 mrf24j.o
-                0x0000098c                mrf_rx_disable
+                0x00000b2c        0x8 mrf24j.o
+                0x00000b2c                mrf_rx_disable
  .text.mrf_rx_enable
-                0x00000994        0x8 mrf24j.o
-                0x00000994                mrf_rx_enable
+                0x00000b34        0x8 mrf24j.o
+                0x00000b34                mrf_rx_enable
  .text.mrf_interrupt_handler
-                0x0000099c      0x118 mrf24j.o
-                0x0000099c                mrf_interrupt_handler
+                0x00000b3c      0x118 mrf24j.o
+                0x00000b3c                mrf_interrupt_handler
  .text.mrf_get_rxdata
-                0x00000ab4        0x6 mrf24j.o
-                0x00000ab4                mrf_get_rxdata
+                0x00000c54        0x6 mrf24j.o
+                0x00000c54                mrf_get_rxdata
  .text.Pk_Set_Packet_Size
-                0x00000aba        0x6 Packet_Setup.o
-                0x00000aba                Pk_Set_Packet_Size
+                0x00000c5a        0x6 Packet_Setup.o
+                0x00000c5a                Pk_Set_Packet_Size
  .text.Pk_Set_Target_Node
-                0x00000ac0        0x4 Packet_Setup.o
-                0x00000ac0                Pk_Set_Target_Node
+                0x00000c60        0x4 Packet_Setup.o
+                0x00000c60                Pk_Set_Target_Node
  .text.Pk_Set_Final_Node
-                0x00000ac4        0x6 Packet_Setup.o
-                0x00000ac4                Pk_Set_Final_Node
+                0x00000c64        0x6 Packet_Setup.o
+                0x00000c64                Pk_Set_Final_Node
  .text.Pk_Set_Command
-                0x00000aca       0x2c Packet_Setup.o
-                0x00000aca                Pk_Set_Command
+                0x00000c6a       0x2c Packet_Setup.o
+                0x00000c6a                Pk_Set_Command
  .text.Pk_Set_Src_Node
-                0x00000af6        0x6 Packet_Setup.o
-                0x00000af6                Pk_Set_Src_Node
- .text.Pk_Add_Data
-                0x00000afc       0x18 Packet_Setup.o
-                0x00000afc                Pk_Add_Data
+                0x00000c96        0x6 Packet_Setup.o
+                0x00000c96                Pk_Set_Src_Node
+ .text.Pk_Set_Hop_Count
+                0x00000c9c        0x6 Packet_Setup.o
+                0x00000c9c                Pk_Set_Hop_Count
  .text.get_adc_value
-                0x00000b14       0x3a spi-master-adc1.o
-                0x00000b14                get_adc_value
+                0x00000ca2       0x3a spi-master-adc1.o
+                0x00000ca2                get_adc_value
  .text.spi_setup
-                0x00000b4e        0x6 tinyspi.o
-                0x00000b4e                spi_setup
+                0x00000cdc        0x6 tinyspi.o
+                0x00000cdc                spi_setup
  .text.spi_transfer_byte
-                0x00000b54       0x14 tinyspi.o
-                0x00000b54                spi_transfer_byte
+                0x00000ce2       0x14 tinyspi.o
+                0x00000ce2                spi_transfer_byte
  .text.spi_transfer_nbytes
-                0x00000b68       0x6c tinyspi.o
-                0x00000b68                spi_transfer_nbytes
+                0x00000cf6       0x6c tinyspi.o
+                0x00000cf6                spi_transfer_nbytes
  .text.avr-libc
-                0x00000bd4       0x12 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memcpy.o)
-                0x00000bd4                memcpy
-                0x00000be6                . = ALIGN (0x2)
+                0x00000d62       0x12 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25\libc.a(memcpy.o)
+                0x00000d62                memcpy
+                0x00000d74                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000be6        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
-                0x00000be6                _exit
-                0x00000be6                exit
+ .fini9         0x00000d74        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+                0x00000d74                _exit
+                0x00000d74                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -531,11 +534,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000be6        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
+ .fini0         0x00000d74        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr25\libgcc.a(_exit.o)
  *(.fini0)
-                0x00000bea                _etext = .
+                0x00000d78                _etext = .
 
-.data           0x00800100        0xa load address 0x00000bea
+.data           0x00800100        0xa load address 0x00000d78
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -557,7 +560,7 @@ END GROUP
                 0x0080010a                _edata = .
                 0x0080010a                PROVIDE (__data_end, .)
 
-.bss            0x0080010a      0x170
+.bss            0x0080010a      0x167
                 0x0080010a                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
@@ -572,35 +575,35 @@ END GROUP
                 0x00800186        0x2 mrf24j.o
  .bss.rx_buf    0x00800188       0x7f mrf24j.o
  *(COMMON)
- COMMON         0x00800207       0x6d main.o
+ COMMON         0x00800207       0x64 main.o
                 0x00800207                node_status
                 0x00800208                neighbor_count
-                0x00800209                recieved_data_buffer
-                0x00800231                transmit_data_buffer
-                0x00800259                last_node
-                0x0080025b                Network_Set
-                0x0080025c                downstairs_neighbor
-                0x00800261                target_index
-                0x00800262                observed_nodes
-                0x0080026c                network_status
-                0x0080026d                mrf_reg_TXSTAT
-                0x0080026e                isr_lock
-                0x0080026f                upstairs_neighbor
- COMMON         0x00800274        0x3 mrf24j.o
-                0x00800274                mrf_flags
-                0x00800275                flag_got_tx
-                0x00800276                flag_got_rx
- COMMON         0x00800277        0x3 spi-master-adc1.o
-                0x00800277                adc_buffer
-                0x0080027a                PROVIDE (__bss_end, .)
-                0x00000bea                __data_load_start = LOADADDR (.data)
-                0x00000bf4                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00800209                transmit_data_buffer
+                0x00800231                last_node
+                0x00800233                Network_Set
+                0x00800234                downstairs_neighbor
+                0x00800239                target_index
+                0x0080023a                network_status
+                0x0080023b                mrf_reg_TXSTAT
+                0x0080023c                isr_lock
+                0x0080023d                hop_count
+                0x0080023e                upstairs_neighbor
+                0x00800243                received_data_buffer
+ COMMON         0x0080026b        0x3 mrf24j.o
+                0x0080026b                mrf_flags
+                0x0080026c                flag_got_tx
+                0x0080026d                flag_got_rx
+ COMMON         0x0080026e        0x3 spi-master-adc1.o
+                0x0080026e                adc_buffer
+                0x00800271                PROVIDE (__bss_end, .)
+                0x00000d78                __data_load_start = LOADADDR (.data)
+                0x00000d82                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0080027a        0x0
+.noinit         0x00800271        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                PROVIDE (__noinit_end, .)
-                0x0080027a                _end = .
+                0x00800271                _end = .
                 [!provide]                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
@@ -670,87 +673,87 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0x2b8
+.debug_aranges  0x00000000      0x2c0
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x38 bitmanip.o
  .debug_aranges
-                0x00000038       0xd8 main.o
+                0x00000038       0xd0 main.o
  .debug_aranges
-                0x00000110      0x100 mrf24j.o
+                0x00000108      0x100 mrf24j.o
  .debug_aranges
-                0x00000210       0x50 Packet_Setup.o
+                0x00000208       0x60 Packet_Setup.o
  .debug_aranges
-                0x00000260       0x20 spi-master-adc1.o
+                0x00000268       0x20 spi-master-adc1.o
  .debug_aranges
-                0x00000280       0x38 tinyspi.o
+                0x00000288       0x38 tinyspi.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x2c46
+.debug_info     0x00000000     0x2f54
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x576 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
  .debug_info    0x00000576      0x1a5 bitmanip.o
- .debug_info    0x0000071b     0x113c main.o
- .debug_info    0x00001857      0xe66 mrf24j.o
- .debug_info    0x000026bd      0x2fa Packet_Setup.o
- .debug_info    0x000029b7      0x134 spi-master-adc1.o
- .debug_info    0x00002aeb      0x15b tinyspi.o
+ .debug_info    0x0000071b     0x13ce main.o
+ .debug_info    0x00001ae9      0xe66 mrf24j.o
+ .debug_info    0x0000294f      0x376 Packet_Setup.o
+ .debug_info    0x00002cc5      0x134 spi-master-adc1.o
+ .debug_info    0x00002df9      0x15b tinyspi.o
 
-.debug_abbrev   0x00000000      0xde5
+.debug_abbrev   0x00000000      0xdd6
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x52b C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
  .debug_abbrev  0x0000052b       0xe4 bitmanip.o
- .debug_abbrev  0x0000060f      0x299 main.o
- .debug_abbrev  0x000008a8      0x2e4 mrf24j.o
- .debug_abbrev  0x00000b8c       0xcc Packet_Setup.o
- .debug_abbrev  0x00000c58       0xbf spi-master-adc1.o
- .debug_abbrev  0x00000d17       0xce tinyspi.o
+ .debug_abbrev  0x0000060f      0x27b main.o
+ .debug_abbrev  0x0000088a      0x2e4 mrf24j.o
+ .debug_abbrev  0x00000b6e       0xdb Packet_Setup.o
+ .debug_abbrev  0x00000c49       0xbf spi-master-adc1.o
+ .debug_abbrev  0x00000d08       0xce tinyspi.o
 
-.debug_line     0x00000000     0x132e
+.debug_line     0x00000000     0x1467
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x10f C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
  .debug_line    0x0000010f      0x10f bitmanip.o
- .debug_line    0x0000021e      0x774 main.o
- .debug_line    0x00000992      0x648 mrf24j.o
- .debug_line    0x00000fda      0x159 Packet_Setup.o
- .debug_line    0x00001133       0xd1 spi-master-adc1.o
- .debug_line    0x00001204      0x12a tinyspi.o
+ .debug_line    0x0000021e      0x880 main.o
+ .debug_line    0x00000a9e      0x648 mrf24j.o
+ .debug_line    0x000010e6      0x186 Packet_Setup.o
+ .debug_line    0x0000126c       0xd1 spi-master-adc1.o
+ .debug_line    0x0000133d      0x12a tinyspi.o
 
-.debug_frame    0x00000000      0x6d0
+.debug_frame    0x00000000      0x708
  *(.debug_frame)
  .debug_frame   0x00000000       0x54 bitmanip.o
- .debug_frame   0x00000054      0x2ac main.o
- .debug_frame   0x00000300      0x280 mrf24j.o
- .debug_frame   0x00000580       0xa4 Packet_Setup.o
- .debug_frame   0x00000624       0x30 spi-master-adc1.o
- .debug_frame   0x00000654       0x7c tinyspi.o
+ .debug_frame   0x00000054      0x2c4 main.o
+ .debug_frame   0x00000318      0x280 mrf24j.o
+ .debug_frame   0x00000598       0xc4 Packet_Setup.o
+ .debug_frame   0x0000065c       0x30 spi-master-adc1.o
+ .debug_frame   0x0000068c       0x7c tinyspi.o
 
-.debug_str      0x00000000      0xa50
+.debug_str      0x00000000      0xa6e
  *(.debug_str)
  .debug_str     0x00000000      0x1d9 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.3.172/gcc/dev/attiny88/avr25/crtattiny88.o
  .debug_str     0x000001d9      0x199 bitmanip.o
                                 0x1d8 (size before relaxing)
- .debug_str     0x00000372      0x3d4 main.o
-                                0x5dd (size before relaxing)
- .debug_str     0x00000746      0x249 mrf24j.o
+ .debug_str     0x00000372      0x3c7 main.o
+                                0x5c4 (size before relaxing)
+ .debug_str     0x00000739      0x249 mrf24j.o
                                 0x4fb (size before relaxing)
- .debug_str     0x0000098f       0x5d Packet_Setup.o
-                                0x25f (size before relaxing)
- .debug_str     0x000009ec       0x27 spi-master-adc1.o
+ .debug_str     0x00000982       0x88 Packet_Setup.o
+                                0x299 (size before relaxing)
+ .debug_str     0x00000a0a       0x27 spi-master-adc1.o
                                 0x1d2 (size before relaxing)
- .debug_str     0x00000a13       0x3d tinyspi.o
+ .debug_str     0x00000a31       0x3d tinyspi.o
                                 0x1d2 (size before relaxing)
 
-.debug_loc      0x00000000     0x1936
+.debug_loc      0x00000000     0x1be6
  *(.debug_loc)
  .debug_loc     0x00000000      0x148 bitmanip.o
- .debug_loc     0x00000148      0xb17 main.o
- .debug_loc     0x00000c5f      0x833 mrf24j.o
- .debug_loc     0x00001492      0x2c8 Packet_Setup.o
- .debug_loc     0x0000175a       0x50 spi-master-adc1.o
- .debug_loc     0x000017aa      0x18c tinyspi.o
+ .debug_loc     0x00000148      0xda2 main.o
+ .debug_loc     0x00000eea      0x833 mrf24j.o
+ .debug_loc     0x0000171d      0x2ed Packet_Setup.o
+ .debug_loc     0x00001a0a       0x50 spi-master-adc1.o
+ .debug_loc     0x00001a5a      0x18c tinyspi.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -770,14 +773,14 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000      0x258
+.debug_ranges   0x00000000      0x260
  *(.debug_ranges)
  .debug_ranges  0x00000000       0x28 bitmanip.o
- .debug_ranges  0x00000028       0xc8 main.o
- .debug_ranges  0x000000f0       0xf0 mrf24j.o
- .debug_ranges  0x000001e0       0x40 Packet_Setup.o
- .debug_ranges  0x00000220       0x10 spi-master-adc1.o
- .debug_ranges  0x00000230       0x28 tinyspi.o
+ .debug_ranges  0x00000028       0xc0 main.o
+ .debug_ranges  0x000000e8       0xf0 mrf24j.o
+ .debug_ranges  0x000001d8       0x50 Packet_Setup.o
+ .debug_ranges  0x00000228       0x10 spi-master-adc1.o
+ .debug_ranges  0x00000238       0x28 tinyspi.o
 
 .debug_macro
  *(.debug_macro)

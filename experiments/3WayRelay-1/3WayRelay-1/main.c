@@ -20,6 +20,7 @@
 #include <string.h>
 #include "blinkin.h"
 #include "Packet_Setup.h"
+#include "network_setup_functions.h"
 
 #define ASMP_PANID 0xCAFE //sets ID for entire network
 uint16_t PAN_ID = 0xCAFE;

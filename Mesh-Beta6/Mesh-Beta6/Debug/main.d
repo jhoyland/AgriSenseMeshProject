@@ -18,8 +18,8 @@ main.d main.o: .././main.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdbool.h \
  .././PinDefs_2_18_2020.h .././command_specs_2_20_2020.h .././tinyspi.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h \
- .././mrf24j.h .././bitmanip.h .././packet_specs.h .././blinkin.h \
- .././Packet_Setup.h .././Network_functions.h .././spi-master-adc1.h
+ .././mrf24j.h .././bitmanip.h .././packet_specs.h .././Packet_Setup.h \
+ .././blinkin.h .././Network_functions.h .././spi-master-adc1.h
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -69,9 +69,9 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 
 .././packet_specs.h:
 
-.././blinkin.h:
-
 .././Packet_Setup.h:
+
+.././blinkin.h:
 
 .././Network_functions.h:
 
