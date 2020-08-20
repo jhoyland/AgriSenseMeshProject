@@ -11,6 +11,8 @@
 #include <wiringPiSPI.h>
 #include <sys/time.h>
 #include <stdio.h>
+#include <string.h>
+#include "setup.h"
 
 /*#ifndef MRF_RESET
 #error No MRF_RESET pin defined for MRF24J module
@@ -239,10 +241,10 @@ void mrf_interrupt_handler(void) {
     GRAB_ISR_MUTEX;
 
     uint8_t last_interrupt = mrf_read_short(MRF_INTSTAT);
-    printf("\nLast interrupt %i",last_interrupt); fflush(stdout);
+   // printf("\nLast interrupt %i",last_interrupt); fflush(stdout);
     if (last_interrupt & MRF_I_RXIF) {
         flag_got_rx++;
-	printf("\nFlag got rx: %i", flag_got_rx); fflush(stdout);
+	//printf("\nFlag got rx: %i", flag_got_rx); fflush(stdout);
         // read out the packet data...
         //cli();
         mrf_rx_disable();
@@ -256,7 +258,7 @@ void mrf_interrupt_handler(void) {
         if(mrf_flags | MRF_BUF_PHY){
 	    printf("\nMRF_BUF_PHY Entered"); fflush(stdout);
             int rb_ptr = 0;
-            for (i = 0; i < frame_length; i++) { // from 0x301 to (0x301 + frame_length -1)
+            for (i = 0; i < frame_length; i++) { // from 0x301 to (0x301 + frame_length -1) Option: don't read frame_length, just expected value
                 rx_buf[rb_ptr++] = mrf_read_long(0x301 + i);
             }
 
@@ -270,19 +272,20 @@ void mrf_interrupt_handler(void) {
             rx_info.rx_data[rd_ptr++] = mrf_read_long(0x301 + bytes_MHR + i); 
         }
 	memcpy(rx_data_buffer.rx_data,rx_info.rx_data,mrf_rx_datalength()); //should copy to new buffer 17/7/20
-        for (i = 0; i < mrf_rx_datalength(); i++) //experimenting
-   /* {
+
+    /*    for (i = 0; i < mrf_rx_datalength(); i++) //experimenting
+    {
 	printf("\nGot: %d 0x %x", i, rx_data_buffer.rx_data[i]); //this is my data!
 	fflush(stdout);
     }*/
 
-        rx_info.frame_length = frame_length;
+        //rx_info.frame_length = frame_length; //not needed?
         // same as datasheet 0x301 + (m + n + 2) <-- frame_length
         rx_info.lqi = mrf_read_long(0x301 + frame_length);
         // same as datasheet 0x301 + (m + n + 3) <-- frame_length + 1
-        rx_info.rssi = mrf_read_long(0x301 + frame_length + 1);
+        rx_info.rssi = mrf_read_long(0x301 + frame_length + 1); //signal strength
 
-        //mrf_rx_enable(); //suggested by james
+        mrf_rx_enable(); //suggested by james
     //    sei();
     }
     if (last_interrupt & MRF_I_TXNIF) {
@@ -295,6 +298,7 @@ void mrf_interrupt_handler(void) {
         tx_info.channel_busy = (mrf_reg_TXSTAT & (1 << CCAFAIL));
     }
     set_message_status(1);
+    printf("\nNo longer interrupted"); fflush(stdout);
    // isr_running = 0;
     DROP_ISR_MUTEX;
 
@@ -344,7 +348,9 @@ uint8_t * mrf_get_rxbuf(void) {
 }
 
 int mrf_rx_datalength(void) {
-    return rx_info.frame_length - bytes_nodata;
+    if (bytes_nodata > rx_info.frame_length) return 0;
+
+    else return (rx_info.frame_length - bytes_nodata);
 }
 
 int mrf_rx_buffer_datalength(void)
